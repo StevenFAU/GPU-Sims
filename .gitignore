@@ -1,0 +1,138 @@
+# ============================================================
+# Build outputs
+# ============================================================
+build/
+build-*/
+out/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.pdb
+*.idb
+*.ilk
+*.exp
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+_deps/
+install_manifest.txt
+compile_commands.json
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ============================================================
+# Node / Web
+# ============================================================
+node_modules/
+dist/
+.vite/
+.next/
+.cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+.env.*.local
+
+# ============================================================
+# IDE and editor
+# ============================================================
+.vscode/*
+!.vscode/settings.json.example
+!.vscode/extensions.json.example
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============================================================
+# Simulation outputs (large binary artifacts)
+# ============================================================
+# Cached simulation state and exports — these can be huge.
+# Track only via Git LFS if at all; usually just regenerate.
+outputs/
+renders/
+captures/
+*.vdb
+*.abc
+*.usd
+*.usda
+*.usdc
+*.usdz
+# Allow tracking specific sample/reference VDB/ABC files by
+# overriding in the relevant sim's .gitignore if needed.
+
+# Image and video outputs in the repo root
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
+/*.mp4
+/*.mov
+/*.webm
+
+# But preserve gallery assets in expected locations
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.gif
+!**/gallery/**
+
+# ============================================================
+# Blender autosaves and locks
+# ============================================================
+*.blend1
+*.blend2
+*.blend@
+.~lock.*
+
+# ============================================================
+# Profiling / tracing
+# ============================================================
+*.gpa
+*.nsight
+*.qdrep
+*.nvvp
+*.qprof
+perf.data*
+*.svg.gz
+
+# ============================================================
+# Claude Code / AI tool artifacts
+# ============================================================
+.claude/
+CLAUDE.local.md

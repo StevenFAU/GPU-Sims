@@ -1,0 +1,100 @@
+name: Structure
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate repo structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required directories exist
+        shell: bash
+        run: |
+          set -e
+          required_dirs=(
+            docs
+            docs/sim-specs
+            common
+            volumetric-grid/eulerian-smoke
+            volumetric-grid/lattice-boltzmann
+            volumetric-grid/reaction-diffusion-3d
+            particle-fluids/sph-water
+            particle-fluids/pic-flip
+            hybrid-particle-grid/mpm-multimaterial
+            continuous-ca/reaction-diffusion-2d
+            continuous-ca/lenia-fft
+            continuous-ca/neural-ca
+            agent-based/physarum
+            agent-based/boids-3d
+            closed-form/mandelbulb-explorer
+            closed-form/strange-attractors
+            quantum/ising-dwave
+            render-pipelines/blender
+            render-pipelines/houdini
+            render-pipelines/optix
+            web
+          )
+          for d in "${required_dirs[@]}"; do
+            if [ ! -d "$d" ]; then
+              echo "MISSING DIR: $d"
+              exit 1
+            fi
+          done
+          echo "All required directories present."
+      - name: Verify required top-level files exist
+        shell: bash
+        run: |
+          set -e
+          required_files=(
+            LICENSE
+            README.md
+            .gitignore
+            .gitattributes
+            .editorconfig
+            .clang-format
+            CONTRIBUTING.md
+            CODE_OF_CONDUCT.md
+            SECURITY.md
+            CITATION.cff
+            CHANGELOG.md
+            docs/overarching-spec.md
+            docs/root-context-distilled.md
+            docs/hardware.md
+            docs/stack-decisions.md
+            docs/conventions.md
+            docs/sim-specs/_template.md
+          )
+          for f in "${required_files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "MISSING FILE: $f"
+              exit 1
+            fi
+          done
+          echo "All required top-level files present."
+      - name: Verify all sim-spec stubs exist
+        shell: bash
+        run: |
+          set -e
+          sims=(
+            strange-attractors mandelbulb-explorer
+            physarum boids-3d
+            reaction-diffusion-2d reaction-diffusion-3d lenia-fft neural-ca
+            eulerian-smoke lattice-boltzmann
+            sph-water pic-flip
+            mpm-multimaterial
+            ising-dwave
+          )
+          for s in "${sims[@]}"; do
+            if [ ! -f "docs/sim-specs/$s.md" ]; then
+              echo "MISSING SIM SPEC: docs/sim-specs/$s.md"
+              exit 1
+            fi
+          done
+          echo "All sim-spec stubs present."

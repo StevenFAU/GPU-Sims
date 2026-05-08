@@ -1,0 +1,68 @@
+# Default: normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Source files (force LF)
+*.c           text eol=lf
+*.h           text eol=lf
+*.cpp         text eol=lf
+*.hpp         text eol=lf
+*.cc          text eol=lf
+*.cxx         text eol=lf
+*.glsl        text eol=lf
+*.vert        text eol=lf
+*.frag        text eol=lf
+*.comp        text eol=lf
+*.wgsl        text eol=lf
+*.hlsl        text eol=lf
+*.py          text eol=lf
+*.ts          text eol=lf
+*.tsx         text eol=lf
+*.js          text eol=lf
+*.jsx         text eol=lf
+*.json        text eol=lf
+*.md          text eol=lf
+*.txt         text eol=lf
+*.yml         text eol=lf
+*.yaml        text eol=lf
+*.toml        text eol=lf
+*.cmake       text eol=lf
+CMakeLists.txt text eol=lf
+
+# Windows-only files
+*.bat         text eol=crlf
+*.cmd         text eol=crlf
+*.ps1         text eol=crlf
+
+# Binary
+*.png         binary
+*.jpg         binary
+*.jpeg        binary
+*.gif         binary
+*.webp        binary
+*.ico         binary
+*.mp4         binary
+*.mov         binary
+*.webm        binary
+*.pdf         binary
+*.zip         binary
+*.tar         binary
+*.gz          binary
+*.7z          binary
+*.vdb         binary
+*.abc         binary
+*.usd         binary
+*.usdc        binary
+*.usdz        binary
+*.blend       binary
+*.fbx         binary
+*.obj         binary
+*.gltf        binary
+*.glb         binary
+
+# Linguist overrides — make sure GitHub's language bar reflects
+# the simulation work, not generated files or third-party scaffolding.
+docs/**            linguist-documentation
+*.md               linguist-documentation
+**/build/**        linguist-generated
+**/dist/**         linguist-generated
+**/node_modules/** linguist-vendored

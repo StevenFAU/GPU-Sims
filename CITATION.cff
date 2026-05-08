@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: "GPU-Sims: A portfolio of GPU-accelerated physics and emergence simulations"
+message: "If you reference this work, please cite it as below."
+type: software
+authors:
+  - family-names: Cohen
+    given-names: Steven
+    alias: StevenFAU
+repository-code: "https://github.com/StevenFAU/GPU-Sims"
+url: "https://github.com/StevenFAU/GPU-Sims"
+license: MIT
+keywords:
+  - gpu-computing
+  - physics-simulation
+  - fluid-simulation
+  - cellular-automata
+  - cuda
+  - vulkan
+  - webgpu
+  - opengl
+  - taichi
+  - openvdb
+  - alembic
+  - real-time-rendering
+  - scientific-visualization

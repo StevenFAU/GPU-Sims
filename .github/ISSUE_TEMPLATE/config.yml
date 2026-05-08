@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/StevenFAU/GPU-Sims/tree/main/docs
+    about: Browse the spec, conventions, and per-sim specifications before opening an issue.

@@ -1,0 +1,106 @@
+name: Build (native)
+
+on:
+  push:
+    paths:
+      - 'CMakeLists.txt'
+      - 'common/common-cpp/**'
+      - '.github/workflows/build-native.yml'
+  pull_request:
+    paths:
+      - 'CMakeLists.txt'
+      - 'common/common-cpp/**'
+      - '.github/workflows/build-native.yml'
+  workflow_dispatch:
+
+jobs:
+  build-ubuntu:
+    name: Ubuntu 24.04 / Vulkan / Release
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            git \
+            pkg-config \
+            libgl1-mesa-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxrandr-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            libvulkan-dev \
+            vulkan-tools \
+            vulkan-validationlayers \
+            spirv-tools \
+            glslang-tools
+
+      - name: Verify Vulkan SDK is available
+        run: |
+          vulkaninfo --summary || true
+          glslangValidator --version
+
+      - name: Configure (Release, examples ON)
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGPU_SIMS_BUILD_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: List built artifacts
+        run: |
+          echo "=== Build directory ==="
+          find build -type f -executable -not -path '*/\.*' | head -50
+          echo "=== Hello binary ==="
+          ls -la build/common/common-cpp/examples/hello/ || true
+
+  build-ubuntu-debug:
+    name: Ubuntu 24.04 / Vulkan / Debug + Validation
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            git \
+            pkg-config \
+            libgl1-mesa-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxrandr-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            libvulkan-dev \
+            vulkan-validationlayers \
+            spirv-tools \
+            glslang-tools
+
+      - name: Configure (Debug)
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DGPU_SIMS_BUILD_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --parallel

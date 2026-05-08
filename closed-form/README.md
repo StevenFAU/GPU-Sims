@@ -4,7 +4,7 @@ No simulation in the time-stepping sense — these demos render mathematical str
 
 ## Sims in this category
 
-- [`strange-attractors/`](strange-attractors/) — 10M particles integrating Lorenz / Aizawa / Thomas ODEs; motion blur, additive blending, slow camera orbit. **Stack B (WebGPU)** or **Stack C (Native).** First spinoff target.
+- [`strange-attractors/`](strange-attractors/) — 10M particles integrating Lorenz / Aizawa / Thomas ODEs; motion blur, additive blending, slow camera orbit. **Stack B (WebGPU).** First spinoff target.
 - [`mandelbulb-explorer/`](mandelbulb-explorer/) — Free-fly distance-estimator ray marcher; soft shadows, orbit-trap coloring, parameter morph animations. **Stack A (Shadertoy) → Stack B (WebGPU).**
 
 For category rationale see [`../docs/overarching-spec.md`](../docs/overarching-spec.md) §5–§6.

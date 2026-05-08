@@ -2,8 +2,8 @@
 
 > **Status:** Specification pending — not yet drafted by the architect chat
 > **Category:** Closed-form
-> **Primary stack:** B (WebGPU)
-> **Secondary stack(s):** C (Native) optional
+> **Primary stack:** WebGPU (Stack B)
+> **Secondary stack(s):** —
 > **Target machine:** Desktop
 > **Folder:** [`closed-form/strange-attractors`](../../closed-form/strange-attractors/)
 

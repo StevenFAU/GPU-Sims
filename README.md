@@ -12,7 +12,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 
 | Sim | Category | Stack | Status |
 |---|---|---|---|
-| [Strange attractors](closed-form/strange-attractors/) | Closed-form | WebGPU / Native | Not started |
+| [Strange attractors](closed-form/strange-attractors/) | Closed-form | WebGPU | Not started |
 | [Mandelbulb explorer](closed-form/mandelbulb-explorer/) | Closed-form | Shadertoy → WebGPU | Not started |
 | [Physarum](agent-based/physarum/) | Agent-based | WebGPU | Not started |
 | [Boids-3D](agent-based/boids-3d/) | Agent-based | WebGPU | Not started |

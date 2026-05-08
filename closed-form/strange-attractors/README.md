@@ -1,7 +1,7 @@
 # Strange Attractors
 
 **Status:** Unimplemented
-**Stack:** Stack B (WebGPU) or Stack C (Native)
+**Stack:** WebGPU
 **Spec:** [`docs/sim-specs/strange-attractors.md`](../../docs/sim-specs/strange-attractors.md)
 
 10M particles integrating Lorenz / Aizawa / Thomas ODEs, motion blur, slow camera orbit. The repo's first warm-up sim.

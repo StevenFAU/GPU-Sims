@@ -62,7 +62,7 @@ using nlohmann::json;
 constexpr uint32_t GRID_SIZE                 = 256;
 constexpr uint32_t WG_DIM                    = 8;     // workgroup_size in shader
 constexpr int      SUBSTEPS_DEFAULT          = 4;
-constexpr float    SIM_DT_DEFAULT            = 1.0f;
+constexpr float    SIM_DT_DEFAULT            = 0.5f;
 constexpr uint32_t INIT_SEED_DEFAULT         = 0xC0FFEEu;
 constexpr uint32_t SEED_BLOCK_DEF            = 16;
 constexpr float    NOISE_AMP_DEFAULT         = 0.05f;

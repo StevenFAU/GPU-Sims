@@ -272,7 +272,6 @@ struct Runtime {
     uint32_t  initSeed      = INIT_SEED_DEFAULT;
     uint32_t  seedBlockSize = SEED_BLOCK_DEF;
     float     noiseAmp      = NOISE_AMP_DEFAULT;
-    bool      windowFullscreen = false;   // not used in v1; tracked for capture compatibility
     uint64_t  iteration     = 0;
 };
 
@@ -690,7 +689,6 @@ int main() {
         j["initSeed"]            = rt.initSeed;
         j["seedBlockSize"]       = rt.seedBlockSize;
         j["noiseAmp"]            = rt.noiseAmp;
-        j["windowFullscreen"]    = rt.windowFullscreen;
         return j;
     };
 

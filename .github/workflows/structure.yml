@@ -24,7 +24,6 @@ jobs:
             common
             volumetric-grid/eulerian-smoke
             volumetric-grid/lattice-boltzmann
-            volumetric-grid/reaction-diffusion-3d
             particle-fluids/sph-water
             particle-fluids/pic-flip
             hybrid-particle-grid/mpm-multimaterial

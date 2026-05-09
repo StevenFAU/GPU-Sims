@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.5.0] — 2026-05-09
+
+### Added
+- **Phase 4:** Second Stack B sim — `closed-form/mandelbulb-explorer/`. Distance-estimator raymarcher (Daniel White / Paul Nylander mandelbulb formulation, n=8 default, range [2, 12]) with cone-traced soft shadows, three orbit-trap coloring presets, and optional auto-morph of the power exponent. First Stack A → B port in the repo: a Steven-original Shadertoy-idiom GLSL implementation preserved at `closed-form/mandelbulb-explorer/shadertoy/mandelbulb.glsl` alongside the WebGPU port at `closed-form/mandelbulb-explorer/web/`. Live at <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/>.
+- Render pipeline: single-pass raymarch into an `rgba16float` HDR offscreen RT, then a Reinhard tonemap pass to the swap-chain image. `renderScale` slider (0.5–1.0) trades resolution for cost — actually reduces fragment count, not a faux quality knob.
+- First sim to consume `@gpusims/common-web` without compute pipelines: pure render-only pipeline, two render passes, one offscreen texture, two uniform buffers, one linear sampler.
+
 ## [0.4.0] — 2026-05-09
 
 ### Added
@@ -59,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub-surface files: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CITATION.cff`, issue and PR templates.
 - CI workflows for markdown linting and structure validation.
 
-[Unreleased]: https://github.com/StevenFAU/GPU-Sims/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/StevenFAU/GPU-Sims/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/StevenFAU/GPU-Sims/compare/v0.2.0...v0.2.1

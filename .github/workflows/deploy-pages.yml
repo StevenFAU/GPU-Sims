@@ -55,6 +55,9 @@ jobs:
       - name: Build strange-attractors-web
         run: npm run build --workspace=@gpusims/strange-attractors-web
 
+      - name: Build mandelbulb-explorer-web
+        run: npm run build --workspace=@gpusims/mandelbulb-explorer-web
+
       - name: Assemble deploy tree
         run: |
           mkdir -p _site
@@ -66,6 +69,9 @@ jobs:
           # strange-attractors → /strange-attractors/
           mkdir -p _site/strange-attractors
           cp -r closed-form/strange-attractors/web/dist/* _site/strange-attractors/
+          # mandelbulb-explorer → /mandelbulb-explorer/
+          mkdir -p _site/mandelbulb-explorer
+          cp -r closed-form/mandelbulb-explorer/web/dist/* _site/mandelbulb-explorer/
           # Show what we built
           echo "=== _site contents ==="
           find _site -maxdepth 2 -type f | sort

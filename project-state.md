@@ -63,7 +63,7 @@ Seven categories. Each lives in its own top-level folder.
 | 1.5 | common-web | WebGPU + TypeScript shared infrastructure: same surface as common-cpp adapted for the browser. Vite WGSL plugin for hot-reload. CI build-web job. lil-gui parameter panel. ZIP-based state capture. Hello-world example. Gallery placeholder index.html. **Eight spec defects caught + fixed** (TS strict-mode dominant; see commit body). | ✅ Shipped | `6b5309a` |
 | 2 | strange-attractors | First Stack B sim. Validates `common-web` against a real consumer. Adds GitHub Pages deploy automation. Adopts canvas-DPR convention for all Stack B portfolio sims. | ✅ Shipped | `7a4f3f5` |
 | 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to Phase 5 (eulerian-smoke is the natural sparse-volume consumer). | ✅ Shipped | `d517f02` |
-| 4 | mandelbulb-explorer | Shadertoy → WebGPU port. Establishes the Stack A→B port flow. | ⬜ Not started | — |
+| 4 | mandelbulb-explorer | Shadertoy → WebGPU port. Second Stack B sim; first Stack A→B port (Steven-original Shadertoy GLSL preserved at `shadertoy/`, real WebGPU port at `web/`). DE raymarcher with soft shadows + orbit traps. No compute pipelines — first sim to use common-web in a render-only pipeline. Single uniform buffer, offscreen HDR RT, render-scale slider. | ✅ Shipped | `<COMMIT-HASH>` |
 | 5 | flagship-cpp-sim | Either `eulerian-smoke` or `sph-water`. Adds OpenVDB or Alembic real impl to common-cpp depending on which. | ⬜ Not started | — |
 | 6 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
 | 7+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
@@ -150,7 +150,7 @@ Lands with the first Stack D sim phase.
 | Category | Sims | Stack | Status |
 |----------|------|-------|--------|
 | `closed-form/strange-attractors/` | strange-attractors | B | **Implemented (Phase 2)**; live at <https://stevenfau.github.io/GPU-Sims/strange-attractors/> |
-| `closed-form/mandelbulb-explorer/` | mandelbulb-explorer | A → B | Sim-spec stub committed in Phase 0; implementation in Phase 4 |
+| `closed-form/mandelbulb-explorer/` | mandelbulb-explorer | A → B | **Implemented (Phase 4)**; live at <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> |
 | `agent-based/physarum/` | physarum | B | Sim-spec stub; implementation TBD |
 | `agent-based/boids-3d/` | boids-3d | B | Sim-spec stub; implementation TBD |
 | `continuous-ca/lenia-fft/` | lenia-fft | D | Sim-spec stub; tied to Phase 6 (common-py) |
@@ -254,6 +254,7 @@ Sim-phase specs must reference the *implemented* `common-` API surface, not an i
 - For Stack B sim phases: `common/common-web/examples/hello/src/main.ts` and the modules it imports from `@gpusims/common-web`.
 - For Stack C sim phases: `common/common-cpp/examples/hello/main.cpp` and the corresponding headers under `common/common-cpp/include/gpusims/`.
 - For Stack D sim phases (eventually): the analogous Python hello example.
+- **Read-actual-source rule extends to CI surfaces.** Phase 4 execution caught two stale anchors in `.github/workflows/deploy-pages.yml` (per-step `name:`/`run:` block shape and `cp dist/*` glob form) that the spec had drafted from memory of an earlier deploy-pages.yml shape. Architect chats drafting modifications to existing CI YAML should fetch the current file contents and anchor on verified strings, not paraphrase from memory of prior phases. Same drift class as the common-web API mismatches caught in earlier rounds.
 
 This is load-bearing: Phase 3's spec was drafted against an idealized `common-cpp` API and Claude Code adapted ~5–10 sites at execution time (Window constructor signature, `gv::WindowOptions` that doesn't exist, descriptor-set construction style — fluent `ComputeBindings` vs raw `vkUpdateDescriptorSets` — profiler-scope idiom, ImGui glue function names, Camera method names, `beginRendering` vs `beginSwapchainPass`). The adaptations all landed correctly, but they cost real tokens and produced a spec → code gap that's hard to audit afterward. The fix is upstream: write the spec against the real API.
 

@@ -1,0 +1,29 @@
+{
+  "name": "gpu-sims",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GPU-accelerated physics and emergence simulations — workspace root",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "common/common-web",
+    "common/common-web/examples/*",
+    "closed-form/*/web",
+    "agent-based/*/web",
+    "continuous-ca/*/web",
+    "volumetric-grid/*/web",
+    "particle-fluids/*/web",
+    "hybrid-particle-grid/*/web",
+    "quantum/*/web"
+  ],
+  "scripts": {
+    "build:web": "npm run build --workspace=@gpusims/common-web --if-present && npm run build --workspaces --if-present --include-workspace-root=false",
+    "dev:hello-web": "npm run dev --workspace=@gpusims/hello-web",
+    "typecheck": "npm run typecheck --workspaces --if-present --include-workspace-root=false"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

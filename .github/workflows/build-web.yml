@@ -1,0 +1,48 @@
+name: Build (web)
+
+on:
+  push:
+    paths:
+      - 'package.json'
+      - 'common/common-web/**'
+      - '.github/workflows/build-web.yml'
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'common/common-web/**'
+      - '.github/workflows/build-web.yml'
+  workflow_dispatch:
+
+jobs:
+  build-web:
+    name: Node 22 / TypeScript / Vite build
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Type-check (strict)
+        run: npm run typecheck
+
+      - name: Build common-web library
+        run: npm run build --workspace=@gpusims/common-web
+
+      - name: Build hello-world example
+        run: npm run build --workspace=@gpusims/hello-web
+
+      - name: List built artifacts
+        run: |
+          echo "=== common-web dist ==="
+          ls -la common/common-web/dist/ || true
+          echo "=== hello-web dist ==="
+          ls -la common/common-web/examples/hello/dist/ || true

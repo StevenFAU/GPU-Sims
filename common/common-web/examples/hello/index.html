@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>gpu_sims_hello — common-web</title>
+    <style>
+        :root { color-scheme: dark; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #0c0c10;
+            color: #ddd;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+        #canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            touch-action: none;
+            outline: none;
+        }
+        #unsupported {
+            display: none;
+            position: absolute;
+            inset: 0;
+            place-content: center;
+            place-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        #unsupported a { color: #4cf; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="unsupported">
+        <div>
+            <h1>WebGPU is not available</h1>
+            <p>This site requires a current browser with WebGPU enabled.</p>
+            <p>See <a href="https://caniuse.com/webgpu" target="_blank" rel="noopener">caniuse.com/webgpu</a> for support.</p>
+        </div>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ sub-package targets one stack:
 | Package      | Stack                          | Status (Phase 1)               |
 |--------------|--------------------------------|--------------------------------|
 | `common-cpp` | C — Native C++ / Vulkan 1.3    | **Implemented**                |
-| `common-web` | B — TypeScript / WebGPU        | Drafted in Phase 1.5           |
+| `common-web` | B — TypeScript / WebGPU        | **Implemented**                |
 | `common-py`  | D — Python / Taichi            | Drafted with first Stack D sim |
 
 Stack A (Shadertoy) does not have a `common-` package — single-file GLSL
@@ -128,10 +128,92 @@ shader files while the program is running — pipelines reload on save. A
 green toast confirms success; a red toast with the GLSL compiler error
 appears on failure (and the previous shader stays bound).
 
-## common-web — WebGPU / TypeScript (Phase 1.5)
+## common-web — WebGPU / TypeScript (Implemented)
 
-Will live at `common/common-web/`. Drafted as a separate phase before the
-first Stack B sim implementation (strange-attractors).
+Path: `common/common-web/`
+
+The Stack B equivalent of common-cpp. Same conceptual API surface — `Context`,
+`Renderer`, `Camera`, `ComputePipeline`, `RenderPipeline`, `HotReloader`,
+`GpuProfiler`, `StateWriter`, `StateReader`, `ParamPanel` (lil-gui-based ImGui
+equivalent).
+
+**Layout:**
+
+```
+common-web/
+├── package.json                npm package: @gpusims/common-web
+├── tsconfig.json
+├── src/
+│   ├── index.ts                public API barrel
+│   ├── camera.ts               native TS port of gpusims::Camera
+│   ├── hotReload.ts            WGSL HMR client (consumes vite plugin)
+│   ├── gpuProfiler.ts          timestamp-query wrapper, ring-buffered
+│   ├── stateWriter.ts          ZIP-based capture (Blob download)
+│   ├── stateReader.ts          ZIP-based capture loader (File input)
+│   ├── paramPanel.ts           lil-gui wrapper
+│   ├── viteWgslPlugin.ts       Vite plugin sims import in their config
+│   ├── input.ts                keyboard + pointer snapshot
+│   ├── log.ts
+│   ├── types.ts
+│   └── webgpu/                 WebGPU-specific abstractions
+│       ├── context.ts
+│       ├── computePipeline.ts
+│       ├── renderPipeline.ts
+│       ├── buffer.ts
+│       ├── texture.ts
+│       ├── shaderModule.ts
+│       └── renderer.ts
+└── examples/
+    └── hello/                  reference application; copy to start a new sim
+```
+
+**Per-sim consumption (per-sim package.json):**
+
+```json
+{
+  "dependencies": { "@gpusims/common-web": "^0.1.0" }
+}
+```
+
+**Per-sim consumption (TypeScript):**
+
+```ts
+import { Context, Renderer, Camera, ParamPanel } from '@gpusims/common-web';
+```
+
+**Per-sim consumption (vite.config.ts):**
+
+```ts
+import { wgslPlugin } from '@gpusims/common-web/vite-plugin';
+export default defineConfig({ plugins: [wgslPlugin()] });
+```
+
+### Build dependencies
+
+Required:
+
+```
+node --version    # must be 22 LTS or newer
+npm install       # from repo root, installs all workspaces
+```
+
+### Hello-world
+
+The example at `examples/hello/` exercises every Phase 1.5 subsystem
+(WebGPU context + canvas, compute pipeline, render pipeline, camera,
+hot-reload via Vite WGSL plugin, GPU profiler with timestamp queries,
+ZIP-based state capture/restore, lil-gui parameter panel).
+
+```
+npm install
+npm run dev:hello-web
+```
+
+Open http://127.0.0.1:5173 — animated gradient with WASDQE camera + RMB-drag
+look. F5 saves a capture (downloads `capture_NNNN.zip`); F9 opens a file
+picker to restore. Edit any of the three WGSL files in
+`common/common-web/examples/hello/shaders/` while the dev server is running
+to see hot-reload in action.
 
 ## common-py — Python / Taichi (Drafted with first Stack D sim)
 

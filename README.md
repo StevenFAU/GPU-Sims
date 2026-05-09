@@ -108,6 +108,31 @@ See [`render-pipelines/`](render-pipelines/) for the offline pipeline.
 
 ---
 
+## How to run
+
+### Native sims (Stack C — Vulkan)
+
+```
+sudo apt install libvulkan-dev vulkan-validationlayers spirv-tools glslang-tools \
+    libgl1-mesa-dev libxinerama-dev libxcursor-dev libxi-dev libxrandr-dev \
+    libwayland-dev libxkbcommon-dev
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGPU_SIMS_BUILD_EXAMPLES=ON
+cmake --build build
+./build/bin/gpu_sims_hello
+```
+
+See `common/common-cpp/README.md` for details.
+
+### Web sims (Stack B — WebGPU)
+
+```
+node --version    # must be 22 LTS or newer
+npm install
+npm run dev:hello-web
+```
+
+Open http://127.0.0.1:5173. See `common/README.md` for details.
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE). Per-sim references and reference-implementation licenses are tracked in each sim's README.

@@ -1,6 +1,6 @@
 # GPU-Sims — Project State
 
-> **Last updated:** end of Phase 1.5 (commit `6b5309a`, 2026-05-08).
+> **Last updated:** end of Phase 3.5 + markdown-lint config follow-up (commit `3de7cc5`, 2026-05-09).
 
 > This is the **canonical handoff document** for the GPU-Sims repository. It exists so that:
 >
@@ -149,7 +149,7 @@ Lands with the first Stack D sim phase.
 
 | Category | Sims | Stack | Status |
 |----------|------|-------|--------|
-| `closed-form/strange-attractors/` | strange-attractors | B | Sim-spec stub committed in Phase 0; **implementation in Phase 2 (next)** |
+| `closed-form/strange-attractors/` | strange-attractors | B | **Implemented (Phase 2)**; live at <https://stevenfau.github.io/GPU-Sims/strange-attractors/> |
 | `closed-form/mandelbulb-explorer/` | mandelbulb-explorer | A → B | Sim-spec stub committed in Phase 0; implementation in Phase 4 |
 | `agent-based/physarum/` | physarum | B | Sim-spec stub; implementation TBD |
 | `agent-based/boids-3d/` | boids-3d | B | Sim-spec stub; implementation TBD |
@@ -247,6 +247,33 @@ This is the convention every Stack B file in `common-web/` follows; per-sim code
 
 ---
 
+### Architects read the actual hello-world source before drafting
+
+Sim-phase specs must reference the *implemented* `common-` API surface, not an idealized one. Concretely, before drafting any per-sim phase spec the architect reads:
+
+- For Stack B sim phases: `common/common-web/examples/hello/src/main.ts` and the modules it imports from `@gpusims/common-web`.
+- For Stack C sim phases: `common/common-cpp/examples/hello/main.cpp` and the corresponding headers under `common/common-cpp/include/gpusims/`.
+- For Stack D sim phases (eventually): the analogous Python hello example.
+
+This is load-bearing: Phase 3's spec was drafted against an idealized `common-cpp` API and Claude Code adapted ~5–10 sites at execution time (Window constructor signature, `gv::WindowOptions` that doesn't exist, descriptor-set construction style — fluent `ComputeBindings` vs raw `vkUpdateDescriptorSets` — profiler-scope idiom, ImGui glue function names, Camera method names, `beginRendering` vs `beginSwapchainPass`). The adaptations all landed correctly, but they cost real tokens and produced a spec → code gap that's hard to audit afterward. The fix is upstream: write the spec against the real API.
+
+The architect's pre-execution checks for any sim phase should explicitly include a `view` on the relevant hello-world's `main.{ts,cpp}` and a scan of the `common/<stack>/include/` (or `src/`) directory for the actual exported surface.
+
+### Periodic hardening pass
+
+Every 3–4 sim phases, accumulated drift in the visible surface earns its own small commit before becoming embarrassing. Recurring drift sites:
+
+- Root `README.md` gallery row: status column ("Not started"), broken path links to relocated sims, missing live URLs for shipped sims.
+- `.github/workflows/structure.yml`: `required_dirs` entries for directories that have moved or been deleted.
+- `CHANGELOG.md`: shipped phases not yet entered (Keep-A-Changelog format).
+- Per-sim docs: dead schema fields, "to be measured post-build" placeholders that have real numbers, stale path references after a sim's canonical home shifts.
+
+The hardening pass is not a phase-ledger row — it's a `chore:` commit between sim phases. Phase 3.5 (commit family `d8ab610..3de7cc5`) is the canonical example: README gallery fix, `structure.yml` stale entry, CHANGELOG backfill (4 entries), dead `windowFullscreen` capture-schema field, plus a small markdown-lint + lychee config follow-up to bring all three CI workflows green simultaneously for the first time since Phase 0.
+
+Don't pre-schedule these; trigger them when drift becomes visible. A short repo-architect chat is enough — they don't need cross-review.
+
+---
+
 ## 8. Things explicitly deferred
 
 These come up periodically in design discussions; the locked answer is "later".
@@ -263,6 +290,16 @@ These come up periodically in design discussions; the locked answer is "later".
 ## 9. Known issues
 
 Tracked here so future architect chats and per-sim implementers don't waste time re-diagnosing them.
+
+### CI baseline (positive)
+
+As of commit `3de7cc5` (post-Phase-3.5 + markdown-lint config), all three repo-level CI workflows are green simultaneously on `main` for the first time since Phase 0:
+
+- `Markdown` → `Lint markdown` (markdownlint-cli2, configured by `.markdownlint.json` to relax style rules that fight with the portfolio's prose conventions).
+- `Markdown` → `Check internal links` (lychee, configured by `lychee.toml` to skip `docs/sim-specs/_template.md` which contains placeholder URLs).
+- `Structure` (required-directories check; `volumetric-grid/reaction-diffusion-3d` was dropped from `required_dirs` in Phase 3.5 since the sim's canonical home moved to `continuous-ca/`).
+
+A red badge on `main` after this commit is a real regression, not pre-existing breakage. The `Build (native)` and `Build (web)` workflows run only on path triggers (touching `common/common-cpp/**`, `common/common-web/**`, root `CMakeLists.txt`, or `package.json`), so they don't fire on every push — to verify them after a non-build-touching change, dispatch them manually via the Actions tab.
 
 ### Stack B (common-web)
 
@@ -353,7 +390,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `d517f02` (Phase 3 — reaction-diffusion-3d).
+- Latest commit: `3de7cc5` (Phase 3.5 + markdown-lint config — repo green-CI baseline established).
 - Stack C build: `cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGPU_SIMS_BUILD_EXAMPLES=ON && cmake --build build`
 - Stack C hello-world binary: `./build/bin/gpu_sims_hello`
 - Stack B install: `npm install` from repo root (Node 22+ required)

@@ -62,7 +62,7 @@ Seven categories. Each lives in its own top-level folder.
 | 1 | common-cpp | Vulkan 1.3 shared infrastructure: `Context`, `Window`, `Renderer`, `Camera`, `HotReloader`, `GpuProfiler`, `StateWriter`/`Reader`, ImGui glue, VDB/Alembic stubs. CI build-native job. Hello-world example exercises everything. **Eight spec defects caught + fixed during first build** (see commit body). | ✅ Shipped | `3a64055` |
 | 1.5 | common-web | WebGPU + TypeScript shared infrastructure: same surface as common-cpp adapted for the browser. Vite WGSL plugin for hot-reload. CI build-web job. lil-gui parameter panel. ZIP-based state capture. Hello-world example. Gallery placeholder index.html. **Eight spec defects caught + fixed** (TS strict-mode dominant; see commit body). | ✅ Shipped | `6b5309a` |
 | 2 | strange-attractors | First Stack B sim. Validates `common-web` against a real consumer. Adds GitHub Pages deploy automation. Adopts canvas-DPR convention for all Stack B portfolio sims. | ✅ Shipped | `7a4f3f5` |
-| 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to Phase 5 (eulerian-smoke is the natural sparse-volume consumer). | ✅ Shipped | `<COMMIT-HASH>` |
+| 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to Phase 5 (eulerian-smoke is the natural sparse-volume consumer). | ✅ Shipped | `d517f02` |
 | 4 | mandelbulb-explorer | Shadertoy → WebGPU port. Establishes the Stack A→B port flow. | ⬜ Not started | — |
 | 5 | flagship-cpp-sim | Either `eulerian-smoke` or `sph-water`. Adds OpenVDB or Alembic real impl to common-cpp depending on which. | ⬜ Not started | — |
 | 6 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
@@ -353,7 +353,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `6b5309a` (Phase 1.5 — common-web).
+- Latest commit: `d517f02` (Phase 3 — reaction-diffusion-3d).
 - Stack C build: `cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGPU_SIMS_BUILD_EXAMPLES=ON && cmake --build build`
 - Stack C hello-world binary: `./build/bin/gpu_sims_hello`
 - Stack B install: `npm install` from repo root (Node 22+ required)

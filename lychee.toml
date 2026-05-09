@@ -1,0 +1,8 @@
+# Lychee config — https://lychee.cli.rs/usage/config/
+
+# The per-sim spec template at docs/sim-specs/_template.md contains
+# placeholder URLs like {{SIM_FOLDER}} that are substituted when a real
+# spec is materialized. Skip the file entirely for link-checking.
+exclude_path = [
+    "docs/sim-specs/_template.md",
+]

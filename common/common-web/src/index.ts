@@ -3,6 +3,7 @@
 //     import { Context, Renderer, Camera, ParamPanel } from '@gpusims/common-web';
 
 // Generic
+export type { JsonValue, JsonObject, Vec2, Vec3, Vec4, Mat4 } from './types.js';
 export { initLogger, log } from './log.js';
 export { Camera } from './camera.js';
 export type { CameraInputState, CameraMode } from './camera.js';
@@ -13,7 +14,7 @@ export type { PassResult } from './gpuProfiler.js';
 export { StateWriter } from './stateWriter.js';
 export { StateReader } from './stateReader.js';
 export { ParamPanel } from './paramPanel.js';
-export type { ParamFolder } from './paramPanel.js';
+export type { ParamFolder, LabeledController, DropdownSpec, DropdownOption } from './paramPanel.js';
 export { snapshotInput } from './input.js';
 export type { InputSnapshot } from './input.js';
 

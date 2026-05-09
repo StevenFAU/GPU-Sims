@@ -1,0 +1,88 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'common/common-web/**'
+      - 'closed-form/**/web/**'
+      - 'agent-based/**/web/**'
+      - 'continuous-ca/**/web/**'
+      - 'volumetric-grid/**/web/**'
+      - 'particle-fluids/**/web/**'
+      - 'hybrid-particle-grid/**/web/**'
+      - 'quantum/**/web/**'
+      - 'gallery/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build sites
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Type-check workspaces
+        run: npm run typecheck
+
+      - name: Build common-web
+        run: npm run build --workspace=@gpusims/common-web
+
+      - name: Build hello-web
+        run: npm run build --workspace=@gpusims/hello-web
+
+      - name: Build strange-attractors-web
+        run: npm run build --workspace=@gpusims/strange-attractors-web
+
+      - name: Assemble deploy tree
+        run: |
+          mkdir -p _site
+          # Gallery → site root
+          cp gallery/index.html _site/index.html
+          # hello-web → /hello/
+          mkdir -p _site/hello
+          cp -r common/common-web/examples/hello/dist/* _site/hello/
+          # strange-attractors → /strange-attractors/
+          mkdir -p _site/strange-attractors
+          cp -r closed-form/strange-attractors/web/dist/* _site/strange-attractors/
+          # Show what we built
+          echo "=== _site contents ==="
+          find _site -maxdepth 2 -type f | sort
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

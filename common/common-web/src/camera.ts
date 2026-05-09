@@ -14,9 +14,21 @@ export class Camera {
     mode: CameraMode = 'free-fly';
 
     // Free-fly state
-    position: vec3 = vec3.fromValues(0, 0, 5);
+    private _position: vec3 = vec3.fromValues(0, 0, 5);
     yawDeg = -90.0;       // looking down -Z
     pitchDeg = 0.0;
+
+    /**
+     * Camera position in world space. Read returns the underlying vec3
+     * (in-place writes via gl-matrix functions are fine). Write accepts any
+     * array-like of length ≥3 (vec3, number[], readonly tuple) and copies
+     * into the underlying vec3 — preserves identity for code that holds
+     * references to the live vec3.
+     */
+    get position(): vec3 { return this._position; }
+    set position(v: ArrayLike<number>) {
+        vec3.set(this._position, Number(v[0]), Number(v[1]), Number(v[2]));
+    }
 
     // Arcball / Orbit state
     target: vec3 = vec3.fromValues(0, 0, 0);
@@ -161,6 +173,25 @@ export class Camera {
     setOrientation(yawDeg: number, pitchDeg: number): void {
         this.yawDeg = yawDeg;
         this.pitchDeg = clamp(pitchDeg, -PITCH_LIMIT_DEG, PITCH_LIMIT_DEG);
+    }
+
+    /**
+     * Aim the camera at a world-space target. In free-fly mode this updates
+     * yaw/pitch from the position→target direction so the camera looks at
+     * (x,y,z); in arcball/orbit modes this also updates the orbit target.
+     */
+    lookAt(x: number, y: number, z: number): void {
+        vec3.set(this.target, x, y, z);
+        const dir = vec3.create();
+        vec3.sub(dir, this.target, this._position);
+        const len = vec3.length(dir);
+        if (len < 1e-8) return;       // degenerate — leave orientation alone
+        vec3.scale(dir, dir, 1 / len);
+        // dir = (cos(p)*cos(y), sin(p), cos(p)*sin(y))
+        const dy = clamp(dir[1], -1, 1);
+        this.pitchDeg = (Math.asin(dy) * 180) / Math.PI;
+        this.yawDeg = (Math.atan2(dir[2], dir[0]) * 180) / Math.PI;
+        this.pitchDeg = clamp(this.pitchDeg, -PITCH_LIMIT_DEG, PITCH_LIMIT_DEG);
     }
 
     resetArcball(): void {

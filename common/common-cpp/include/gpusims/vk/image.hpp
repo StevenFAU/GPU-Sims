@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <vulkan/vulkan.h>
@@ -58,6 +59,18 @@ public:
                                  VkImageLayout   new_layout,
                                  std::uint32_t   mip_levels = 1,
                                  std::uint32_t   array_layers = 1);
+
+    // Synchronous host -> device copy. Allocates a transient host-visible
+    // staging buffer, copies via vkCmdCopyBufferToImage on the graphics queue,
+    // and waits. Image is transitioned to GENERAL on return. Works for both
+    // 2D and 3D images; `bytes` must equal extent.width*height*depth*texelSize.
+    void upload(const void* src, std::size_t bytes);
+
+    // Synchronous device -> host copy. The image must currently be in
+    // VK_IMAGE_LAYOUT_GENERAL. Allocates a transient staging buffer,
+    // copies via vkCmdCopyImageToBuffer, waits, and reads back. Image is
+    // restored to GENERAL on return. Works for 2D and 3D.
+    void readback(void* dst, std::size_t bytes);
 
 private:
     Context*           ctx_        = nullptr;

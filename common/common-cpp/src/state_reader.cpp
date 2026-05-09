@@ -1,10 +1,32 @@
 #include <gpusims/state_reader.hpp>
 
+#include <algorithm>
 #include <fstream>
+#include <system_error>
+#include <vector>
 
 #include <gpusims/log.hpp>
 
 namespace gpusims {
+
+std::optional<std::filesystem::path>
+StateReader::findLatest(const std::filesystem::path& root) {
+    std::error_code ec;
+    if (!std::filesystem::is_directory(root, ec)) {
+        return std::nullopt;
+    }
+    std::vector<std::filesystem::path> matches;
+    for (const auto& e : std::filesystem::directory_iterator(root, ec)) {
+        if (ec) break;
+        if (!e.is_directory()) continue;
+        const auto name = e.path().filename().string();
+        if (name.rfind("capture_", 0) != 0) continue;
+        matches.push_back(e.path());
+    }
+    if (matches.empty()) return std::nullopt;
+    std::sort(matches.begin(), matches.end());
+    return matches.back();
+}
 
 std::optional<StateReader> StateReader::open(const std::filesystem::path& capture_dir) {
     StateReader r;

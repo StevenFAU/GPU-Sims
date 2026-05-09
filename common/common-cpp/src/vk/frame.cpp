@@ -64,4 +64,23 @@ void destroyFrame(Context& ctx, Frame& frame) {
     }
 }
 
+void memoryBarrier(VkCommandBuffer       cmd,
+                   VkPipelineStageFlags2 src_stage,
+                   VkAccessFlags2        src_access,
+                   VkPipelineStageFlags2 dst_stage,
+                   VkAccessFlags2        dst_access) {
+    VkMemoryBarrier2 mb{};
+    mb.sType         = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2;
+    mb.srcStageMask  = src_stage;
+    mb.srcAccessMask = src_access;
+    mb.dstStageMask  = dst_stage;
+    mb.dstAccessMask = dst_access;
+
+    VkDependencyInfo di{};
+    di.sType                = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
+    di.memoryBarrierCount   = 1;
+    di.pMemoryBarriers      = &mb;
+    vkCmdPipelineBarrier2(cmd, &di);
+}
+
 }  // namespace gpusims::vk

@@ -72,11 +72,13 @@ endif()
 
 # Per-sim subdirectories are added when sims are implemented; commented stubs
 # are left here as the agreed insertion point.
-#
+
+# Continuous CA sims (Phase 3+).
+add_subdirectory(continuous-ca/reaction-diffusion-3d)
+
 # if(GPU_SIMS_BUILD_VOLUMETRIC_GRID)
 #     add_subdirectory(volumetric-grid/eulerian-smoke)
 #     add_subdirectory(volumetric-grid/lattice-boltzmann)
-#     add_subdirectory(volumetric-grid/reaction-diffusion-3d)
 # endif()
 
 # ----------------------------------------------------------------------------

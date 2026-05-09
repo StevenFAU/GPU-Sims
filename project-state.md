@@ -62,7 +62,7 @@ Seven categories. Each lives in its own top-level folder.
 | 1 | common-cpp | Vulkan 1.3 shared infrastructure: `Context`, `Window`, `Renderer`, `Camera`, `HotReloader`, `GpuProfiler`, `StateWriter`/`Reader`, ImGui glue, VDB/Alembic stubs. CI build-native job. Hello-world example exercises everything. **Eight spec defects caught + fixed during first build** (see commit body). | ✅ Shipped | `3a64055` |
 | 1.5 | common-web | WebGPU + TypeScript shared infrastructure: same surface as common-cpp adapted for the browser. Vite WGSL plugin for hot-reload. CI build-web job. lil-gui parameter panel. ZIP-based state capture. Hello-world example. Gallery placeholder index.html. **Eight spec defects caught + fixed** (TS strict-mode dominant; see commit body). | ✅ Shipped | `6b5309a` |
 | 2 | strange-attractors | First Stack B sim. Validates `common-web` against a real consumer. Adds GitHub Pages deploy automation. Adopts canvas-DPR convention for all Stack B portfolio sims. | ✅ Shipped | `7a4f3f5` |
-| 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. May exercise OpenVDB writer (real impl) for first time. | ⬜ Not started | — |
+| 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to Phase 5 (eulerian-smoke is the natural sparse-volume consumer). | ✅ Shipped | `<COMMIT-HASH>` |
 | 4 | mandelbulb-explorer | Shadertoy → WebGPU port. Establishes the Stack A→B port flow. | ⬜ Not started | — |
 | 5 | flagship-cpp-sim | Either `eulerian-smoke` or `sph-water`. Adds OpenVDB or Alembic real impl to common-cpp depending on which. | ⬜ Not started | — |
 | 6 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
@@ -154,7 +154,7 @@ Lands with the first Stack D sim phase.
 | `agent-based/physarum/` | physarum | B | Sim-spec stub; implementation TBD |
 | `agent-based/boids-3d/` | boids-3d | B | Sim-spec stub; implementation TBD |
 | `continuous-ca/lenia-fft/` | lenia-fft | D | Sim-spec stub; tied to Phase 6 (common-py) |
-| `continuous-ca/reaction-diffusion-3d/` | reaction-diffusion-3d | C | Sim-spec stub; **first Stack C sim, Phase 3** |
+| `continuous-ca/reaction-diffusion-3d/` | reaction-diffusion-3d | C | **Implemented (Phase 3)** |
 | `continuous-ca/reaction-diffusion-2d/` | reaction-diffusion-2d | TBD | Sim-spec stub |
 | `continuous-ca/neural-ca/` | neural-ca | TBD | Sim-spec stub |
 | `volumetric-grid/eulerian-smoke/` | eulerian-smoke | C | Sim-spec stub; flagship sim — likely OpenVDB consumer |

@@ -46,4 +46,15 @@ void initFrame(Context& ctx, Frame& frame, std::uint32_t in_flight_index);
 // Free a Frame's resources. Called by Renderer at shutdown.
 void destroyFrame(Context& ctx, Frame& frame);
 
+// Issue a single global VkMemoryBarrier2 via vkCmdPipelineBarrier2. Used by
+// per-sim code at hazard sites between compute writes and subsequent shader
+// reads (which common-cpp does not auto-insert). Global rather than per-image
+// is correct when all of the application's resources move together; the
+// over-broad scope costs nothing in practice for typical per-sim workloads.
+void memoryBarrier(VkCommandBuffer       cmd,
+                   VkPipelineStageFlags2 src_stage,
+                   VkAccessFlags2        src_access,
+                   VkPipelineStageFlags2 dst_stage,
+                   VkAccessFlags2        dst_access);
+
 }  // namespace gpusims::vk

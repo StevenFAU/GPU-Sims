@@ -1,5 +1,6 @@
 #include <gpusims/vk/image.hpp>
 
+#include <cstring>
 #include <stdexcept>
 
 #define VMA_STATIC_VULKAN_FUNCTIONS 1
@@ -7,6 +8,7 @@
 #include <vk_mem_alloc.h>
 
 #include <gpusims/log.hpp>
+#include <gpusims/vk/buffer.hpp>
 #include <gpusims/vk/context.hpp>
 #include <gpusims/vk/debug.hpp>
 
@@ -151,6 +153,94 @@ void Image::transitionLayout(VkCommandBuffer    cmd,
     di.imageMemoryBarrierCount  = 1;
     di.pImageMemoryBarriers     = &b;
     vkCmdPipelineBarrier2(cmd, &di);
+}
+
+void Image::upload(const void* src, std::size_t bytes) {
+    if (!ctx_ || image_ == VK_NULL_HANDLE) {
+        throw std::runtime_error("Image::upload: image not initialised");
+    }
+    Buffer staging = Buffer::create(*ctx_, bytes,
+                                    VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                    MemoryUsage::HostVisibleSequential,
+                                    "image-upload-stage");
+    staging.uploadDirect(src, bytes, 0);
+
+    const VkExtent3D ext = info_.extent;
+    const std::uint32_t layers = info_.type == ImageType::e3D ? 1 : info_.array_layers;
+
+    ctx_->runOneShot([&](VkCommandBuffer cb) {
+        // UNDEFINED-or-anything → TRANSFER_DST_OPTIMAL.
+        // Use UNDEFINED as the source layout: we discard prior contents on upload,
+        // which is safe because we're about to overwrite the whole image.
+        transitionLayout(cb, image_, VK_IMAGE_ASPECT_COLOR_BIT,
+                         VK_IMAGE_LAYOUT_UNDEFINED,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                         info_.mip_levels, layers);
+
+        VkBufferImageCopy region{};
+        region.bufferOffset      = 0;
+        region.bufferRowLength   = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel       = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount     = layers;
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = ext;
+        vkCmdCopyBufferToImage(cb, staging.handle(), image_,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               1, &region);
+
+        // TRANSFER_DST_OPTIMAL → GENERAL.
+        transitionLayout(cb, image_, VK_IMAGE_ASPECT_COLOR_BIT,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                         VK_IMAGE_LAYOUT_GENERAL,
+                         info_.mip_levels, layers);
+    });
+}
+
+void Image::readback(void* dst, std::size_t bytes) {
+    if (!ctx_ || image_ == VK_NULL_HANDLE) {
+        throw std::runtime_error("Image::readback: image not initialised");
+    }
+    Buffer staging = Buffer::create(*ctx_, bytes,
+                                    VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                    MemoryUsage::HostVisibleRandom,
+                                    "image-readback-stage");
+
+    const VkExtent3D ext = info_.extent;
+    const std::uint32_t layers = info_.type == ImageType::e3D ? 1 : info_.array_layers;
+
+    ctx_->runOneShot([&](VkCommandBuffer cb) {
+        transitionLayout(cb, image_, VK_IMAGE_ASPECT_COLOR_BIT,
+                         VK_IMAGE_LAYOUT_GENERAL,
+                         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                         info_.mip_levels, layers);
+
+        VkBufferImageCopy region{};
+        region.bufferOffset      = 0;
+        region.bufferRowLength   = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel       = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount     = layers;
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = ext;
+        vkCmdCopyImageToBuffer(cb, image_,
+                               VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                               staging.handle(), 1, &region);
+
+        transitionLayout(cb, image_, VK_IMAGE_ASPECT_COLOR_BIT,
+                         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                         VK_IMAGE_LAYOUT_GENERAL,
+                         info_.mip_levels, layers);
+    });
+
+    // The staging buffer is HostVisibleRandom + MAPPED. After runOneShot's
+    // queueWaitIdle, the host can read directly. Invalidate first to be safe.
+    vmaInvalidateAllocation(ctx_->allocator(), staging.allocation(), 0, bytes);
+    std::memcpy(dst, staging.mapped(), bytes);
 }
 
 }  // namespace gpusims::vk

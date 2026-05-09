@@ -24,6 +24,12 @@ class StateReader {
 public:
     static std::optional<StateReader> open(const std::filesystem::path& capture_dir);
 
+    // Locate the most recent capture_NNNN/ subdirectory under `root`. Returns
+    // nullopt if no captures exist or `root` does not exist. Selection is by
+    // the largest NNNN suffix (sorted lexicographically on padded names).
+    static std::optional<std::filesystem::path>
+    findLatest(const std::filesystem::path& root);
+
     // Top-level metadata. Returns null json if key not present.
     nlohmann::json meta(const std::string& key) const;
 

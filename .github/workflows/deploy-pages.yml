@@ -61,6 +61,9 @@ jobs:
       - name: Build reaction-diffusion-2d-web
         run: npm run build --workspace=@gpusims/reaction-diffusion-2d-web
 
+      - name: Build physarum-web
+        run: npm run build --workspace=@gpusims/physarum-web
+
       - name: Assemble deploy tree
         run: |
           mkdir -p _site
@@ -78,6 +81,9 @@ jobs:
           # reaction-diffusion-2d → /reaction-diffusion-2d/
           mkdir -p _site/reaction-diffusion-2d
           cp -r continuous-ca/reaction-diffusion-2d/web/dist/* _site/reaction-diffusion-2d/
+          # physarum → /physarum/
+          mkdir -p _site/physarum
+          cp -r agent-based/physarum/web/dist/* _site/physarum/
           # Show what we built
           echo "=== _site contents ==="
           find _site -maxdepth 2 -type f | sort

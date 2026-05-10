@@ -67,9 +67,10 @@ Seven categories. Each lives in its own top-level folder.
 | 3.5 | hardening pass | README gallery row fixes, `structure.yml` stale-entry drop, CHANGELOG backfill (0.2.0 / 0.2.1 / 0.3.0 / 0.4.0), dead `windowFullscreen` capture-schema field removal, markdown-lint + lychee config to bring all three CI workflows green simultaneously for the first time since Phase 0. | ✅ Shipped | `3de7cc5` |
 | 4 | mandelbulb-explorer | Shadertoy → WebGPU port. **First Stack A→B port** (Steven-original Shadertoy GLSL preserved at `closed-form/mandelbulb-explorer/shadertoy/`, real WebGPU port at `closed-form/mandelbulb-explorer/web/`). DE raymarcher with cone-traced soft shadows, three orbit-trap coloring presets, n-power morph (toggle default OFF). **First sim using `common-web` in a render-only pipeline** (no compute, just two render passes — single-uniform-buffer raymarch into HDR `rgba16float` offscreen RT, then Reinhard tonemap to canvas). `renderScale` slider trades resolution for cost. **First multi-architect cross-review chain** (3 review rounds caught Camera.lookAt drift, WGSL UV inversion bug, full StateWriter/Reader API mismatch, README gallery-row omission, plus two polish flags). Live at <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/>. | ✅ Shipped | `8d8334f` |
 | 5 | reaction-diffusion-2d | Second Stack A → B port. **First Stack B sim with compute ping-pong on persistent 2D state** (Phase 2's strange-attractors uses compute for particle integration but does not ping-pong general 2D grid state; Phase 4's mandelbulb-explorer is render-only). Six Pearson 1993 named presets matching the Stack C `reaction-diffusion-3d` sim's preset names exactly for cross-stack vocabulary parity. Mouse-paint brush (LMB-drag splats `v` material) via separate compute kernel. Full-state capture (deinterleaved `u.bin` + `v.bin` matching Phase 3's per-field shape) under JSON meta key `'reactionDiffusion2d'`. **First multi-file Stack A artifact in the repo** (`shadertoy/BufA.glsl` + `shadertoy/Image.glsl` + `shadertoy/README.md`) — extends Phase 4's single-file convention to sims with persistent state. Two in-flight common-web additions (both spec-authorized): `Texture.readback2D` and `ParamPanel.refreshDisplays` (see § 5). One in-flight cross-cutting fix: mandelbulb-explorer's 3 HMR path constants corrected to per-sim `web/`-relative shape so hot-reload actually fires. **Typecheck-fix follow-up at `e1f0673`** (function declaration → arrow expression for TS strict-mode closure narrowing; see § 7). Live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/>. | ✅ Shipped | `ed54dd3` |
-| 6 | TBD | Coordinator picks at start. Per the rollout brief: Tier 1 (Stack B `physarum` or `boids-3d`) before Tier 2 flagship (`eulerian-smoke` with OpenVDB or `sph-water` with Alembic). rd-2d's spec serves as structural template for the next Stack B Tier-1 sim. | ⬜ Not started | — |
-| 7 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
-| 8+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
+| 6 | physarum | First agent-system Stack B sim and **first user of `atomic<u32>` storage buffers** in the repo. Multi-species Jones 2010 model: discrete agents on a continuous 2D periodic domain, three species with mutual repulsion (RGB-per-species visualization). Discrete agent-count tier dropdown (256k / 1M / 4M / 10M, default 4M); first sim with raised `requiredLimits` (`maxStorageBufferBindingSize: 200_000_000`) for the 10M-tier 160 MB agent buffer; first sim using `@workgroup_size(256, 1, 1)` on 1D-dispatch kernels (4M tier exceeds baseline `maxComputeWorkgroupsPerDimension` at 64-wide). Persistent food-source pins as the headline interactive moment (LMB places, RMB removes, cap 32; new `pin_deposit.compute.wgsl` pass). Capture/load: trail map + RNG seed + parameters; agents reseeded from seed on load (literal positions not preserved by design). **First sim to ship without a Stack A counterpart** — the `agent-based/physarum/` folder contains `web/`, `docs/`, sim-level `README.md` only; no `shadertoy/`. Establishes the no-port pattern for future Stack B-originated sims. Live at <https://stevenfau.github.io/GPU-Sims/physarum/>. | ✅ Shipped | _pending commit_ |
+| 7 | TBD | Coordinator picks at start. Per the rollout brief: remaining Tier 1 (Stack B `boids-3d`) before Tier 2 flagship (`eulerian-smoke` with OpenVDB or `sph-water` with Alembic). Boids-3d would be the second consumer of physarum's agent-buffer scaffolding and sparse-source point-emitter pattern (food pins → leader attractors), triggering the Pearson's-law-of-three promotion review of `PointEmitterArray` to common-web. | ⬜ Not started | — |
+| 8 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
+| 9+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
 
 (Phase numbering is for the architect's reference; commit messages don't need to use it.)
 
@@ -162,7 +163,7 @@ Lands with the first Stack D sim phase.
 |----------|------|-------|--------|
 | `closed-form/strange-attractors/` | strange-attractors | B | **Implemented (Phase 2)**; live at <https://stevenfau.github.io/GPU-Sims/strange-attractors/> |
 | `closed-form/mandelbulb-explorer/` | mandelbulb-explorer | A → B | **Implemented (Phase 4)**; live at <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> |
-| `agent-based/physarum/` | physarum | B | Sim-spec stub; implementation TBD |
+| `agent-based/physarum/` | physarum | B (no Stack A) | **Implemented (Phase 6)**; live at <https://stevenfau.github.io/GPU-Sims/physarum/>. First sim shipping without a `shadertoy/` counterpart. |
 | `agent-based/boids-3d/` | boids-3d | B | Sim-spec stub; implementation TBD |
 | `continuous-ca/lenia-fft/` | lenia-fft | D | Sim-spec stub; tied to Phase 7 (common-py) |
 | `continuous-ca/reaction-diffusion-3d/` | reaction-diffusion-3d | C | **Implemented (Phase 3)** |
@@ -198,7 +199,9 @@ Lands with the first Stack D sim phase.
 └── docs/                     optional design notes
 ```
 
-When the first Stack B sim ships, this auto-resolves under root `package.json`'s workspace glob `closed-form/*/web` and gets pulled into `npm install` automatically. The `shadertoy/` subfolder is only present for A→B ports (Phase 4's mandelbulb-explorer is the canonical example; Phase 5's reaction-diffusion-2d will reuse this layout if picked).
+When the first Stack B sim ships, this auto-resolves under root `package.json`'s workspace glob `closed-form/*/web` and gets pulled into `npm install` automatically. The `shadertoy/` subfolder is only present for A→B ports (Phase 4's mandelbulb-explorer is the canonical example; Phase 5's reaction-diffusion-2d reuses this layout).
+
+**Stack-B-only sims** (origin Stack B research with no clean Shadertoy expression) ship with `web/`, `docs/`, and a sim-level `README.md` only — no `shadertoy/` subdirectory. First instance: physarum (Phase 6 — Shadertoy can't host the 10M-agent compute pipeline). Future Stack B-originated sims (boids-3d, neural-CA web variant, lenia-fft web variant) inherit this shape.
 
 ### Canvas + DPR (Stack B portfolio sims)
 
@@ -533,14 +536,16 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `e1f0673` (Phase 5 — `reaction-diffusion-2d` shipped at `ed54dd3`, typecheck fix at `e1f0673`).
+- Latest commit: _pending Phase 6 commit_ (Phase 6 — `physarum` shipped; previous head `cbbcdb6` Phase 5 retro).
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)
+  - <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/> (Phase 5)
+  - <https://stevenfau.github.io/GPU-Sims/physarum/> (Phase 6)
 - Stack C build: `cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGPU_SIMS_BUILD_EXAMPLES=ON && cmake --build build`
 - Stack C hello-world binary: `./build/bin/gpu_sims_hello`
 - Stack B install: `npm install` from repo root (Node 22+ required)
 - Stack B hello-world: `npm run dev:hello-web` then http://127.0.0.1:5173 in a WebGPU-enabled browser
 - Stack B build: `npm run typecheck && npm run build:web`
-- Per-sim Vite dev ports: hello-web 5173, strange-attractors 5174, mandelbulb-explorer 5175, next sim 5176
+- Per-sim Vite dev ports: hello-web 5173, strange-attractors 5174, mandelbulb-explorer 5175, reaction-diffusion-2d 5176, physarum 5177, next sim 5178
 - Ubuntu deps for Stack C: see `common/common-cpp/README.md`

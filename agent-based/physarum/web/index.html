@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Physarum — GPU-Sims</title>
+    <style>
+        :root { color-scheme: dark; }
+        html, body { margin: 0; padding: 0; height: 100%; background: #0a0a0a; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            cursor: crosshair;
+        }
+        #hud {
+            position: fixed;
+            bottom: 8px;
+            left: 8px;
+            color: #cfcfcf;
+            font-size: 12px;
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 4px 8px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        #help {
+            position: fixed;
+            top: 8px;
+            right: 8px;
+            color: #cfcfcf;
+            font-size: 11px;
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 4px 8px;
+            border-radius: 3px;
+            pointer-events: none;
+            text-align: right;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="hud">initializing…</div>
+    <div id="help">
+        LMB: place food pin &nbsp; RMB: remove pin<br>
+        F5: capture &nbsp; F9: load &nbsp; R: reset
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "@gpusims/physarum-web",
+  "version": "0.7.0",
+  "private": true,
+  "description": "Physarum — first agent-system Stack B sim. Multi-species slime-mold transport networks (~10M agents, three-species mutual repulsion, persistent food-source pins). First user of atomic<u32> storage buffers in the repo.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gpusims/common-web": "^0.1.0"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.50",
+    "typescript": "^5.6.0",
+    "vite": "^7.0.0"
+  }
+}

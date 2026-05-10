@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.7.0] — 2026-05-10
+
+### Added
+- **Phase 6:** Fourth Stack B sim — `agent-based/physarum/`. Multi-species Jones 2010 slime-mold transport-network simulation: discrete agents on a continuous 2D periodic domain, three species with mutual repulsion, RGB-per-species trail visualization. Discrete agent-count tier dropdown (256k / 1M / 4M / 10M, default 4M) and grid-size dropdown (512 / 1024 / 2048, default 1024). First agent-system sim in the repo and **first user of `atomic<u32>` storage buffers** (three deposit buffers indexed `cellY * gridSize + cellX`; agent-move uses `atomicAdd`, diffuse-decay reads non-atomically). Live at <https://stevenfau.github.io/GPU-Sims/physarum/>.
+- Six named presets covering the parameter space: **Networks** (default), **Snowflake**, **Highways**, **Conflict**, **Cooperation**, **Chaos**. Picking a preset overwrites all seven shape parameters and (by default) reseeds; touching any slider flips the dropdown to "Custom".
+- Persistent food-source pins as the headline interactive moment: LMB-click places (cap 32), RMB-click within 8 cells removes, panel "Clear all" button. New `pin_deposit.compute.wgsl` pass (conditional, dispatched only when `pinCount > 0`) scatters per-pin contributions into the deposit buffers each frame; visualize fragment overlays 1-pixel white outline rings at active pins.
+- Capture/load (F5/F9): trail map (rgba16float bytes, 8 MB at 1024²) + RNG seed + parameters + pin array. **Agents are reseeded from the captured `initSeed`, not loaded literally** — at the 10M tier the agent buffer is 160 MB, beyond reasonable browser-ZIP territory. Same seed + same agent count + same parameters = bit-identical reproduction; different agent count = visually-similar but not literally-identical.
+- First sim to use raised `requiredLimits` on `Context.create` (`maxStorageBufferBindingSize: 200_000_000`, `maxBufferSize: 200_000_000`) — the 10M-tier agent buffer exceeds baseline 128 MiB binding-size limit. v1.1 graceful-fallback path documented in `agent-based/physarum/docs/notes.md` priority 1.6.
+- First sim to use `@workgroup_size(256, 1, 1)` on the 1D-dispatch compute kernels (agent-move and clear-deposits) rather than the conventional 64. Load-bearing: at 64-wide the 4M tier needs 65,536 workgroups in X — exceeds baseline `maxComputeWorkgroupsPerDimension` (65,535) by one.
+
+### Changed
+- Per-sim Vite dev port for physarum: 5177.
+- Gallery card list (`gallery/index.html`) extended with the Physarum entry between rd-2d and the hello demo.
+- Root README gallery row for Physarum: status flipped from "Not started" to live.
+
+### Convention extensions
+- **No-Stack-A pattern:** physarum is the first sim to ship without a `shadertoy/` counterpart, establishing the convention for future Stack B-originated sims (boids-3d, neural-CA web variant, lenia-fft web variant) that have no clean Shadertoy expression. The `agent-based/physarum/` folder contains `web/`, `docs/`, and a sim-level `README.md` only.
+- **Atomic-buffer compute idiom:** load-bearing for any future agent or sparse-source simulation in the repo. Documented in `agent-based/physarum/docs/load-bearing-decisions.md` § 2.
+- **Sparse-source point-emitter pattern:** first consumer of the food-pin / fluid-emitter / particle-emitter shape (32-element fixed-size storage buffer, 2D dispatch over the grid that iterates pins per cell). Promotion to common-web fires at the third consumer (boids-3d or eulerian-smoke); intentionally per-sim in v1.
+- **Discrete agent-count tiers:** first sim with a tier-dropdown for buffer-size-affecting parameters rather than a continuous slider. Pattern: a `Record<string, number>` of named tiers, `recreateGridResources()` on dropdown change.
+
 ## [0.6.0] — 2026-05-09
 
 ### Added

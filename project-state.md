@@ -536,7 +536,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `1250971` (Phase 6 — `physarum` shipped at `1250971`; previous head `cbbcdb6` Phase 5 retro).
+- Latest commit: `c36c731` — Phase 6 retro: tier-normalized deposit + project-state fill (on top of `1250971`, Phase 6 main).
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)

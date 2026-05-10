@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boids 3D — GPU-Sims</title>
+    <style>
+        :root {
+            --bg-top: #0c1014;
+            --bg-bot: #06080c;
+            --hud-fg: #b8c4d0;
+            --hud-bg: rgba(8, 10, 14, 0.55);
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bot) 100%);
+            color: var(--hud-fg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        }
+        #canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            cursor: crosshair;
+        }
+        #hud {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            padding: 6px 10px;
+            background: var(--hud-bg);
+            border-radius: 4px;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+            pointer-events: none;
+            user-select: none;
+            z-index: 10;
+        }
+        #help {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            padding: 8px 12px;
+            background: var(--hud-bg);
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 1.5;
+            pointer-events: none;
+            user-select: none;
+            z-index: 10;
+            opacity: 0.75;
+        }
+        #help kbd {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+            font-size: 10px;
+            padding: 1px 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="help">
+        <kbd>WASD</kbd> move &middot; <kbd>QE</kbd> down/up &middot; <kbd>RMB-drag</kbd> look<br>
+        <kbd>LMB</kbd> place leader &middot; <kbd>Shift+LMB</kbd> remove leader<br>
+        <kbd>F5</kbd> save &middot; <kbd>F9</kbd> load &middot; <kbd>R</kbd> reseed
+    </div>
+    <div id="hud">starting...</div>
+    <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

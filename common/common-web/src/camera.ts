@@ -152,15 +152,22 @@ export class Camera {
     }
 
     /**
-     * Column-major perspective matrix in WebGPU clip space ([0,1] depth, Y up
-     * in NDC because of the y-flip). Identical to gpusims::Camera::projection
-     * — Vulkan and WebGPU share clip-space convention.
+     * Column-major perspective matrix in WebGPU clip space ([0,1] depth,
+     * Y up in NDC). WebGPU clip-space Y points UP (matches OpenGL and
+     * gl-matrix's `mat4.perspectiveZO` default), so no Y-flip is needed.
+     *
+     * Historical note: an earlier draft of this method applied
+     * `out[5] *= -1` under the (incorrect) belief that Vulkan and WebGPU
+     * share clip-space convention. They don't — Vulkan clip-space Y points
+     * DOWN, WebGPU clip-space Y points UP. The flip silently inverted
+     * world-Y in every Stack B render until Phase 7's boids-3d surfaced
+     * it (strange-attractors and mandelbulb had masked the bug because
+     * their rendered shapes have no canonical orientation). Removed
+     * Phase 7 after architect-2 review. See project-state.md § 9.
      */
     projection(): mat4 {
         const out = mat4.create();
         mat4.perspectiveZO(out, degToRad(this.fovDeg), this.aspect, this.near, this.far);
-        // Y-flip for Vulkan/WebGPU clip-space (origin top-left).
-        out[5] *= -1;
         return out;
     }
 

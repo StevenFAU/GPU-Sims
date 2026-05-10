@@ -1,0 +1,46 @@
+=== Params struct (160 bytes, std-uniform layout) ===
+   0..4   u32  boidCount
+   4..8   u32  predatorCount
+   8..12  u32  entityCount
+  12..16  u32  iteration
+  16..20  u32  cellCount             (= 512)
+  20..24  u32  gridDim               (= 8)
+  24..28  f32  cellSize              (= 4.0)
+  28..32  f32  boxHalfExtent         (= 16.0)
+  32..36  f32  separationRadius
+  36..40  f32  separationWeight
+  40..44  f32  alignmentRadius
+  44..48  f32  alignmentWeight
+  48..52  f32  cohesionRadius
+  52..56  f32  cohesionWeight
+  56..60  f32  boidMaxSpeed
+  60..64  u32  leaderCount
+  64..68  f32  leaderInfluenceRadius
+  68..72  f32  leaderStrength
+  72..76  u32  predatorMode          (0=nearest-prey, 1=stochastic, 2=flock-center)
+  76..80  f32  predatorFleeRadius
+  80..84  f32  predatorFleeStrength
+  84..88  f32  predatorDetectionRadius
+  88..92  u32  predatorRePickFrames
+  92..96  f32  predatorSpeedMul
+  96..100 f32  boidScale
+ 100..112 _pad (3 f32 to align next vec3)
+ 112..128 vec3 boidColor + auto-pad
+ 128..144 vec3 predatorColor + auto-pad
+ 144..160 vec3 leaderColor + auto-pad
+
+=== Entity struct (32 bytes, std-storage layout) ===
+   0..12  vec3<f32> position
+  12..16  u32       species          (0 = boid, 1 = predator)
+  16..28  vec3<f32> velocity
+  28..32  f32       _pad
+
+=== PredatorState struct (16 bytes, std-storage layout) ===
+   0..4   u32 target_boid_id         (0xFFFFFFFF = sentinel "no target")
+   4..8   u32 target_age_frames      (frames since last re-pick; stochastic mode only)
+   8..12  u32 _pad0
+  12..16  u32 _pad1
+
+=== Leader struct (16 bytes, std-storage layout) ===
+   0..12  vec3<f32> position
+  12..16  f32       strength

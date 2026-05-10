@@ -64,6 +64,9 @@ jobs:
       - name: Build physarum-web
         run: npm run build --workspace=@gpusims/physarum-web
 
+      - name: Build boids-3d
+        run: npm run build --workspace=@gpusims/boids-3d-web
+
       - name: Assemble deploy tree
         run: |
           mkdir -p _site
@@ -84,6 +87,10 @@ jobs:
           # physarum → /physarum/
           mkdir -p _site/physarum
           cp -r agent-based/physarum/web/dist/* _site/physarum/
+          # boids-3d → /boids-3d/
+          mkdir -p _site/boids-3d
+          cp -r agent-based/boids-3d/web/dist/* _site/boids-3d/
+          # Copy boids-3d dist (anchor: spec § 5.2)
           # Show what we built
           echo "=== _site contents ==="
           find _site -maxdepth 2 -type f | sort

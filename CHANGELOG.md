@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.8.0] - 2026-05-10
+
+### Added
+
+- Boids 3D simulation (Stack B) — multi-species 3D Reynolds flocking with leader attractors and dynamic predators. Live at <https://stevenfau.github.io/GPU-Sims/boids-3d/>.
+  - Spatial-hash counting-sort (histogram + multi-block prefix scan + scatter) for neighbor queries at up to 100k+1k entities.
+  - Three runtime-switchable predator hunting modes (nearest-prey, stochastic-prey, flock-center).
+  - Persistent leader attractors (LMB-place, Shift+LMB-remove; cap 32) with cosine-envelope falloff.
+  - Six parameter presets (Cohesive Flock, Loose Murmuration, Tight Schooling, Predator Spread, Waypoint Tour, Chaos).
+  - Four discrete agent-count tiers (25k / 50k / 75k / 100k) with degradation contract at hero tier.
+  - Bit-exact-within-one-step capture/load round-trip across all entity types and panel state.
+  - First Stack B sim with: 3D free-fly camera driving rasterization (vs. mandelbulb's raymarcher); manual render-pass construction with depth attachment; spatial-hash compute (counting-sort with multi-block prefix scan); instanced low-poly rendering with velocity-derived orientation + Gram-Schmidt singularity fallback; click-to-place ground-plane unproject.
+- Per-sim Vite dev port: 5178.
+
+### Fixed
+
+- `common/common-web/src/camera.ts` Y-flip in `Camera.projection()` removed. The `out[5] *= -1` line was a Vulkan-idiom mistakenly applied to a WebGPU pipeline (Vulkan clip-space Y points down, WebGPU Y points up). The flip had silently inverted world-Y in every Stack B render since common-web shipped; strange-attractors and mandelbulb masked the artifact because their rendered shapes have no canonical orientation. Boids-3d would have been the first sim to visibly exhibit the bug. Caught during architect-2 cross-review. See project-state.md § 9.
+
+### Changed
+
+- `project-state.md`: § 3 phase ledger updated with Phase 7 row; § 5 stale dev-port reference updated; § 6 boids-3d row → Implemented; § 9 known issues — `camera.ts` Y-flip resolution note added; § 10 architect-1 onboarding prompt updated with the clone-the-repo-directly note for accessing actual common-* source.
+
 ## [0.7.0] — 2026-05-10
 
 ### Added

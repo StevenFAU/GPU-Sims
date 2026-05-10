@@ -501,7 +501,18 @@ async function main(): Promise<void> {
         paramsF32[7] = rt.stepSize;
         paramsF32[8] = rt.decayRate;
         paramsF32[9] = rt.diffuseWeight;
-        paramsF32[10] = rt.depositAmount;
+        // Tier-normalized deposit. Default depositAmount values in presets.ts are
+        // tuned for the 4M / 1024² baseline; at higher tiers the trail texture
+        // saturates (white soup) because per-cell agent density grows with both
+        // agentCount and inversely with cell count. Normalize so that perceived
+        // trail brightness stays roughly invariant across tier changes.
+        // The slider value (rt.depositAmount) is unchanged — only the GPU upload.
+        const BASE_AGENTS = 4_194_304;
+        const BASE_CELLS  = 1024 * 1024;
+        const actualAgents = AGENT_COUNT_TIERS[rt.agentCountTier];
+        const actualCells  = rt.gridSize * rt.gridSize;
+        const tierScale = (BASE_AGENTS / actualAgents) * (actualCells / BASE_CELLS);
+        paramsF32[10] = rt.depositAmount * tierScale;
         paramsF32[11] = rt.repulsionStrength;
         paramsF32[12] = rt.simSpeed;
         paramsU32[13] = rt.pins.length;

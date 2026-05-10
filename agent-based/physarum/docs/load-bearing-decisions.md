@@ -135,6 +135,27 @@ Flagged as v1.1 priority 1.6 in `notes.md`. The choice of 4M as the default tier
 
 **If the WebGPU spec ever raises baseline `maxStorageBufferBindingSize` to 256 MB or higher**, this discussion becomes obsolete and `requiredLimits` can be dropped. Tracked as a v2.x consideration.
 
+## 12. Tier-normalized deposit amount on GPU upload
+
+`rt.depositAmount` is the user-facing/preset slider value, tuned for the 4M / 1024² baseline. The value uploaded to the GPU uniform is multiplied by a tier-scale factor:
+
+```
+tierScale = (BASE_AGENTS / actualAgents) × (actualCells / BASE_CELLS)
+          = (4_194_304 / agentCount) × (gridSize² / 1_048_576)
+```
+
+This keeps perceived trail brightness roughly invariant when the user changes `Agent count` or `Grid size` in the panel. Without the normalization, the 10M / 2048² combination saturates the rgba16float trail texture to white within a few seconds, regardless of `Trail intensity` (exposure) settings.
+
+The slider readings, preset values in `presets.ts`, and the JSON capture format are all unchanged — only the value written into the params uniform is scaled. This means:
+
+- Captures saved at one tier and loaded at another tier still produce visually-equivalent simulations (the captured `depositAmount` field is the user-facing value, applied through the same auto-scale on load).
+- Touching the deposit slider always changes brightness in a tier-independent way.
+- Future preset retuning still happens at the 4M / 1024² baseline; the auto-scale handles tier variance, presets handle pattern-type variance.
+
+**Math sanity:** at the 4M / 1024² baseline, `tierScale = 1.0`. Doubling agents halves the scale (each agent contributes half as much, so total brightness is constant). Doubling grid resolution quadruples the scale (4× more cells means each cell gets ¼ as many hits, so per-cell deposit needs to be 4× higher to maintain integrated brightness). The two effects compose multiplicatively, so the formula is the product of the two ratios.
+
+**This auto-scale is itself load-bearing for the v1 portfolio demo.** Without it, a recruiter who clicks the agent-count dropdown to 10M sees a white screen and assumes the sim is broken. The default tier (4M) is unaffected; the scale is invisible at default settings.
+
 ## Convention extensions to track in project-state.md
 
 Phase 6 introduces these conventions that should be reflected in project-state.md after Phase 6 completes:

@@ -378,14 +378,14 @@ async function main(): Promise<void> {
     let brushCellY = 0;
     let brushHasPosition = false;
 
-    function pointerToCell(e: PointerEvent): void {
+    const pointerToCell = (e: PointerEvent): void => {
         const rect = canvas.getBoundingClientRect();
         const u = (e.clientX - rect.left) / Math.max(rect.width,  1);
         const v = (e.clientY - rect.top)  / Math.max(rect.height, 1);
         brushCellX = u * rt.gridSize;
         brushCellY = v * rt.gridSize;
         brushHasPosition = true;
-    }
+    };
     canvas.addEventListener('pointermove',  pointerToCell);
     canvas.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;

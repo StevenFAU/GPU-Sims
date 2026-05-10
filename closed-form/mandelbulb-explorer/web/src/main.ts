@@ -14,9 +14,9 @@ import raymarchFrag   from '../shaders/raymarch.frag.wgsl?raw';
 import tonemapFrag    from '../shaders/tonemap.frag.wgsl?raw';
 
 // HMR-relative paths. Must match the path Vite's plugin emits.
-const VERT_PATH     = 'closed-form/mandelbulb-explorer/web/shaders/fullscreen.vert.wgsl';
-const RAYMARCH_PATH = 'closed-form/mandelbulb-explorer/web/shaders/raymarch.frag.wgsl';
-const TONEMAP_PATH  = 'closed-form/mandelbulb-explorer/web/shaders/tonemap.frag.wgsl';
+const VERT_PATH     = 'shaders/fullscreen.vert.wgsl';
+const RAYMARCH_PATH = 'shaders/raymarch.frag.wgsl';
+const TONEMAP_PATH  = 'shaders/tonemap.frag.wgsl';
 
 const MAX_DPR = 2.0;
 const HDR_FORMAT: GPUTextureFormat = 'rgba16float';

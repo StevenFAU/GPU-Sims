@@ -16,7 +16,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 | [Mandelbulb explorer](closed-form/mandelbulb-explorer/) | Closed-form | Shadertoy → WebGPU | Not started |
 | [Physarum](agent-based/physarum/) | Agent-based | WebGPU | Not started |
 | [Boids-3D](agent-based/boids-3d/) | Agent-based | WebGPU | Not started |
-| [Reaction-diffusion 2D](continuous-ca/reaction-diffusion-2d/) | Continuous CA | Shadertoy | Not started |
+| [Reaction-diffusion 2D](continuous-ca/reaction-diffusion-2d/) | Continuous CA | Shadertoy → WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/) (Phase 5) |
 | [Reaction-diffusion 3D](continuous-ca/reaction-diffusion-3d/) | Continuous CA | Native C++ | Implemented (Phase 3) |
 | [Lenia (FFT)](continuous-ca/lenia-fft/) | Continuous CA | Python (Taichi) + WebGPU | Not started |
 | [Neural CA](continuous-ca/neural-ca/) | Continuous CA | Python (PyTorch) + WebGPU | Not started |

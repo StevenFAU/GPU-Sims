@@ -78,6 +78,48 @@ export class Texture {
         );
     }
 
+    /**
+     * Async readback of a 2D texture's mip-0 contents into a CPU Uint8Array.
+     * Mirrors Buffer.readback. Caller specifies bytesPerPixel (e.g. 8 for
+     * rg32float, 4 for r32float, 4 for rgba8unorm).
+     *
+     * Note: WebGPU requires bytesPerRow to be a multiple of 256. For widths
+     * that don't satisfy this with the given bytesPerPixel, the caller must
+     * pad rows manually or pick a different format. Throws if mismatch is
+     * detectable.
+     */
+    async readback2D(bytesPerPixel: number): Promise<Uint8Array> {
+        if (this.type !== TextureType.e2D) {
+            throw new Error('Texture: readback2D requires a 2D texture');
+        }
+        const bytesPerRow = this.width * bytesPerPixel;
+        if (bytesPerRow % 256 !== 0) {
+            throw new Error(
+                `Texture: readback2D requires width*bytesPerPixel to be a `
+                + `multiple of 256 (got ${bytesPerRow}). Pad rows or pick a `
+                + `different width.`
+            );
+        }
+        const stagingDesc: GPUBufferDescriptor = {
+            size: bytesPerRow * this.height,
+            usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+        };
+        if (this.handle.label) stagingDesc.label = `${this.handle.label}-readback`;
+        const staging = this.ctx.device.createBuffer(stagingDesc);
+        const encoder = this.ctx.device.createCommandEncoder();
+        encoder.copyTextureToBuffer(
+            { texture: this.handle, mipLevel: 0 },
+            { buffer: staging, bytesPerRow, rowsPerImage: this.height },
+            { width: this.width, height: this.height, depthOrArrayLayers: 1 },
+        );
+        this.ctx.device.queue.submit([encoder.finish()]);
+        await staging.mapAsync(GPUMapMode.READ);
+        const copy = new Uint8Array(staging.getMappedRange().slice(0));
+        staging.unmap();
+        staging.destroy();
+        return copy;
+    }
+
     destroy(): void {
         this.handle.destroy();
     }

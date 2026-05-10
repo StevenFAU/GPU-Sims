@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.6.0] — 2026-05-09
+
+### Added
+- **Phase 5:** Third Stack B sim — `continuous-ca/reaction-diffusion-2d/`. Gray-Scott reaction-diffusion on a 512² periodic 2D grid (range 256–1024 via dropdown), Forward Euler integration with substep slider 1–32 (default 4), compute ping-pong on `rg32float` storage textures, manual bilinear visualization through a 4-LUT colormap (magma default). Six Pearson 1993 named parameter presets (λ, σ, α, β, ξ, τ) matching the Stack C `reaction-diffusion-3d` sim's preset names exactly for cross-stack vocabulary parity.
+- Mouse-paint brush: LMB-drag splats `v` material onto the grid via a separate compute kernel. The first Stack B sim with user-driven compute dispatch.
+- Second Stack A → B port; first multi-file Stack A artifact (`shadertoy/BufA.glsl` + `shadertoy/Image.glsl` + `shadertoy/README.md`). Multi-buffer Shadertoy idiom — establishes the convention for future ports of stateful sims (physarum, neural-CA).
+- `Texture.readback2D(bytesPerPixel)` helper on `common/common-web/src/webgpu/texture.ts` — async readback of a 2D texture's mip-0 contents into a `Uint8Array`. Mirrors `Buffer.readback`. First helper of its kind on common-web; future sims that capture texture state (physarum, neural-CA, lenia-fft web variants) consume it.
+- `ParamPanel.refreshDisplays()` (and matching `ParamFolder.refreshDisplays()` interface + `FolderImpl` implementation) on `common/common-web/src/paramPanel.ts`. Walks every controller under the panel via lil-gui's `controllersRecursive()` and calls `updateDisplay()` on each. Workaround for the lil-gui slider-freeze on externally-mutated bound state (project-state.md § 9 known issue 3); applies to every Stack B sim with presets or captures.
+- Full-state capture: F5 saves JSON parameter block + deinterleaved `u.bin` + `v.bin` in a ZIP, matching Phase 3's `reaction-diffusion-3d` per-field shape under the JSON meta key `'reactionDiffusion2d'`.
+- Live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/>.
+
+### Changed
+- Per-sim Vite dev port for reaction-diffusion-2d: 5176.
+
+### Fixed
+- `closed-form/mandelbulb-explorer/web/src/main.ts`: three HMR path constants corrected from the repo-relative form (`'closed-form/mandelbulb-explorer/web/shaders/...'`) to the per-sim `web/`-relative form (`'shaders/...'`). The previous form did not match what `viteWgslPlugin` emits, so mandelbulb's hot-reload was silently a no-op. No behavior change other than hot-reload starting to fire correctly during `npm run dev`.
+
 ## [0.5.0] — 2026-05-09
 
 ### Added
@@ -66,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub-surface files: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CITATION.cff`, issue and PR templates.
 - CI workflows for markdown linting and structure validation.
 
-[Unreleased]: https://github.com/StevenFAU/GPU-Sims/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/StevenFAU/GPU-Sims/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.2.1...v0.3.0

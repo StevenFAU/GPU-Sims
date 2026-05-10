@@ -64,9 +64,10 @@ Seven categories. Each lives in its own top-level folder.
 | 2 | strange-attractors | First Stack B sim. Validates `common-web` against a real consumer. Adds GitHub Pages deploy automation. Adopts canvas-DPR convention for all Stack B portfolio sims. | ✅ Shipped | `7a4f3f5` |
 | 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to Phase 5 (eulerian-smoke is the natural sparse-volume consumer). | ✅ Shipped | `d517f02` |
 | 4 | mandelbulb-explorer | Shadertoy → WebGPU port. Second Stack B sim; first Stack A→B port (Steven-original Shadertoy GLSL preserved at `shadertoy/`, real WebGPU port at `web/`). DE raymarcher with soft shadows + orbit traps. No compute pipelines — first sim to use common-web in a render-only pipeline. Single uniform buffer, offscreen HDR RT, render-scale slider. | ✅ Shipped | `8d8334f` |
-| 5 | flagship-cpp-sim | Either `eulerian-smoke` or `sph-water`. Adds OpenVDB or Alembic real impl to common-cpp depending on which. | ⬜ Not started | — |
-| 6 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
-| 7+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
+| 5 | reaction-diffusion-2d | Second Stack A → B port. First Stack B sim with compute ping-pong on persistent 2D state. Six Pearson 1993 named presets matching the Stack C `reaction-diffusion-3d` sim's preset names. Mouse-paint brush (LMB-drag splats `v` material). Full-state capture (deinterleaved `u.bin` + `v.bin` matching Phase 3's per-field shape). Multi-file Shadertoy artifact convention extension. In-flight `Texture.readback2D` addition to common-web. Live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/>. | ✅ Shipped | `<COMMIT-HASH>` |
+| 6 | flagship-cpp-sim | Either `eulerian-smoke` or `sph-water`. Adds OpenVDB or Alembic real impl to common-cpp depending on which. | ⬜ Not started | — |
+| 7 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
+| 8+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
 
 (Phase numbering is for the architect's reference; commit messages don't need to use it.)
 
@@ -155,7 +156,7 @@ Lands with the first Stack D sim phase.
 | `agent-based/boids-3d/` | boids-3d | B | Sim-spec stub; implementation TBD |
 | `continuous-ca/lenia-fft/` | lenia-fft | D | Sim-spec stub; tied to Phase 6 (common-py) |
 | `continuous-ca/reaction-diffusion-3d/` | reaction-diffusion-3d | C | **Implemented (Phase 3)** |
-| `continuous-ca/reaction-diffusion-2d/` | reaction-diffusion-2d | TBD | Sim-spec stub |
+| `continuous-ca/reaction-diffusion-2d/` | reaction-diffusion-2d | A → B | **Implemented (Phase 5)**; live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/> |
 | `continuous-ca/neural-ca/` | neural-ca | TBD | Sim-spec stub |
 | `volumetric-grid/eulerian-smoke/` | eulerian-smoke | C | Sim-spec stub; flagship sim — likely OpenVDB consumer |
 | `volumetric-grid/lattice-boltzmann/` | lattice-boltzmann | C | Sim-spec stub |

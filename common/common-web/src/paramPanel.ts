@@ -1,5 +1,6 @@
 import GUI from 'lil-gui';
 import type { Controller } from 'lil-gui';
+import { log } from './log.js';
 
 /**
  * Controller returned by ParamPanel methods. Adds a `label` setter that
@@ -33,6 +34,13 @@ export interface ParamFolder {
     addColor<T extends object>(target: T, prop: keyof T & string): LabeledController;
     addDropdown(spec: DropdownSpec): LabeledController;
     addButton(name: string, fn: () => void): LabeledController;
+    /**
+     * Refresh every controller's displayed value to match its bound source.
+     * Call after externally mutating bound state (preset selection, capture
+     * load) so lil-gui sliders / dropdowns don't show stale values. Recurses
+     * into sub-folders.
+     */
+    refreshDisplays(): void;
     /** Destroy all controllers and sub-folders. */
     clear(): void;
     open(): void;
@@ -111,6 +119,36 @@ class FolderImpl implements ParamFolder {
     addFolder(name: string): ParamFolder {
         const folder = this.gui.addFolder(name);
         return new FolderImpl(folder, this.storageKey);
+    }
+
+    refreshDisplays(): void {
+        // lil-gui exposes controllersRecursive() on both root GUI and
+        // sub-folder GUI; it returns every Controller at all depths under
+        // this scope. The `as unknown as` cast matches the typings-gap
+        // pattern used by clear() below — lil-gui 0.20 ships a d.ts that
+        // doesn't expose this method or the `children` array.
+        const controllers = (this.gui as unknown as {
+            controllersRecursive: () => Array<{ updateDisplay: () => void }>;
+        }).controllersRecursive();
+        let failed = 0;
+        for (const c of controllers) {
+            try {
+                c.updateDisplay();
+            } catch (err) {
+                // Library code: log loud rather than swallow silently. A real
+                // bug here (controller in invalid state, lil-gui shape change)
+                // should surface immediately. Log only the first failure per
+                // call to avoid console flood when a single broken controller
+                // would otherwise spam.
+                if (failed === 0) {
+                    log.warn('ParamPanel.refreshDisplays: controller updateDisplay() threw', err);
+                }
+                failed++;
+            }
+        }
+        if (failed > 1) {
+            log.warn(`ParamPanel.refreshDisplays: ${failed} controller(s) failed; only the first error was logged`);
+        }
     }
 
     clear(): void {
@@ -192,6 +230,10 @@ export class ParamPanel implements ParamFolder {
     addFolder(name: string): ParamFolder {
         return this.folder.addFolder(name);
     }
+    refreshDisplays(): void {
+        this.folder.refreshDisplays();
+    }
+
     clear(): void {
         this.folder.clear();
     }

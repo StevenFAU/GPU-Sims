@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reaction-Diffusion 2D — GPU-Sims</title>
+    <style>
+        :root { color-scheme: dark; }
+        html, body { margin: 0; padding: 0; background: #000; color: #ddd; font-family: system-ui, sans-serif; overflow: hidden; }
+        body { width: 100vw; height: 100vh; }
+        #canvas { display: block; width: 100vw; height: 100vh; cursor: crosshair; }
+        #unsupported {
+            display: none;
+            position: absolute;
+            inset: 0;
+            place-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        #unsupported a { color: #6cf; }
+        #hint {
+            position: absolute;
+            left: 1rem;
+            bottom: 1rem;
+            font-size: 0.85rem;
+            color: #888;
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="unsupported">
+        <div>
+            <h1>WebGPU not available</h1>
+            <p>This sim requires a browser with WebGPU support.<br />
+            See <a href="https://caniuse.com/webgpu">caniuse.com/webgpu</a>.</p>
+        </div>
+    </div>
+    <div id="hint">LMB-drag to paint &middot; pick a preset in the panel &middot; F5 capture &middot; F9 load</div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

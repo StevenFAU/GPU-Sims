@@ -1,0 +1,21 @@
+{
+  "name": "@gpusims/reaction-diffusion-2d-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reaction-Diffusion 2D — third GPU-Sims Stack B sim. Gray-Scott pattern explorer with six Pearson 1993 named presets, mouse-paint brush, and full-state capture. Second Stack A → B port; first Stack B sim with compute ping-pong on persistent 2D state.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gpusims/common-web": "^0.1.0"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.50",
+    "typescript": "^5.6.0",
+    "vite": "^7.0.0"
+  }
+}

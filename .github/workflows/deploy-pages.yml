@@ -58,6 +58,9 @@ jobs:
       - name: Build mandelbulb-explorer-web
         run: npm run build --workspace=@gpusims/mandelbulb-explorer-web
 
+      - name: Build reaction-diffusion-2d-web
+        run: npm run build --workspace=@gpusims/reaction-diffusion-2d-web
+
       - name: Assemble deploy tree
         run: |
           mkdir -p _site
@@ -72,6 +75,9 @@ jobs:
           # mandelbulb-explorer → /mandelbulb-explorer/
           mkdir -p _site/mandelbulb-explorer
           cp -r closed-form/mandelbulb-explorer/web/dist/* _site/mandelbulb-explorer/
+          # reaction-diffusion-2d → /reaction-diffusion-2d/
+          mkdir -p _site/reaction-diffusion-2d
+          cp -r continuous-ca/reaction-diffusion-2d/web/dist/* _site/reaction-diffusion-2d/
           # Show what we built
           echo "=== _site contents ==="
           find _site -maxdepth 2 -type f | sort

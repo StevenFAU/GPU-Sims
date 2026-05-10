@@ -1,11 +1,12 @@
 # GPU-Sims — Project State
 
-> **Last updated:** end of Phase 3.5 + markdown-lint config follow-up (commit `3de7cc5`, 2026-05-09).
+> **Last updated:** end of Phase 5 — `reaction-diffusion-2d` shipped at `ed54dd3`, typecheck fix at `e1f0673`, retro at this commit.
 
 > This is the **canonical handoff document** for the GPU-Sims repository. It exists so that:
 >
 > - A new **repo-architect chat** can take over from a fresh context, pick up where the previous architect left off, and make consistent decisions with what came before.
 > - A new **category-architect chat** (responsible for, e.g., volumetric-grid sims) can scope its category-level architecture against the locked cross-stack decisions.
+> - A new **reviewer-architect chat** (cross-reviews phase specs before Claude Code execution) can catch drift between draft and synced repo state.
 > - A **per-sim implementer chat** can find the conventions it needs without re-deriving them.
 > - A **coordinator chat** (the user's project-management role) can quickly see what's done, what's next, and what's blocked.
 >
@@ -62,10 +63,11 @@ Seven categories. Each lives in its own top-level folder.
 | 1 | common-cpp | Vulkan 1.3 shared infrastructure: `Context`, `Window`, `Renderer`, `Camera`, `HotReloader`, `GpuProfiler`, `StateWriter`/`Reader`, ImGui glue, VDB/Alembic stubs. CI build-native job. Hello-world example exercises everything. **Eight spec defects caught + fixed during first build** (see commit body). | ✅ Shipped | `3a64055` |
 | 1.5 | common-web | WebGPU + TypeScript shared infrastructure: same surface as common-cpp adapted for the browser. Vite WGSL plugin for hot-reload. CI build-web job. lil-gui parameter panel. ZIP-based state capture. Hello-world example. Gallery placeholder index.html. **Eight spec defects caught + fixed** (TS strict-mode dominant; see commit body). | ✅ Shipped | `6b5309a` |
 | 2 | strange-attractors | First Stack B sim. Validates `common-web` against a real consumer. Adds GitHub Pages deploy automation. Adopts canvas-DPR convention for all Stack B portfolio sims. | ✅ Shipped | `7a4f3f5` |
-| 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to Phase 5 (eulerian-smoke is the natural sparse-volume consumer). | ✅ Shipped | `d517f02` |
-| 4 | mandelbulb-explorer | Shadertoy → WebGPU port. Second Stack B sim; first Stack A→B port (Steven-original Shadertoy GLSL preserved at `shadertoy/`, real WebGPU port at `web/`). DE raymarcher with soft shadows + orbit traps. No compute pipelines — first sim to use common-web in a render-only pipeline. Single uniform buffer, offscreen HDR RT, render-scale slider. | ✅ Shipped | `8d8334f` |
-| 5 | reaction-diffusion-2d | Second Stack A → B port. First Stack B sim with compute ping-pong on persistent 2D state. Six Pearson 1993 named presets matching the Stack C `reaction-diffusion-3d` sim's preset names. Mouse-paint brush (LMB-drag splats `v` material). Full-state capture (deinterleaved `u.bin` + `v.bin` matching Phase 3's per-field shape). Multi-file Shadertoy artifact convention extension. In-flight `Texture.readback2D` addition to common-web. Live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/>. | ✅ Shipped | `<COMMIT-HASH>` |
-| 6 | flagship-cpp-sim | Either `eulerian-smoke` or `sph-water`. Adds OpenVDB or Alembic real impl to common-cpp depending on which. | ⬜ Not started | — |
+| 3 | reaction-diffusion-3d | First Stack C sim. Validates `common-cpp` at simulation scale. 256³ Gray-Scott RD on a periodic 3D grid, volume raymarch visualization, six Pearson 1993 named presets. VDB writer deferred to whichever phase ships `eulerian-smoke` (the natural sparse-volume consumer). | ✅ Shipped | `d517f02` |
+| 3.5 | hardening pass | README gallery row fixes, `structure.yml` stale-entry drop, CHANGELOG backfill (0.2.0 / 0.2.1 / 0.3.0 / 0.4.0), dead `windowFullscreen` capture-schema field removal, markdown-lint + lychee config to bring all three CI workflows green simultaneously for the first time since Phase 0. | ✅ Shipped | `3de7cc5` |
+| 4 | mandelbulb-explorer | Shadertoy → WebGPU port. **First Stack A→B port** (Steven-original Shadertoy GLSL preserved at `closed-form/mandelbulb-explorer/shadertoy/`, real WebGPU port at `closed-form/mandelbulb-explorer/web/`). DE raymarcher with cone-traced soft shadows, three orbit-trap coloring presets, n-power morph (toggle default OFF). **First sim using `common-web` in a render-only pipeline** (no compute, just two render passes — single-uniform-buffer raymarch into HDR `rgba16float` offscreen RT, then Reinhard tonemap to canvas). `renderScale` slider trades resolution for cost. **First multi-architect cross-review chain** (3 review rounds caught Camera.lookAt drift, WGSL UV inversion bug, full StateWriter/Reader API mismatch, README gallery-row omission, plus two polish flags). Live at <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/>. | ✅ Shipped | `8d8334f` |
+| 5 | reaction-diffusion-2d | Second Stack A → B port. **First Stack B sim with compute ping-pong on persistent 2D state** (Phase 2's strange-attractors uses compute for particle integration but does not ping-pong general 2D grid state; Phase 4's mandelbulb-explorer is render-only). Six Pearson 1993 named presets matching the Stack C `reaction-diffusion-3d` sim's preset names exactly for cross-stack vocabulary parity. Mouse-paint brush (LMB-drag splats `v` material) via separate compute kernel. Full-state capture (deinterleaved `u.bin` + `v.bin` matching Phase 3's per-field shape) under JSON meta key `'reactionDiffusion2d'`. **First multi-file Stack A artifact in the repo** (`shadertoy/BufA.glsl` + `shadertoy/Image.glsl` + `shadertoy/README.md`) — extends Phase 4's single-file convention to sims with persistent state. Two in-flight common-web additions (both spec-authorized): `Texture.readback2D` and `ParamPanel.refreshDisplays` (see § 5). One in-flight cross-cutting fix: mandelbulb-explorer's 3 HMR path constants corrected to per-sim `web/`-relative shape so hot-reload actually fires. **Typecheck-fix follow-up at `e1f0673`** (function declaration → arrow expression for TS strict-mode closure narrowing; see § 7). Live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/>. | ✅ Shipped | `ed54dd3` |
+| 6 | TBD | Coordinator picks at start. Per the rollout brief: Tier 1 (Stack B `physarum` or `boids-3d`) before Tier 2 flagship (`eulerian-smoke` with OpenVDB or `sph-water` with Alembic). rd-2d's spec serves as structural template for the next Stack B Tier-1 sim. | ⬜ Not started | — |
 | 7 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
 | 8+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
 
@@ -96,6 +98,7 @@ These are settled. Don't re-litigate without strong cause; if a future phase wan
 | 15 | **lil-gui for in-browser parameter UI** | The de facto debug-UI library for WebGPU/Three.js demos. ParamPanel wraps it with localStorage persistence per sim. | Phase 1.5 |
 | 16 | **State capture: JSON + binary, zipped (web) / loose dir (native)** | Same JSON schema across stacks. Web side packs into ZIP for one-click download/upload; native side writes a loose directory. Cross-stack replay is technically possible (same schema), not used today but kept open. | Phase 1 / 1.5 |
 | 17 | **TypeScript strict mode includes `exactOptionalPropertyTypes: true`** | Catches real defects at compile time (Phase 1.5 found 10 sites). Construction pattern: build descriptor as a local, then `if (label) desc.label = label;` — not `{label: cond ? '...' : undefined}`. | Phase 1.5 |
+| 18 | **Stack A artifacts preserved alongside Stack B ports** | When a sim is ported A→B, the A artifact lives at `<category>/<sim>/shadertoy/<sim>.glsl` with a port-mapping README; the B port lives at `<category>/<sim>/web/`. Both halves in the repo make the port pattern a documented, reusable convention (mandelbulb-explorer is the canonical example; reaction-diffusion-2d will reuse it). | Phase 4 |
 
 ---
 
@@ -136,9 +139,16 @@ import { wgslPlugin } from '@gpusims/common-web/vite-plugin';
 export default defineConfig({ plugins: [wgslPlugin()] });
 ```
 
-Module list: same surface as common-cpp, adapted to TypeScript and WebGPU. `ComputePipeline` / `RenderPipeline` instead of `vk::ComputePipeline` / `vk::GraphicsPipeline`. `ParamPanel` (lil-gui) instead of ImGui. `StateWriter`/`Reader` use ZIP via `fflate`. Math via gl-matrix.
+Module list: same surface as common-cpp, adapted to TypeScript and WebGPU. `ComputePipeline` / `RenderPipeline` instead of `vk::ComputePipeline` / `vk::GraphicsPipeline`. `ParamPanel` (lil-gui) instead of ImGui. `StateWriter`/`Reader` use ZIP via `fflate`. Math via gl-matrix. `Camera.lookAt(x, y, z)` was added in Phase 2 — pre-existing in synced source by Phase 4 even though the Phase 1.5 spec didn't mention it.
 
 Hello-world: `common/common-web/examples/hello/`. Run with `npm run dev:hello-web` from repo root; opens at http://127.0.0.1:5173.
+
+**Phase 5 additions** (in-flight, both authorized by the Phase 5 spec):
+
+- `Texture.readback2D(bytesPerPixel: number): Promise<Uint8Array>` — async readback of a 2D texture's mip-0 contents into a `Uint8Array`. Mirrors `Buffer.readback`. Throws if `width × bytesPerPixel` is not a multiple of 256 (WebGPU `bytesPerRow` alignment requirement). Used by `reaction-diffusion-2d`'s F5 capture path; future Stack B sims that capture texture state (physarum, neural-CA, lenia-fft web variants) consume it.
+- `ParamPanel.refreshDisplays(): void` (plus matching `ParamFolder.refreshDisplays()` interface method + `FolderImpl` implementation) — walks every controller under the panel via lil-gui's `controllersRecursive()` and calls `updateDisplay()` on each. Workaround for the lil-gui slider-freeze on externally-mutated bound state (see § 9). Fail-loud posture: logs the first failure per call via `log.warn` rather than silent swallow. Future Stack B sims with presets or captures (physarum, boids-3d, neural-CA, eulerian-smoke when ported) inherit it.
+
+Per-sim Vite dev ports (assigned in numerical order as sims ship): hello-web 5173, strange-attractors 5174, mandelbulb-explorer 5175. Next sim takes 5176.
 
 ### `common-py` (Stack D, Python/Taichi) — not yet implemented
 
@@ -154,13 +164,13 @@ Lands with the first Stack D sim phase.
 | `closed-form/mandelbulb-explorer/` | mandelbulb-explorer | A → B | **Implemented (Phase 4)**; live at <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> |
 | `agent-based/physarum/` | physarum | B | Sim-spec stub; implementation TBD |
 | `agent-based/boids-3d/` | boids-3d | B | Sim-spec stub; implementation TBD |
-| `continuous-ca/lenia-fft/` | lenia-fft | D | Sim-spec stub; tied to Phase 6 (common-py) |
+| `continuous-ca/lenia-fft/` | lenia-fft | D | Sim-spec stub; tied to Phase 7 (common-py) |
 | `continuous-ca/reaction-diffusion-3d/` | reaction-diffusion-3d | C | **Implemented (Phase 3)** |
 | `continuous-ca/reaction-diffusion-2d/` | reaction-diffusion-2d | A → B | **Implemented (Phase 5)**; live at <https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/> |
 | `continuous-ca/neural-ca/` | neural-ca | TBD | Sim-spec stub |
-| `volumetric-grid/eulerian-smoke/` | eulerian-smoke | C | Sim-spec stub; flagship sim — likely OpenVDB consumer |
+| `volumetric-grid/eulerian-smoke/` | eulerian-smoke | C | Sim-spec stub; flagship sim — likely OpenVDB consumer; **Phase 5 candidate** |
 | `volumetric-grid/lattice-boltzmann/` | lattice-boltzmann | C | Sim-spec stub |
-| `particle-fluids/sph-water/` | sph-water | C | Sim-spec stub; flagship sim — likely Alembic consumer |
+| `particle-fluids/sph-water/` | sph-water | C | Sim-spec stub; flagship sim — likely Alembic consumer; **Phase 5 candidate** |
 | `particle-fluids/pic-flip/` | pic-flip | C | Sim-spec stub |
 | `hybrid-particle-grid/mpm-multimaterial/` | mpm-multimaterial | C or D | Sim-spec stub |
 | `quantum/ising-dwave/` | ising-dwave | special | Eventually D-Wave-backed; details deferred |
@@ -181,11 +191,14 @@ Lands with the first Stack D sim phase.
 │   ├── src/
 │   │   └── main.ts
 │   └── shaders/*.wgsl
+├── shadertoy/                only when sim has a Stack A artifact (A → B port)
+│   ├── <sim>.glsl            paste-runnable on shadertoy.com
+│   └── README.md             port-mapping notes (Stack A ↔ Stack B)
 ├── README.md                 sim-level README
 └── docs/                     optional design notes
 ```
 
-When the first Stack B sim ships, this auto-resolves under root `package.json`'s workspace glob `closed-form/*/web` and gets pulled into `npm install` automatically.
+When the first Stack B sim ships, this auto-resolves under root `package.json`'s workspace glob `closed-form/*/web` and gets pulled into `npm install` automatically. The `shadertoy/` subfolder is only present for A→B ports (Phase 4's mandelbulb-explorer is the canonical example; Phase 5's reaction-diffusion-2d will reuse this layout if picked).
 
 ### Canvas + DPR (Stack B portfolio sims)
 
@@ -234,6 +247,8 @@ JSON `state.json` written by both stacks has the same shape:
 Native side: `capture_NNNN/state.json` plus per-buffer `<name>.bin` files in the same directory.
 Web side: ZIP archive named `capture_NNNN.zip` containing `capture_NNNN/state.json` + `<name>.bin` files.
 
+The web `StateWriter`'s root parameter (`new StateWriter('captures')`) controls the in-archive directory name but **not** the download filename — the downloaded ZIP is always named `capture_NNNN.zip`. Per-sim READMEs should state this accurately.
+
 ### Stack B descriptor construction (TypeScript strict mode)
 
 WebGPU descriptor objects often have optional fields. Under `exactOptionalPropertyTypes: true`, `{label: cond ? 'foo' : undefined}` is rejected because `undefined` isn't assignable to `string`. Use the conditional-assignment pattern instead:
@@ -246,28 +261,89 @@ return device.createBuffer(desc);
 
 This is the convention every Stack B file in `common-web/` follows; per-sim code should match it.
 
+### Stack B closure narrowing (TypeScript strict mode)
+
+After the WebGPU support guard `if (!canvas) throw`, the type of `canvas` is narrowed from `HTMLCanvasElement | null` to `HTMLCanvasElement`. The narrowing is preserved into closures **only if the closure is declared as a `const` arrow expression**:
+
+```ts
+const onPointerMove = (e: PointerEvent): void => {
+    const rect = canvas.getBoundingClientRect();  // narrowed: ok
+};
+```
+
+A `function` declaration loses the narrowing — TS treats the body as reachable from the top of the enclosing scope (declarations hoist; expressions don't):
+
+```ts
+function onPointerMove(e: PointerEvent): void {
+    const rect = canvas.getBoundingClientRect();  // error TS18047: 'canvas' is possibly 'null'
+}
+```
+
+Caught by `npm run typecheck --workspaces` post-Phase-5 ship; fixed at `e1f0673`. Mandelbulb (Phase 4) didn't surface it — no nested-function closures referencing `canvas`. RD-2D (Phase 5) was the first sim to add user-driven event handlers dispatching into a shared compute kernel via a closure capturing the narrowed `canvas`. Future Stack B sims with multiple event handlers (physarum, boids-3d, neural-CA, lenia-fft) should declare all such handlers as `const handler = (...) => { ... }` by default.
+
+### Stack B WGSL UV/NDC convention
+
+Stack B's shared `fullscreen.vert.wgsl` uses UVs `(0,1), (2,1), (0,-1)` so `uv = (0, 0)` is at canvas TOP — matches WebGPU's framebuffer-y origin and texture-sample convention. Render-then-textureSample round-trips preserve orientation without an explicit flip. Strange-attractors (Phase 2) and mandelbulb-explorer (Phase 4) both use this layout. Hello-world (Phase 1.5) uses the opposite convention `(0,0), (2,0), (0,2)` because it's a standalone infrastructure example and the convention question doesn't bite there.
+
+For sims that treat `uv` as a screen coord (origin-bottom, graphics-math convention) when constructing ray directions or NDC math, the fragment shader must explicitly invert: `ndc.y = 1.0 - uv.y * 2.0`. Mandelbulb-explorer's raymarch frag does this; the tonemap frag (a pure texture-blit) doesn't need to.
+
 ---
 
 ### Architects read the actual hello-world source before drafting
 
 Sim-phase specs must reference the *implemented* `common-` API surface, not an idealized one. Concretely, before drafting any per-sim phase spec the architect reads:
 
-- For Stack B sim phases: `common/common-web/examples/hello/src/main.ts` and the modules it imports from `@gpusims/common-web`.
+- For Stack B sim phases: `common/common-web/examples/hello/src/main.ts` and the modules it imports from `@gpusims/common-web`. Also read the most recently shipped Stack B sim's `main.ts` (currently `closed-form/mandelbulb-explorer/web/src/main.ts`) as a closer template — its `doSave` / `triggerFileLoad` / `applyCapture` shape is canonical for capture/load.
 - For Stack C sim phases: `common/common-cpp/examples/hello/main.cpp` and the corresponding headers under `common/common-cpp/include/gpusims/`.
 - For Stack D sim phases (eventually): the analogous Python hello example.
-- **Read-actual-source rule extends to CI surfaces.** Phase 4 execution caught two stale anchors in `.github/workflows/deploy-pages.yml` (per-step `name:`/`run:` block shape and `cp dist/*` glob form) that the spec had drafted from memory of an earlier deploy-pages.yml shape. Architect chats drafting modifications to existing CI YAML should fetch the current file contents and anchor on verified strings, not paraphrase from memory of prior phases. Same drift class as the common-web API mismatches caught in earlier rounds.
+- **CI surfaces also count.** When the spec modifies `.github/workflows/*.yml`, the architect fetches the actual file contents and anchors the Python edit on verified strings, not a paraphrase from memory of prior phases. Phase 4's first execution caught two stale anchors in `deploy-pages.yml` (per-step `name:`/`run:` block shape and `cp dist/*` glob form) — Claude Code adapted on the fly, but the lesson banks here. Same drift class as the API mismatches.
 
-This is load-bearing: Phase 3's spec was drafted against an idealized `common-cpp` API and Claude Code adapted ~5–10 sites at execution time (Window constructor signature, `gv::WindowOptions` that doesn't exist, descriptor-set construction style — fluent `ComputeBindings` vs raw `vkUpdateDescriptorSets` — profiler-scope idiom, ImGui glue function names, Camera method names, `beginRendering` vs `beginSwapchainPass`). The adaptations all landed correctly, but they cost real tokens and produced a spec → code gap that's hard to audit afterward. The fix is upstream: write the spec against the real API.
+This is load-bearing: Phase 3's spec was drafted against an idealized `common-cpp` API and Claude Code adapted ~5–10 sites at execution time (Window constructor signature, `gv::WindowOptions` that doesn't exist, descriptor-set construction style — fluent `ComputeBindings` vs raw `vkUpdateDescriptorSets` — profiler-scope idiom, ImGui glue function names, Camera method names, `beginRendering` vs `beginSwapchainPass`). The adaptations all landed correctly, but they cost real tokens and produced a spec → code gap that's hard to audit afterward. Phase 4's first draft drifted on three API surfaces (`Camera.lookAt` non-existence claim, `StateWriter`/`StateReader` shape, raymarch UV/NDC orientation) before architect cross-review caught them; the fix is upstream — write the spec against the real API.
 
 The architect's pre-execution checks for any sim phase should explicitly include a `view` on the relevant hello-world's `main.{ts,cpp}` and a scan of the `common/<stack>/include/` (or `src/`) directory for the actual exported surface.
+
+### Multi-architect cross-review for high-stakes phase specs
+
+For phases that touch wide common-* API surface area, lock load-bearing decisions, or establish first-of-pattern conventions, the spec benefits from a cross-review pass before going to Claude Code. The pattern, banked from Phase 4 (canonical example — first Stack A→B port, established the convention):
+
+1. **Architect-1 (drafter)** reads project-state.md, the most recent phase spec, and the actual `common-*` source for any API the new sim consumes. Drafts the spec to a single `.md` file. Flags load-bearing decisions explicitly. Notes anything they're uncertain about.
+2. **Architect-2 (reviewer, fresh chat)** reads the draft + the actual `common-*` source independently — does NOT take the spec's word for any API surface. Looks for: API drift (do the spec's `main.{ts,cpp}` calls match real signatures?), shader correctness (sign/orientation bugs, dimensional inconsistencies), schema drift (state.json field names consistent across phases), CI-surface drift (do the workflow YAML anchors match the synced file?), and root-surface drift (README gallery row, CHANGELOG entry). Reports findings as: blocking issues (must fix), minor flagged items (architect-1's choice to defer or fold in), and approved items (sign-off on architect-1's flagged decisions).
+3. **Architect-1 (revisions)** applies the fixes. Sends the revised spec back for a second pass.
+4. **Architect-2 (approval)** signs off or flags one more round.
+5. Spec goes to Claude Code. Claude Code's completion report flags any execution-time spec defects (e.g., stale CI YAML anchors that even the reviewer missed) for future banking.
+
+Phase 4's chain caught three blocking issues in round 1 (Camera.lookAt drift, WGSL UV/NDC inversion bug, full StateWriter/Reader API mismatch) plus two architect-3 self-catches during revision (GpuProfiler API drift, JsonValue/JsonObject import gaps), plus one real omission in round 2 (root README.md gallery row missing), plus two non-blocking polish flags (auto-morph continuity math, trap-coloring dimensional inconsistency). Each round-1 finding was a real ship-stopper that single-architect drafting missed. End-to-end overhead: ~3-4 conversational turns per architect, ~8-12 turns total including the user's bridging messages.
+
+When it's worth the overhead:
+
+- New Stack B/C/D sim phases (touch wide API surface area).
+- Phases that introduce or modify common-* APIs.
+- First-of-pattern phases (the first port, the first compute-light render-only sim, etc.).
+
+When single-architect is fine:
+
+- Hardening passes (Phase 3.5 was one architect, no review).
+- Small additions to existing infrastructure.
+- Documentation-only commits.
+- The ledger-pointer chore commit at the end of every sim phase.
+
+The reviewer should be a fresh chat (not a continuation of the drafter's session) to avoid context bleed; each architect in the chain having loaded only the file artifacts and project-state.md is what makes them catch each other's blind spots.
+
+### Phase ledger row positioning
+
+The § 3 ledger has speculative future rows below the most-recent shipped row (e.g., a TBD row, `common-py + first-d-sim`, `Remaining sims`). When a phase ships, its row must INSERT immediately after the previous shipped row, and any speculative rows below shift their numbers by one. A literal append at the table's bottom produces a duplicate row number — the Phase 5 spec anchored on `| 4 | mandelbulb-explorer |` and instructed "append after," which would have produced two rows numbered 5; Claude Code adapted by inserting + renumbering speculative rows to 6 / 7 / 8+.
+
+Phase specs writing § 3 ledger edits should make positioning explicit: anchor on the previous shipped row, instruct INSERT (not append), and call out the renumbering of any speculative rows below the insertion point. Where a spec is ambiguous on this, treat row position as intent-preserving rather than literal byte-edit. Banked so future specs include explicit positioning instructions.
+
+---
 
 ### Periodic hardening pass
 
 Every 3–4 sim phases, accumulated drift in the visible surface earns its own small commit before becoming embarrassing. Recurring drift sites:
 
-- Root `README.md` gallery row: status column ("Not started"), broken path links to relocated sims, missing live URLs for shipped sims.
+- Root `README.md` gallery row: status column ("Not started"), broken path links to relocated sims, missing live URLs for shipped sims. (Phase 4 caught this preemptively in cross-review and added the row update to the phase itself; future phases should follow that pattern, treating README updates as part of the ship rather than deferring to a later hardening pass.)
 - `.github/workflows/structure.yml`: `required_dirs` entries for directories that have moved or been deleted.
-- `CHANGELOG.md`: shipped phases not yet entered (Keep-A-Changelog format).
+- `CHANGELOG.md`: shipped phases not yet entered (Keep-A-Changelog format). Phase 4 also added the CHANGELOG entry inline rather than deferring; same pattern.
 - Per-sim docs: dead schema fields, "to be measured post-build" placeholders that have real numbers, stale path references after a sim's canonical home shifts.
 
 The hardening pass is not a phase-ledger row — it's a `chore:` commit between sim phases. Phase 3.5 (commit family `d8ab610..3de7cc5`) is the canonical example: README gallery fix, `structure.yml` stale entry, CHANGELOG backfill (4 entries), dead `windowFullscreen` capture-schema field, plus a small markdown-lint + lychee config follow-up to bring all three CI workflows green simultaneously for the first time since Phase 0.
@@ -286,6 +362,7 @@ These come up periodically in design discussions; the locked answer is "later".
 - **Toast UI for hot-reload events on Stack B.** Stack C has it (ImGui). Stack B logs to console only — toast HTML overlay is a polish pass.
 - **Per-canvas multi-sim composition.** One canvas, one sim. Picture-in-picture or side-by-side comparison is out of scope.
 - **Mobile / touch.** Both stacks open windows/canvases at fixed resolutions and assume keyboard + mouse input.
+- **Mandelbulb-explorer v1.1 polish.** Higher default `iterCap` (≥12 at n=8) for richer per-pixel orbit-trap variegation; smoothstep ramp with adjustable `trapLo`/`trapHi` bounds in place of the linear `clamp(0, 1)`; perceptual gamma on the trap ramp. Notes captured in `closed-form/mandelbulb-explorer/docs/notes.md`. Triggered when v1.1 polish becomes worth it; not before.
 
 ---
 
@@ -303,13 +380,15 @@ As of commit `3de7cc5` (post-Phase-3.5 + markdown-lint config), all three repo-l
 
 A red badge on `main` after this commit is a real regression, not pre-existing breakage. The `Build (native)` and `Build (web)` workflows run only on path triggers (touching `common/common-cpp/**`, `common/common-web/**`, root `CMakeLists.txt`, or `package.json`), so they don't fire on every push — to verify them after a non-build-touching change, dispatch them manually via the Actions tab.
 
+`Pages build and deployment` runs on every push to `main` (no `paths:` filter); each sim phase ship re-runs it (~37 seconds, idempotent). Phase 4's ship deployed cleanly; the ledger-pointer chore re-triggered it as a no-op.
+
 ### Stack B (common-web)
 
-- **`GpuProfiler` readback path triggers "Buffer is already mapped".** The current implementation calls `mapAsync` on a readback buffer in the same encoder cycle that targets it via `copyBufferToBuffer`, which WebGPU rejects. State-machine guard mitigates the warning spam but doesn't fix the underlying architectural issue. **Workaround:** `Context.create` does NOT auto-request `timestamp-query` anymore; sims must opt in via `optionalFeatures: ['timestamp-query']` if they want it. The hello-world bypasses by not requesting the feature; profiler degrades to CPU-only timing. **Proper fix (deferred):** rework `GpuProfiler` to use a small pool of unmapped readback buffers with a "pending readback" queue, decoupling readback from `beginFrame`. Owner: whoever first needs precise GPU timings on Stack B (likely the first compute-heavy Stack B sim).
+- **`GpuProfiler` readback path triggers "Buffer is already mapped".** The current implementation calls `mapAsync` on a readback buffer in the same encoder cycle that targets it via `copyBufferToBuffer`, which WebGPU rejects. State-machine guard mitigates the warning spam but doesn't fix the underlying architectural issue. **Workaround:** `Context.create` does NOT auto-request `timestamp-query` anymore; sims must opt in via `optionalFeatures: ['timestamp-query']` if they want it. The hello-world bypasses by not requesting the feature; profiler degrades to CPU-only timing. Phase 4's mandelbulb-explorer goes one step further and doesn't instantiate a `GpuProfiler` at all (matches strange-attractors precedent — neither imports it). **Proper fix (deferred):** rework `GpuProfiler` to use a small pool of unmapped readback buffers with a "pending readback" queue, decoupling readback from `beginFrame`. Owner: whoever first needs precise GPU timings on Stack B (likely the first compute-heavy Stack B sim).
 
 - **Firefox on Linux requires `dom.webgpu.enabled` flag.** Default-off as of May 2026. Chromium/Chrome on Linux works out of the box. Not a code fix — environmental. Document in per-sim READMEs.
 
-- **lil-gui sliders don't auto-update when bound values change externally.** The Camera's `position`/`yawDeg`/`pitchDeg` change during free-fly motion (WASD + RMB) but the displayed numbers stay frozen until the user drags a slider. Cosmetic only — the camera is actually moving. Workaround if it ever matters: call `controller.updateDisplay()` once per frame on the relevant controllers.
+- **lil-gui sliders don't auto-update when bound values change externally.** The Camera's `position`/`yawDeg`/`pitchDeg` change during free-fly motion (WASD + RMB) but the displayed numbers stay frozen until the user drags a slider. Same shape applies to any controller bound to runtime state mutated by preset selection, capture load, or any non-slider input. Cosmetic only — the underlying state is actually changing. **Resolution shipped Phase 5:** call `panel.refreshDisplays()` after externally mutating bound state. The method walks every controller under the panel via lil-gui's `controllersRecursive()` and calls `updateDisplay()` on each. Logs first failure per call via `log.warn` rather than silent swallow. Phase 4 sidestepped this for the n-power slider by defaulting `autoMorphEnabled` to OFF (so the slider stays the source of truth).
 
 ### Stack C (common-cpp)
 
@@ -326,17 +405,73 @@ For convenience: prompts to give a fresh chat in each role. The user maintains a
 ```
 You are the repo architect for GPU-Sims (github.com/StevenFAU/GPU-Sims).
 Read project-state.md from project sources and the most recent shipped
-phase spec (e.g., phase1_5_common.md) before answering. The repo's
-authoritative state is in the code; project-state.md is the cross-cutting
-context.
+phase spec (e.g., phase4_mandelbulb_explorer.md) before answering. The
+repo's authoritative state is in the code; project-state.md is the
+cross-cutting context.
 
 Your role: draft the next phase's instruction document for Claude Code to
 execute. See § 3 of project-state.md for what's next. Make load-bearing
 decisions; flag and pause rather than guess. The phase spec output is a
 single .md file the user drops into Claude Code.
 
+Critical: read the actual common-* source for any API the new sim
+consumes (per § 7's read-actual-source rule). The spec is not authoritative;
+the synced source is. Phase 4's first draft drifted on three API surfaces
+before architect cross-review caught them — don't repeat that.
+
+For high-stakes phases (new sims, common-* changes, first-of-pattern
+work), expect the user will route the spec through a reviewer-architect
+chat before sending to Claude Code; draft accordingly.
+
 Begin by confirming you've read the relevant docs and ask any clarifying
 questions before drafting.
+```
+
+### Reviewer-architect chat (cross-reviews a phase spec)
+
+```
+You are reviewing a phase spec for GPU-Sims (github.com/StevenFAU/GPU-Sims).
+Another architect has drafted the spec; your job is to catch drift between
+the draft and the actual repo state before it goes to Claude Code.
+
+Read project-state.md (especially § 4 locked decisions, § 7 conventions —
+including the read-actual-source rule and the multi-architect cross-review
+pattern, and § 9 known issues). Then independently read the actual common-*
+source the spec touches — do NOT take the spec's word for any API surface.
+
+For Stack B specs:
+- common/common-web/src/index.ts (barrel) and the modules it imports.
+- The most recently shipped Stack B sim's main.ts as a closer template
+  (currently closed-form/mandelbulb-explorer/web/src/main.ts).
+
+For Stack C specs:
+- common/common-cpp/examples/hello/main.cpp and the corresponding headers
+  under common/common-cpp/include/gpusims/.
+- The most recently shipped Stack C sim's main.cpp as a closer template
+  (currently continuous-ca/reaction-diffusion-3d/src/main.cpp).
+
+Look for, in priority order:
+- API drift: spec calls methods that don't exist or have wrong signatures.
+- Shader correctness: sign/orientation bugs (especially WGSL UV/NDC math
+  per § 7), dimensional inconsistencies in coloring or DE math.
+- Schema drift: state.json field names consistent across phases.
+- CI surface drift: deploy-pages.yml / structure.yml anchors must match
+  the synced file shape, not paraphrases. (Phase 4 caught two stale
+  anchors here.)
+- Root-surface drift: README.md gallery row update, CHANGELOG.md entry
+  prepend — must be in the modified-files list, not deferred.
+
+Report findings as: blocking issues (must fix before Claude Code), minor
+flagged items (architect-1's choice to defer or fold in), and approved
+items (sign-off on architect-1's flagged decisions). Be specific about
+which file-line of synced source contradicts which line of the draft.
+
+After architect-1 revises, do a second pass focused on the rewritten
+sections. The other fixes are typically surgical and don't need much
+follow-up review.
+
+Begin by confirming the surfaces you're checking against and ask any
+clarifying questions before reading the draft.
 ```
 
 ### Category-architect chat (owns one category branch)
@@ -383,6 +518,12 @@ phase to work on next, hand briefs to architects, receive their phase specs,
 and pass them to Claude Code for execution. Update project-state.md's § 3
 phase ledger when phases ship.
 
+For high-stakes phases (new sims, common-* changes, first-of-pattern
+work), route the architect-1 draft through a reviewer-architect chat
+before sending to Claude Code (see § 7's multi-architect cross-review
+pattern). For hardening passes and small additions, single-architect
+drafting is fine.
+
 Begin by summarizing the current state and what's next.
 ```
 
@@ -392,10 +533,14 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `3de7cc5` (Phase 3.5 + markdown-lint config — repo green-CI baseline established).
+- Latest commit: `e1f0673` (Phase 5 — `reaction-diffusion-2d` shipped at `ed54dd3`, typecheck fix at `e1f0673`).
+- Live sims:
+  - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
+  - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)
 - Stack C build: `cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGPU_SIMS_BUILD_EXAMPLES=ON && cmake --build build`
 - Stack C hello-world binary: `./build/bin/gpu_sims_hello`
 - Stack B install: `npm install` from repo root (Node 22+ required)
 - Stack B hello-world: `npm run dev:hello-web` then http://127.0.0.1:5173 in a WebGPU-enabled browser
 - Stack B build: `npm run typecheck && npm run build:web`
+- Per-sim Vite dev ports: hello-web 5173, strange-attractors 5174, mandelbulb-explorer 5175, next sim 5176
 - Ubuntu deps for Stack C: see `common/common-cpp/README.md`

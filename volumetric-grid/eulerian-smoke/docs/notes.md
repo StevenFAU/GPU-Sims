@@ -1,0 +1,61 @@
+# Eulerian Smoke — v1.1+ polish notes
+
+This file is the prioritized backlog of polish items that landed outside Phase 8's v1 scope. Each entry includes an effort estimate and the rationale for why it's polish rather than v1.
+
+## Priority 1.0 — Moving obstacles
+
+The overarching-spec's eulerian-smoke entry lists "moving obstacles" as part of the v1 commitment. Phase 8 explicitly deferred this to v1.1 to keep scope tractable. Implementation outline:
+
+- Add a `solid_mask` 3D image (r8ui, 256³ × 1 byte = 16 MB at default tier). 0 = fluid, 1 = solid.
+- Add an "Obstacles" UI section in the panel: place spheres / boxes via clicks with the same `recreateGridResources`-style "Apply" idiom, or live-rasterize as the user drags — the simpler path.
+- Add an `obstacle_rasterize` compute pass that runs before advection: for each obstacle, write 1 into the relevant cells.
+- Modify advection / buoyancy / vorticity / divergence / Jacobi / project / boundaries kernels to short-circuit when `solid_mask[i,j,k] == 1`. The simplest contract: velocity zero, pressure boundary-condition treats solid cells like wall cells, density / temperature held at the solid cell's previous value (no flux through solids).
+- Add a "solid-cell tint" render contribution in the raymarch (so the user can see the obstacle shape).
+
+Estimated effort: 1–2 weeks of solver + render work. Visual benefit: significant — obstacles let the user create "smoke around a sphere" / "candle flame deflecting off a card" style scenes that recruiters recognize from production effects work.
+
+## Priority 1.1 — Free-slip wall boundary conditions
+
+Phase 8 ships with no-slip walls (zero velocity at all wall cells, both normal and tangential components). The more visually-correct choice for rising-plume smoke is free-slip (normal velocity zero, tangential velocity unchanged) — smoke slides along the walls realistically rather than "sticking." For a free rising plume that barely touches the side walls, the distinction is invisible; with obstacles (priority 1.0) it becomes visible. Implement by modifying `apply_boundaries.comp.glsl` to reflect the tangential velocity components rather than zero them.
+
+Estimated effort: 1 day. Bundle with priority 1.0 — they're solving the same problem at different scopes.
+
+## Priority 1.2 — MGPCG pressure solver
+
+Jacobi at 40 iterations is acceptable for smoke; for water (where incompressibility error is more visible) it'd be inadequate. The standard upgrade is multigrid preconditioned conjugate gradient (MGPCG). Reference: McAdams/Sifakis/Teran 2010. Effort: 2–4 weeks. Visual benefit: modest for smoke; significant for follow-on sims (sph-water).
+
+## Priority 1.3 — Animation hero render
+
+The Blender script supports `--frame-start` / `--frame-end` from v1; v1.1 is producing an actual animation deliverable. Requires A100 access (240 frames × 512 samples × 1920×1080 ≈ many GPU-hours on dev hardware; trivial on A100). Deliverable: 8-second smoke-plume animation, 30 fps, 1080p. Banked for when HPC slot opens up.
+
+## Priority 1.4 — Per-frame temperature VDB export
+
+v1 ships density-per-frame + temperature-one-shot. For animation rendering with temperature-driven emission, per-frame temperature is needed. Implementation is trivial (one more `writeFloatFrame` call inside the export loop); the cost is the doubled disk write per frame. v1.1 widens the panel toggle to "Export density + temperature per frame."
+
+## Priority 1.5 — GPU isosurface render alternative
+
+The volume raymarch produces smoke-style results. For "stylized smoke" looks (e.g., the cartoonish Hayao Miyazaki smoke aesthetic), a marching-cubes isosurface at the density-threshold might be more aesthetic. RD-3D has the same v1.1 entry — implementing once would benefit both sims.
+
+## Priority 1.6 — Particle motion-blur via velocity-pass rendering
+
+If the offline render ever needs motion-blurred smoke (e.g., for an in-camera move), Blender Cycles can read a velocity grid for vector-based motion blur. Requires per-frame velocity export, which needs the slow `writeVec3Grid` path optimized. Two implementation options: (a) use `openvdb::Vec3SGrid::Accessor` with batched setValue (4–8× faster than the synced naive loop); (b) write three scalar grids (vx, vy, vz) via `copyFromDense` and assemble on the Blender side. Banked because the v1 hero render is a single still that doesn't need motion blur.
+
+## Priority 1.7 — HDR bloom + better tonemap
+
+Phase 8's render is Reinhard-tonemap-inline-in-the-fragment-shader. RD-3D has the same v1.1 entry — implementing HDR ping-pong + half-res bloom + decoupled ACES tonemap pass once would benefit every Stack C volume sim.
+
+## Priority 1.8 — Fullscreen-borderless window mode
+
+Repo-wide v1.1 across every Stack C sim. Requires extending `gv::Window` with a fullscreen toggle. Banked at the common-cpp level.
+
+## Priority 1.9 — Smoke-trail emitter dragging
+
+Currently the user clicks LMB to place an emitter; v1.1 could let the user drag to place a *trail* of emitters along the cursor path. Cleaner UX for sketching smoke shapes (signature, logo, etc.) Estimated effort: 1 day. Modest visual benefit; might be worth bundling with priority 1.0's obstacle UI rework.
+
+## Priority 1.10 — A wind / gravity slider
+
+A constant world-space force vector added each substep. Gives the user "smoke drifts to one side as it rises" effect for stylistic scenes. Trivial to implement (one uniform field + one extra dispatch). 0.5 day of work.
+
+## Priority 1.11 — D3Q19 LBM cross-sim share
+
+Phase 8's solver stack is Stam-tradition. The neighboring `volumetric-grid/lattice-boltzmann/` sim will use a fundamentally different solver (LBM streaming + collision). The two sims share the volume raymarch render path; promote `raymarch.frag.glsl` to a common-cpp shader-include after LBM ships (consumer #2 of the volume-raymarch shader pattern). Banked as the rule-of-three candidate at consumer #3 (likely a future volumetric-grid sim).

@@ -76,8 +76,9 @@ endif()
 # Continuous CA sims (Phase 3+).
 add_subdirectory(continuous-ca/reaction-diffusion-3d)
 
+add_subdirectory(volumetric-grid/eulerian-smoke)
+
 # if(GPU_SIMS_BUILD_VOLUMETRIC_GRID)
-#     add_subdirectory(volumetric-grid/eulerian-smoke)
 #     add_subdirectory(volumetric-grid/lattice-boltzmann)
 # endif()
 

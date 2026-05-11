@@ -1,0 +1,4 @@
+# Ignore all VDB exports — they're generated artifacts.
+*.vdb
+# But keep the directory itself in version control.
+!.gitignore

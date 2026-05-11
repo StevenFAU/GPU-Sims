@@ -8,6 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.9.0] - <YYYY-MM-DD>
+
+### Added
+
+- Eulerian Smoke simulation (Stack C) — 256³ Stam stable-fluids with the full Fedkiw-2001 solver stack. First Tier-2 flagship sim. Path: `volumetric-grid/eulerian-smoke/`.
+  - Single-pass MacCormack-corrected semi-Lagrangian advection (Selle/Fedkiw 2008) with reverse-Stam clamping limiter.
+  - Vorticity confinement (Fedkiw 2001 eq 14) with zero-guarded unit-gradient normalization.
+  - Jacobi-iteration pressure projection (panel slider 10–100, default 40).
+  - Boussinesq buoyancy from temperature; six smoke-dynamics presets (Plume, Candle, Cigar, Smokestack, Explosion-Puff, Chimney-Down).
+  - Sparse user-placed emitters (LMB-place / RMB-remove, cap 8) — first consumer of the new "volumetric source-injection" pattern, distinct from the physarum/boids massless-attractor pattern.
+  - Volume raymarch render: Beer-Lambert absorption + single-scattering single-shadow-march + temperature-driven black-body emission via a 256×4 RGBA8 LUT (four ramps: blackbody/sunset/cold/mono).
+  - Three discrete grid-resolution tiers (192³ / 256³ / 384³; default 256³); 384³ marked as the stretch tier with the degradation-warning idiom from boids-3d's 100k tier.
+  - F5/F9 capture/load with full mid-frame state restore (velocity + density + temperature + pressure + emitters + camera + parameters).
+  - Optional per-frame OpenVDB density export via `gpusims::vdb::writeFloatFrame` — first real consumer of the OpenVDB writer that has shipped as a stub since Phase 1. Opt-in via `-DGPU_SIMS_USE_OPENVDB=ON` at CMake-configure time (default remains OFF; CI continues to verify stub-mode compilation only).
+  - One-shot temperature VDB export for hero-render pairing.
+- `render-pipelines/blender/render_smoke.py` — first script under the offline-render trajectory. Headless Blender Cycles with the Principled Volume shader, GPU device-selection fallback chain (OptiX → HIP → CUDA → fail loud), supports both single-still and animation modes via `--frame-start` / `--frame-end`. v1 deliverable is a single hero still; animation banked v1.1 once A100 access is available.
+
+### Changed
+
+- `project-state.md`: § 3 phase ledger updated with Phase 8 row; § 5 per-stack package surface area — added note that Phase 8 is the first real exercise of `vdb_writer`; § 6 eulerian-smoke row → Implemented (Phase 8); § 9 known issues — entry added if Phase 8 execution surfaced a defect in the never-exercised `vdb_writer.cpp` path.
+- `README.md` (root) — gallery row for eulerian-smoke flipped from "Not started" to "Implemented (Phase 8)".
+- `CMakeLists.txt` (root) — eulerian-smoke promoted to unconditional `add_subdirectory(volumetric-grid/eulerian-smoke)`; lattice-boltzmann entry preserved as commented for its future phase.
+- `docs/sim-specs/eulerian-smoke.md` — fleshed §§ 1–11 from Phase 0 stubs.
+
+### Convention extensions
+
+- **Volumetric source-injection emitter pattern** added to `project-state.md` § 7. Consumer #1: eulerian-smoke (this phase). Likely consumers #2 + #3: sph-water, mpm-multimaterial. Promotion review at consumer #3.
+- **Point-emitter / sparse-source pattern** convention annotated: eulerian-smoke was evaluated and explicitly did NOT count as consumer #3 (its emitter pattern is volumetric source injection, a distinct shape).
+- **Tier-1 / Tier-2 framing** added to `project-state.md` § 7. Tier-2 = "A100-hero" Stack C/D flagship sims; Tier-1 = Stack B WebGPU warm-ups. Banked from the overarching-spec's categorization for future architect reference.
+
+
 ## [0.8.0] - 2026-05-10
 
 ### Added

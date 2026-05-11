@@ -20,7 +20,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 | [Reaction-diffusion 3D](continuous-ca/reaction-diffusion-3d/) | Continuous CA | Native C++ | Implemented (Phase 3) |
 | [Lenia (FFT)](continuous-ca/lenia-fft/) | Continuous CA | Python (Taichi) + WebGPU | Not started |
 | [Neural CA](continuous-ca/neural-ca/) | Continuous CA | Python (PyTorch) + WebGPU | Not started |
-| [Eulerian smoke](volumetric-grid/eulerian-smoke/) | Volumetric grid | Native C++ | Not started |
+| [Eulerian smoke](volumetric-grid/eulerian-smoke/) | Volumetric grid | Native C++ | Implemented (Phase 8) |
 | [Lattice Boltzmann](volumetric-grid/lattice-boltzmann/) | Volumetric grid | Native C++ | Not started |
 | [SPH water](particle-fluids/sph-water/) | Particle fluids | Native C++ | Not started |
 | [PIC/FLIP](particle-fluids/pic-flip/) | Particle fluids | Native C++ | Stretch |

@@ -399,6 +399,10 @@ When single-architect is fine:
 - Documentation-only commits.
 - The ledger-pointer chore commit at the end of every sim phase.
 
+Within new-sim phases, first-of-its-kind vs copy-the-template:
+
+The "is it worth the overhead" question has a finer-grained answer once you're inside a new-sim phase. For first-of-its-kind sim phases — new solver family, new render pattern, new common-* surface area, first-of-pattern decisions to lock — the full architect-1 → architect-2 → coordinator chain consistently catches blocking issues that a single architect-2 round misses. For copy-the-template sim phases — second instance of an established pattern, sim that inherits cleanly from an existing one with the same Stack and common-* shape — a single architect-2 round suffices and the additional chain overhead doesn't pay back. Phases 7 (boids-3d, first crowd-dynamics Stack B sim) and 8 (eulerian-smoke, first Tier-2 flagship Stack C) both demonstrated the value of the full chain — each surfaced multiple round-1 blocking issues that one architect alone missed. Future Stack C sims that inherit the eulerian-smoke template (sph-water, mpm-multimaterial, LBM) likely fall on the copy-the-template side of the heuristic.
+
 The reviewer should be a fresh chat (not a continuation of the drafter's session) to avoid context bleed; each architect in the chain having loaded only the file artifacts and project-state.md is what makes them catch each other's blind spots.
 
 ### Phase ledger row positioning
@@ -421,6 +425,48 @@ Every 3–4 sim phases, accumulated drift in the visible surface earns its own s
 The hardening pass is not a phase-ledger row — it's a `chore:` commit between sim phases. Phase 3.5 (commit family `d8ab610..3de7cc5`) is the canonical example: README gallery fix, `structure.yml` stale entry, CHANGELOG backfill (4 entries), dead `windowFullscreen` capture-schema field, plus a small markdown-lint + lychee config follow-up to bring all three CI workflows green simultaneously for the first time since Phase 0.
 
 Don't pre-schedule these; trigger them when drift becomes visible. A short repo-architect chat is enough — they don't need cross-review.
+
+---
+
+### Anchor-grep verification for cross-cutting modifications
+
+When a spec § 5.x section calls for an anchor-based Python edit (find old block, replace with new block), the spec author AND the reviewing architect must `grep` the synced source for the literal anchor text and verify byte-for-byte that the anchor matches. The recurring failure mode is the anchor being paraphrased from memory and drifting from the on-disk reality — Phase 4 surfaced 2 anchor-mismatch defects in cross-cutting mods, Phase 8 surfaced 3 more (CMakeLists block shape, README gallery row cell count, phase ledger column count). The convention is: anchor strings are grep-verified against the synced file before the spec is locked, not after Claude Code reports the mismatch.
+
+### Count-consistency self-check across spec sections
+
+When a fact appears in multiple spec sections — file counts, pipeline counts, shader counts, dispatch counts, watch counts, ledger column counts — pick one occurrence as canonical and re-derive the others, or `grep` all occurrences after each edit and reconcile. Phase 8 surfaced 5+ off-by-one drift items between § 0 preamble, § 3 manifest intro, § 6 verification block comments and echoes, completion-report file counts, and inline comments inside `main.cpp`. Count drift is recurring and silent — none of these were caught by readability review because every individual section reads cleanly in isolation. The discipline is to treat counts as cross-sectional invariants and verify them as a final pass.
+
+### Verification-block grep patterns need anchor discipline
+
+The shell `grep` invocations in spec § 6 verification blocks should use the same anchor patterns as Python edit anchors — i.e., line-start anchors (`^if(...)`), not substring matches. Phase 8 surfaced an unanchored `grep "if(GPU_SIMS_BUILD_VOLUMETRIC_GRID)"` that matched the commented-out lattice-boltzmann line (which the spec itself preserved as commented), causing the verification step to falsely report success. Fix forward: every verification grep pattern is anchored at line start, and where the pattern could match a commented-out line, the negation `grep -v '^#'` (or equivalent) is appended.
+
+### "Identity for clarity" comments are red flags, not calming signals
+
+Round-1 architect-2 review of Phase 8 caught a `project_p` parity bug where the spec contained a comment claiming "identity; explicit for clarity" — the reassuring comment masked an actual inverted formula and was the reason architect-1's self-review skipped past it. The convention is: when reviewing, treat self-justifying comments ("trivially", "by definition", "for clarity", "obviously", "always") with extra scrutiny rather than as skip-signals. They are statistically more likely to be wrong than the same code with no comment, because writers reach for them when their own confidence is shaky.
+
+### Single-source-of-truth for preset / config / parameter tables
+
+When a parameter set appears in multiple places — narrative description table + struct initializer + sim-specs file + completion report — pick one as canonical and have the others reference it; never duplicate the values across sources. Phase 8's Chimney-Down catch (round-1 architect-2 Flag B) was caused by three diverging sources for the same six preset values: each looked internally consistent and only cross-section diff exposed the drift. Same drift class as count-consistency, but specific to per-row tabular data where the columns are easy to misalign during copy-paste. Convention banked: pick one source, reference from others, never duplicate.
+
+### API-grep convention for first-of-its-kind sim phases
+
+For any spec section that calls into common-cpp APIs (`gpusims::` or `gv::`), the spec author must include the synced API signature as a literal quote with file:line reference rather than paraphrasing from memory. Reviewer verification then includes a `grep` of each quoted API against the synced header to confirm the signature matches. Phase 8 surfaced 12 API-drift defects at Claude Code build time because the spec asserted API signatures from memory rather than from grep — every one of them should have been caught at architect-1 self-review with a one-minute grep. This is the single highest-value retro item from Phase 8 and extends the existing "Architects read the actual hello-world source before drafting" convention with concrete per-API verification discipline.
+
+### Architect-1 fabrication pattern (general)
+
+When drafting spec content, prompts to Claude Code, or any architect-2 review request, architect-1 must never assert specific numeric values, struct field names, function signatures, file:line references, or process patterns from memory. Either quote the file with a verifiable reference, or `grep` before asserting. The pattern surfaced four times in Phase 8: (a) 12 API signatures fabricated in the `main.cpp` draft, surfaced at build time; (b) 3 fabricated spec assertions in the Chimney-Down investigation prompt (densityRate=2.0 vs actual 4.0, T_ambient=0.5 vs actual 0.0, shader formula form), surfaced by Claude Code reading the actual files; (c) a misremembered git `--amend` process pattern in the commit prompt that would have shipped a broken SHA pointer if Claude Code hadn't paused for confirmation; (d) confident assertions about present-mode being the heat source without measurement, retracted after `radeontop` data. The convention is the meta-rule: if I would say it in a tone of confident recall, I should grep first. This subsumes several Phase 7/8 conventions and is the single root-cause to internalize.
+
+### Per-preset behavior cross-grep when spec has a parameter table
+
+When a spec defines a per-preset parameter table AND a per-preset behavior elsewhere (emitter placement, initial conditions, camera angle, color ramp selection, etc.), the reviewer must cross-grep the preset name against ALL spec sections to find every preset-conditional behavior site. Phase 8's round-1 review caught the parameter-table values for Chimney-Down but missed that the emitter-placement code did not branch on preset, leaving Chimney-Down's downward buoyancy misapplied at the floor — a defect that survived two architect reviews and was only caught at user-driven visual verification post-ship. Banked as a reviewer-side convention: enumerate every preset's name, then grep each against the full spec for behavior-site mentions, and verify each site either applies uniformly or branches on the preset index correctly.
+
+### Shader-copy destination must namespace by sim
+
+Per-sim `CMakeLists.txt` files that copy `shaders/*.glsl` to `${CMAKE_BINARY_DIR}/bin/` must use a sim-namespaced destination (e.g., `bin/eulerian-smoke/shaders/`) to avoid Ninja "multiple rules generate" collisions across sims with shared shader filenames. The collision is silent until two sims with a common shader name (`fullscreen.vert.glsl` is the canonical case) are built in the same tree. RD-3D's `CMakeLists.txt` used the un-namespaced form and shipped fine because it was the only Stack C consumer at the time; eulerian-smoke (Phase 8) surfaced the collision at build configure time. Rule-of-three candidate: at the next Stack C sim, promote the shader-copy boilerplate to a `common-cpp` CMake helper that namespaces automatically rather than relying on per-sim discipline.
+
+### Commit-SHA back-fill must use a separate follow-up commit, not `git commit --amend`
+
+The back-fill writes the previous commit's SHA into `project-state.md`'s § 3 ledger row and the corresponding date into `CHANGELOG.md`. If the back-fill is folded into the original commit via `git commit --amend`, the commit's contents change, the SHA changes, and the back-filled SHA reference becomes an orphan pointing at a commit that no longer exists in history. Phase 7 handled this correctly with a separate follow-up commit (`5f8fb19 Phase 7 retro: project-state.md commit-SHA backfill`); Phase 8's commit prompt reinvented the broken `--amend` pattern from memory, and Claude Code caught the structural flaw mid-sequence and refused to push. Convention banked: the back-fill is always a follow-up commit referencing the previous commit's stable SHA, never an amend. Same architect-1 fabrication failure mode as the general convention above — process patterns should be grep'd from `git log` precedent, not asserted from memory.
 
 ---
 
@@ -470,7 +516,7 @@ A red badge on `main` after this commit is a real regression, not pre-existing b
 
 ### Stack C (common-cpp)
 
-- None currently tracked — Phase 1 shipped clean after the eight defect-fix iterations.
+- **`choosePresentMode()` hardcoded to MAILBOX-preferred — surfaced Phase 8.** `choosePresentMode()` in `common/common-cpp/src/vk/window.cpp` selects `VK_PRESENT_MODE_MAILBOX_KHR` > `IMMEDIATE` > `FIFO` unconditionally, with no caller control. The effect is that any Stack C sim runs uncapped and pegs the GPU at 100% utilization. Eulerian-smoke (Phase 8) is the first Stack C sim with a heavy enough per-frame workload for this to surface as audible thermal load on the dev hardware (RX 6800 XT fans pegged under sustained compute). RD-3D (Phase 3) was light enough that the issue wasn't noticed. **Workaround:** launch with `vblank_mode=3 ./build/bin/<sim>` to force FIFO at the Mesa driver layer. The eulerian-smoke README already documents this for the user. **Proper fix (deferred):** common-cpp API amendment exposing `VkPresentModeKHR` at `Window` construction (and a `recreateSwapchain(VkPresentModeKHR)` overload for runtime VSync toggling), with FIFO as the new default. Owner: a candidate Phase 8.5 mini-phase ("common-cpp: VSync support"), or folded into a broader common-cpp hardening phase that also covers OpenVDB CI enablement and the shader-copy CMake helper banked in § 7.
 
 ---
 

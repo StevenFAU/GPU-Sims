@@ -59,3 +59,15 @@ A constant world-space force vector added each substep. Gives the user "smoke dr
 ## Priority 1.11 — D3Q19 LBM cross-sim share
 
 Phase 8's solver stack is Stam-tradition. The neighboring `volumetric-grid/lattice-boltzmann/` sim will use a fundamentally different solver (LBM streaming + collision). The two sims share the volume raymarch render path; promote `raymarch.frag.glsl` to a common-cpp shader-include after LBM ships (consumer #2 of the volume-raymarch shader pattern). Banked as the rule-of-three candidate at consumer #3 (likely a future volumetric-grid sim).
+
+## Priority 1.0′ — Active density+temperature drain at open ceiling
+
+v1's `apply_boundaries.comp.glsl` zeros velocity at the five no-slip faces but does NOT drain density or temperature at the `y = N-1` ceiling. Net effect: injection has no matching outflow, so the domain monotonically saturates over ~30 seconds for any preset with continuous emission. Workaround in v1: tune `densityDissipation ≈ 0.015` and `temperatureDissipation ≈ 0.018` to produce quasi-steady-state plumes that look correct over the demo window. Real fix in v1.1: one additional branch in `apply_boundaries` that zeros density and temperature at `y = N-1` cells (matches the "open ceiling" boundary the visual intent assumes). Estimated effort: 1 hour. Bundle with priority 1.1 (free-slip walls) since both are `apply_boundaries.comp.glsl` edits.
+
+## Priority 1.12 — VSync default + panel toggle (depends on common-cpp amendment)
+
+The thermal observation during Phase 8 visual verification (RX 6800 XT fans maxed under sustained compute) traces to common-cpp's hardcoded MAILBOX-preferred present mode in `choosePresentMode()` (`common/common-cpp/src/vk/window.cpp`). The real fix requires a common-cpp API amendment first — banked separately as a candidate Phase 8.5 or broader common-cpp hardening phase exposing `VkPresentModeKHR` at `Window` construction with FIFO as the new default. After that lands, eulerian-smoke adds a "VSync" checkbox to the Rendering panel, defaulted ON, plumbed through to the new present-mode selection. Workaround in the meantime: launch with `vblank_mode=3 ./build/bin/eulerian_smoke` for FIFO at the Mesa driver layer.
+
+## Priority 1.13 — Re-evaluate default grid tier from 256³ to 192³
+
+Phase 8 testing surfaced that 256³ runs significantly slower than 192³ on the RX 6800 XT, and the visual quality difference is modest for interactive exploration — the portfolio hero render uses offline Blender Cycles anyway, where solver tier is irrelevant. Consider making 192³ the default tier in the SMOKE_PRESETS / tier dropdown, 256³ the "high quality" tier, and 384³ the stretch tier with the existing degradation warning. v1.1 polish, not a defect. Estimated effort: trivial (one-line constant flip + dropdown label reshuffle).

@@ -1,6 +1,6 @@
 # GPU-Sims — Project State
 
-> **Last updated:** end of Phase 5 — `reaction-diffusion-2d` shipped at `ed54dd3`, typecheck fix at `e1f0673`, retro at this commit.
+> **Last updated:** end of Phase 8 — `eulerian-smoke` shipped at `867ea39`, SHA/date back-fill at `b413afb`, Phase 7+8 retro convention banking at `9ad5120`, OpenVDB CMake patch + `vdb_writer` first-exercise note + recording UX design + staleness fixes at `TBD-SHA-FOLLOWUP` (this commit; back-filled by the follow-up commit immediately after).
 
 > This is the **canonical handoff document** for the GPU-Sims repository. It exists so that:
 >
@@ -518,6 +518,8 @@ A red badge on `main` after this commit is a real regression, not pre-existing b
 
 - **`choosePresentMode()` hardcoded to MAILBOX-preferred — surfaced Phase 8.** `choosePresentMode()` in `common/common-cpp/src/vk/window.cpp` selects `VK_PRESENT_MODE_MAILBOX_KHR` > `IMMEDIATE` > `FIFO` unconditionally, with no caller control. The effect is that any Stack C sim runs uncapped and pegs the GPU at 100% utilization. Eulerian-smoke (Phase 8) is the first Stack C sim with a heavy enough per-frame workload for this to surface as audible thermal load on the dev hardware (RX 6800 XT fans pegged under sustained compute). RD-3D (Phase 3) was light enough that the issue wasn't noticed. **Workaround:** launch with `vblank_mode=3 ./build/bin/<sim>` to force FIFO at the Mesa driver layer. The eulerian-smoke README already documents this for the user. **Proper fix (deferred):** common-cpp API amendment exposing `VkPresentModeKHR` at `Window` construction (and a `recreateSwapchain(VkPresentModeKHR)` overload for runtime VSync toggling), with FIFO as the new default. Owner: a candidate Phase 8.5 mini-phase ("common-cpp: VSync support"), or folded into a broader common-cpp hardening phase that also covers OpenVDB CI enablement and the shader-copy CMake helper banked in § 7.
 
+- **OpenVDB writer first-exercise: clean — Phase 8 (positive).** Phase 8 enabled `-DGPU_SIMS_USE_OPENVDB=ON` for the first time, exercising `gpusims::vdb::writeFloatFrame` end-to-end against the OpenVDB 10.0.1 system package on Ubuntu 24.04. The writer code shipped as a stub at Phase 1 and was unexercised through Phases 2–7. No `vdb_writer.cpp` API-drift defects surfaced at build time or runtime. Output VDB files inspected via `vdb_print`: valid file format, correct grid metadata (class `"fog volume"`, identity-scaled transform, blosc compression), value ranges sensible. Hard-rule-8 in-flight fix authorization went unused. Notable validation of the Phase 1 architect-1 work that the stub-shipped API surface was specified well enough to ship correctly without exercise for seven phases. **Build-system note:** `common/common-cpp/cmake/optional_deps.cmake` was patched in this commit to add a block-scoped `CMAKE_MODULE_PATH` hint for Debian/Ubuntu's multi-arch `FindOpenVDB.cmake` location. See commit `TBD-SHA-FOLLOWUP` for the patch (back-filled by the follow-up commit after this one). Future consumers on Fedora / Arch / vcpkg are unaffected (those distros ship `OpenVDBConfig.cmake` which the existing CONFIG-mode `find_package` finds without hint).
+
 ---
 
 ## 10. Onboarding prompts
@@ -670,7 +672,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `c36c731` — Phase 6 retro: tier-normalized deposit + project-state fill (on top of `1250971`, Phase 6 main).
+- Latest commit: `9ad5120` — Phase 7+8 retro convention banking (on top of `867ea39`, Phase 8 ship + `b413afb` SHA/date back-fill). Phase 8 closeout commits will follow this.
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)

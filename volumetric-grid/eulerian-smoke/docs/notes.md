@@ -28,9 +28,11 @@ Jacobi at 40 iterations is acceptable for smoke; for water (where incompressibil
 
 The Blender script supports `--frame-start` / `--frame-end` from v1; v1.1 is producing an actual animation deliverable. Requires A100 access (240 frames × 512 samples × 1920×1080 ≈ many GPU-hours on dev hardware; trivial on A100). Deliverable: 8-second smoke-plume animation, 30 fps, 1080p. Banked for when HPC slot opens up.
 
-## Priority 1.4 — Per-frame temperature VDB export
+## Priority 1.4 — Per-frame temperature VDB export *(superseded by 1.14)*
 
-v1 ships density-per-frame + temperature-one-shot. For animation rendering with temperature-driven emission, per-frame temperature is needed. Implementation is trivial (one more `writeFloatFrame` call inside the export loop); the cost is the doubled disk write per frame. v1.1 widens the panel toggle to "Export density + temperature per frame."
+~~v1 ships density-per-frame + temperature-one-shot. For animation rendering with temperature-driven emission, per-frame temperature is needed. Implementation is trivial (one more `writeFloatFrame` call inside the export loop); the cost is the doubled disk write per frame. v1.1 widens the panel toggle to "Export density + temperature per frame."~~
+
+*Superseded by Priority 1.14 (Unified VDB recording UX), which subsumes per-frame temperature export via a single recording toggle that writes density + temperature synchronously to a per-run subdirectory with metadata. Retained here for historical reference of the original narrower scope.*
 
 ## Priority 1.5 — GPU isosurface render alternative
 
@@ -71,3 +73,20 @@ The thermal observation during Phase 8 visual verification (RX 6800 XT fans maxe
 ## Priority 1.13 — Re-evaluate default grid tier from 256³ to 192³
 
 Phase 8 testing surfaced that 256³ runs significantly slower than 192³ on the RX 6800 XT, and the visual quality difference is modest for interactive exploration — the portfolio hero render uses offline Blender Cycles anyway, where solver tier is irrelevant. Consider making 192³ the default tier in the SMOKE_PRESETS / tier dropdown, 256³ the "high quality" tier, and 384³ the stretch tier with the existing degradation warning. v1.1 polish, not a defect. Estimated effort: trivial (one-line constant flip + dropdown label reshuffle).
+
+## Priority 1.14 — Unified VDB recording UX (category-architect work)
+
+The current capture flow has two independent toggles: "Export VDB density per frame" (continuous) and "Export current temperature snapshot" (one-shot). This produces unpaired density/temperature files at different frame indices, which is ergonomically wrong for Blender Cycles consumption where the black-body emission shader needs spatially correlated temperature and density.
+
+Proposed redesign (category-architect scope):
+
+- Replace both controls with a single "Record VDB sequence" checkbox in the State panel.
+- When toggled ON: auto-create a new subdirectory `vdb_export/run_NNNN/` (NNNN auto-incremented from highest existing). Write a `recording.json` metadata file with the preset name, all RuntimeState parameters, grid tier, sim commit SHA (build-time embedded), and start timestamp.
+- Every render frame while toggled ON: synchronously write `density_NNNN.vdb` AND `temperature_NNNN.vdb` to the run subdirectory, with NNNN starting at 0000 for the first recorded frame and counting up.
+- When toggled OFF: update `recording.json` with end timestamp and frame count. Display "Last recording: run_NNNN/ (X frames)" in the State panel until the next toggle-on.
+- The existing "Export current temperature snapshot" button is removed (subsumed).
+- Lazy directory creation — no empty directories for runs that never started.
+
+This was identified by the repo architect during Phase 8's hero-render exploration. The bad ergonomics blocked end-to-end Blender validation in the Phase 8 session itself, which is why the validation step was deferred to category-architect scope (alongside the hero render aesthetic itself). The recording UX fix is a prerequisite to comfortable iterative hero-render work.
+
+Estimated effort: 2–4 hours of category-architect work (panel UX + per-frame write coordination + `recording.json` scaffolding + auto-numbered subdir logic).

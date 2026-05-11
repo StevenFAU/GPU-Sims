@@ -21,7 +21,23 @@ if(GPU_SIMS_USE_OPENVDB)
     find_package(OpenVDB CONFIG)
     if(NOT TARGET OpenVDB::openvdb)
         # Fallback: try the older module-based find.
+        # Debian/Ubuntu's libopenvdb-dev ships FindOpenVDB.cmake under
+        # /usr/lib/<multi-arch-triple>/cmake/OpenVDB/, which is not on
+        # CMake's default MODULE search path. Hint it explicitly via a
+        # block-scoped append to CMAKE_MODULE_PATH, then restore the
+        # variable so this hint does not leak to other find_package
+        # MODULE calls later in the configure.
+        #
+        # On non-Debian distros where CMAKE_LIBRARY_ARCHITECTURE is
+        # empty, the appended path becomes /usr/lib//cmake/OpenVDB
+        # which is harmless — CMake silently ignores non-existent
+        # entries in CMAKE_MODULE_PATH and falls through to its
+        # built-in module search.
+        set(_gpusims_saved_module_path "${CMAKE_MODULE_PATH}")
+        list(APPEND CMAKE_MODULE_PATH
+             "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/OpenVDB")
         find_package(OpenVDB MODULE)
+        set(CMAKE_MODULE_PATH "${_gpusims_saved_module_path}")
     endif()
     if(NOT TARGET OpenVDB::openvdb)
         message(FATAL_ERROR

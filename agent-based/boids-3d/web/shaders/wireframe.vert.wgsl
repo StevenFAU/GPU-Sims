@@ -17,7 +17,7 @@ struct CameraUniforms {
 
 @group(0) @binding(0) var<uniform> camera: CameraUniforms;
 
-const H: f32 = 16.0;     // KEEP IN SYNC WITH main.ts BOX_HALF_EXTENT
+const H: f32 = 40.0;     // KEEP IN SYNC WITH main.ts BOX_HALF_EXTENT
 
 fn edge_vertex(idx: u32) -> vec3<f32> {
     // 8 corner labels:

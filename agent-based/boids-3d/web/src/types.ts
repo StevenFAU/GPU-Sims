@@ -1,7 +1,7 @@
 import type { PresetName } from './presets.js';
 
 /** Discrete agent-count tier identifier. */
-export type AgentCountTier = '25k' | '50k' | '75k' | '100k';
+export type AgentCountTier = '5k' | '10k' | '25k' | '50k' | '75k' | '100k';
 
 /** Predator hunting strategy. Mutually exclusive runtime mode. */
 export type PredatorMode = 'nearest-prey' | 'stochastic-prey' | 'flock-center';

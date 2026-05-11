@@ -1,6 +1,6 @@
 # Boids 3D
 
-Reynolds 1987 multi-species 3D flocking with leader attractors and dynamic predators, running entirely on the GPU via WebGPU. 50,000 boids and 500 predators by default; a 100k+1k hero tier is available in the dropdown for users with stronger hardware.
+Reynolds 1987 multi-species 3D flocking with leader attractors and dynamic predators, running entirely on the GPU via WebGPU. 10,000 boids and 100 predators by default; a 100k+1k hero tier is available in the dropdown for users with stronger hardware.
 
 [Live demo](https://stevenfau.github.io/GPU-Sims/boids-3d/) (requires a WebGPU-enabled browser).
 
@@ -44,8 +44,10 @@ The dropdown selects how many boids and predators run. Lower tiers are smoother 
 
 | Tier | Boids | Predators | Hardware target |
 |---|---|---|---|
-| 25k | 25,000 | 250 | Integrated GPU floor (Intel Iris Xe, M-series MacBook Air) |
-| **50k** (default) | 50,000 | 500 | Discrete GPU 60 fps target (RX 6800 XT, RTX 2080 Ti, M-series Pro/Max) |
+| 5k | 5,000 | 50 | Integrated GPU floor; weakest laptops |
+| **10k** (default) | 10,000 | 100 | Comfortable on virtually any WebGPU-capable device |
+| 25k | 25,000 | 250 | Mid-tier discrete GPU comfortable |
+| 50k | 50,000 | 500 | Discrete GPU 60 fps target (RX 6800 XT, RTX 2080 Ti, M-series Pro/Max) |
 | 75k | 75,000 | 750 | Mid stretch |
 | 100k | 100,000 | 1,000 | Hero tier; 6800 XT comfortable at ~50 fps; sustained <30 fps logs a console warning |
 

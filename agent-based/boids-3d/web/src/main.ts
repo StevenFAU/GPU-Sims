@@ -57,10 +57,10 @@ const HMR_BG_FRAG          = 'shaders/background.frag.wgsl';
 // World layout constants. CHANGES TO THESE PROPAGATE INTO EVERY SHADER —
 // modify `params` uniform layout and shader constants together.
 // ---------------------------------------------------------------------------
-const BOX_HALF_EXTENT = 16.0;       // Box is [-16, 16]^3, edge length 32.
+const BOX_HALF_EXTENT = 40.0;       // Box is [-40, 40]^3, edge length 80.
 const CELL_SIZE       = 4.0;        // = max(allNeighborhoodRadii); see § 2.6.
-const GRID_DIM        = 8;          // 32u / 4u = 8 cells per axis.
-const CELL_COUNT      = GRID_DIM * GRID_DIM * GRID_DIM;     // 512
+const GRID_DIM        = 20;         // 80u / 4u = 20 cells per axis.
+const CELL_COUNT      = GRID_DIM * GRID_DIM * GRID_DIM;     // 8000
 const CELL_PREFIX_BLOCK_SIZE = 256; // multi-block scan workgroup size
 
 // ---------------------------------------------------------------------------
@@ -82,6 +82,8 @@ const DEFAULT_SEED         = 0xB01D5;
 // the hero stretch with degradation contract per § 2.6.
 // ---------------------------------------------------------------------------
 const AGENT_COUNT_TIERS = {
+    '5k':   { boids:   5_000, predators:   50 },
+    '10k':  { boids:  10_000, predators:  100 },
     '25k':  { boids:  25_000, predators:  250 },
     '50k':  { boids:  50_000, predators:  500 },
     '75k':  { boids:  75_000, predators:  750 },
@@ -97,7 +99,7 @@ const MAX_ENTITIES  = MAX_BOIDS + MAX_PREDATORS;
 // vantage outside the box, giving the user an immediate aerial view of the
 // scene on first load.
 // ---------------------------------------------------------------------------
-const INITIAL_CAMERA_POSITION: [number, number, number] = [22, 16, 22];
+const INITIAL_CAMERA_POSITION: [number, number, number] = [55, 40, 55];
 const INITIAL_CAMERA_TARGET:   [number, number, number] = [ 0,  0,  0];
 const INITIAL_FOV_DEG = 55;
 
@@ -105,7 +107,7 @@ function defaultRuntime(): Runtime {
     const initial = PRESETS['Cohesive Flock'];
     return {
         presetName:        'Cohesive Flock',
-        agentCountTier:    '50k',
+        agentCountTier:    '10k',
 
         separationRadius:  initial.separationRadius,
         separationWeight:  initial.separationWeight,
@@ -192,8 +194,8 @@ async function main(): Promise<void> {
     camera.position  = INITIAL_CAMERA_POSITION;
     camera.fovDeg    = INITIAL_FOV_DEG;
     camera.near      = 0.1;
-    camera.far       = 200.0;
-    camera.moveSpeed = 8.0;
+    camera.far       = 500.0;
+    camera.moveSpeed = 20.0;
     camera.lookSpeed = 0.18;
     camera.lookAt(INITIAL_CAMERA_TARGET[0], INITIAL_CAMERA_TARGET[1], INITIAL_CAMERA_TARGET[2]);
 
@@ -884,10 +886,10 @@ async function main(): Promise<void> {
     reynoldsFolder.addNumber(rt, 'alignmentWeight',  0.0, 5.0, 0.05).name('Alignment weight').onChange(onCustomTouch);
     reynoldsFolder.addNumber(rt, 'cohesionRadius',   0.1, 4.0, 0.05).name('Cohesion radius').onChange(onCustomTouch);
     reynoldsFolder.addNumber(rt, 'cohesionWeight',   0.0, 5.0, 0.05).name('Cohesion weight').onChange(onCustomTouch);
-    reynoldsFolder.addNumber(rt, 'boidMaxSpeed',     0.5, 6.0, 0.05).name('Max speed').onChange(onCustomTouch);
+    reynoldsFolder.addNumber(rt, 'boidMaxSpeed',     0.5, 8.0, 0.05).name('Max speed').onChange(onCustomTouch);
 
     const leaderFolder = panel.addFolder('Leaders');
-    leaderFolder.addNumber(rt, 'leaderInfluenceRadius', 0.5, 4.0, 0.05).name('Influence radius').onChange(onCustomTouch);
+    leaderFolder.addNumber(rt, 'leaderInfluenceRadius', 0.5, 12.0, 0.05).name('Influence radius').onChange(onCustomTouch);
     leaderFolder.addNumber(rt, 'leaderStrength',        0.0, 5.0, 0.05).name('Strength').onChange(onCustomTouch);
     leaderFolder.addButton('Clear all leaders', () => { rt.leaders = []; uploadLeaders(); });
 
@@ -907,9 +909,9 @@ async function main(): Promise<void> {
             { label: 'Flock center',    value: 'flock-center'    },
         ],
     });
-    predatorFolder.addNumber(rt, 'predatorFleeRadius',      0.2, 4.0, 0.05).name('Flee radius').onChange(onCustomTouch);
-    predatorFolder.addNumber(rt, 'predatorFleeStrength',    0.0, 8.0, 0.1).name('Flee strength').onChange(onCustomTouch);
-    predatorFolder.addNumber(rt, 'predatorDetectionRadius', 0.2, 4.0, 0.05).name('Detection radius').onChange(onCustomTouch);
+    predatorFolder.addNumber(rt, 'predatorFleeRadius',      0.5, 6.0, 0.05).name('Flee radius').onChange(onCustomTouch);
+    predatorFolder.addNumber(rt, 'predatorFleeStrength',    0.0, 12.0, 0.1).name('Flee strength').onChange(onCustomTouch);
+    predatorFolder.addNumber(rt, 'predatorDetectionRadius', 0.5, 6.0, 0.05).name('Detection radius').onChange(onCustomTouch);
     predatorFolder.addNumber(rt, 'predatorRePickFrames',    30,  300, 1).name('Re-pick frames (stochastic)').onChange(onCustomTouch);
     predatorFolder.addNumber(rt, 'predatorSpeedMul',        0.8, 2.5, 0.05).name('Speed multiplier').onChange(onCustomTouch);
 
@@ -924,7 +926,7 @@ async function main(): Promise<void> {
 
     const cameraFolder = panel.addFolder('Camera');
     cameraFolder.addNumber(camera, 'fovDeg',    20.0, 110.0, 1.0).name('FOV');
-    cameraFolder.addNumber(camera, 'moveSpeed', 1.0,  30.0,  0.5).name('Move speed');
+    cameraFolder.addNumber(camera, 'moveSpeed', 2.0,  75.0,  0.5).name('Move speed');
     cameraFolder.addNumber(camera, 'lookSpeed', 0.05, 0.5,   0.01).name('Look speed');
     cameraFolder.addButton('Reset camera', () => {
         camera.position = INITIAL_CAMERA_POSITION;
@@ -1161,7 +1163,7 @@ async function main(): Promise<void> {
 
         if (e.shiftKey) {
             // Remove nearest leader within 4.0 world-space units.
-            let bestIdx = -1, bestD = 4.0 * 4.0;
+            let bestIdx = -1, bestD = 10.0 * 10.0;
             for (let i = 0; i < rt.leaders.length; i++) {
                 const l = rt.leaders[i]!;
                 const dx = l.position[0] - hit.position[0];

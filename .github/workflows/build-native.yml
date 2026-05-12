@@ -42,6 +42,7 @@ jobs:
             vulkan-tools \
             vulkan-validationlayers \
             libopenvdb-dev \
+            libboost-iostreams-dev \
             spirv-tools \
             glslang-tools
 

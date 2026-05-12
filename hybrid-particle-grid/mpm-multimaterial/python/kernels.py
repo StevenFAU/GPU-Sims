@@ -22,15 +22,16 @@ calls are made.
 """
 
 # NOTE: deliberately NO `from __future__ import annotations`. Taichi 1.7.4's
-# @ti.kernel decorator reads argument annotations via isinstance() against
-# the actual annotation value; PEP 563 stringifies all annotations, which
-# causes Taichi to reject `ti.template()` arg annotations with
-# `TaichiSyntaxError: Invalid type annotation`. Verified against Taichi
-# 1.7.4 empirically. Other @ti.kernel-containing files in the repo
-# (examples/hello/main.py, common-py and sim tests/test_kernels.py) keep
-# `from __future__ import annotations` because their kernels use only
-# primitive-type annotations (float, int) which Taichi resolves correctly
-# from string form; only ti.template() requires the evaluated form.
+# @ti.kernel decorator reads argument annotations via isinstance() at
+# decoration time; PEP 563 stringifies all annotations, which causes Taichi
+# to reject ANY annotated arg (ti.template(), float, int — all of them)
+# with `TaichiSyntaxError: Invalid type annotation`. Verified empirically
+# against Taichi 1.7.4 with both ti.template() and primitive annotations.
+# The constraint applies to every file that defines @ti.kernel functions
+# with annotated arguments: this file, examples/hello/main.py, and
+# tests/test_kernels.py in both common-py and the sim. Files whose @ti.kernel
+# functions take zero args (nested inside test functions, etc.) are
+# technically safe today but defensively also drop the future import.
 
 from typing import Final
 

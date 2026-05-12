@@ -25,7 +25,16 @@ Run:
   python main.py
 """
 
-from __future__ import annotations
+# NOTE: deliberately NO `from __future__ import annotations`. Taichi 1.7.4's
+# @ti.kernel decorator rejects string-form argument annotations at decoration
+# time (TaichiSyntaxError from kernel_impl.py:631 extract_arguments). The
+# `step` kernel below has `dt: float, gravity_y: float` args; under PEP 563
+# those annotations become strings and Taichi can't introspect them. The
+# constraint applies to ALL annotated-arg kernels (not just ti.template()
+# ones — verified empirically against Taichi 1.7.4 with primitive annotations
+# post-Phase-9). See the same comment in
+# hybrid-particle-grid/mpm-multimaterial/python/kernels.py for the canonical
+# banking of this constraint.
 
 from pathlib import Path
 from typing import Final

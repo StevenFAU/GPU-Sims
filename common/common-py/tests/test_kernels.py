@@ -12,7 +12,11 @@ Or directly:
     python tests/test_kernels.py
 """
 
-from __future__ import annotations
+# NOTE: deliberately NO `from __future__ import annotations`. Same Taichi
+# 1.7.4 constraint as the sim's kernels.py — @ti.kernel rejects string-form
+# argument annotations. The current test kernels (init, svd_smoke, fill)
+# have no args so they wouldn't trigger today, but adding an annotated arg
+# to any future test kernel would silently break module import. Defensive.
 
 import numpy as np
 import taichi as ti

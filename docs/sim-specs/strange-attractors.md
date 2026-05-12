@@ -200,8 +200,8 @@ HPC stretch (Stack C native variant — deferred).
 ## 10. Engineering risks
 
 - **Browser GPU memory limits.** WebGPU's per-allocation cap is roughly
-  512 MB on most browsers as of mid-2026. Two 4K rgba16float ping-pong
-  + bloom + 32 MB position buffer is well under that, but a future user
+  512 MB on most browsers as of mid-2026. Two 4K rgba16float ping-pong +
+  bloom + 32 MB position buffer is well under that, but a future user
   on an exotic browser or display could hit it. Mitigation: DPR cap at 2.0
   is enforced; if needed, fall back to half-res rendering with a config flag.
 - **Substep count mismatched to attractor stiffness.** Lorenz at 16 substeps

@@ -80,7 +80,7 @@ Rather than a unique toolchain per sim, the repo standardizes on four stacks. Mo
 **Tooling:** Python 3.11+, Taichi (Vulkan backend on AMD desktop, CUDA backend on lab PC), JAX or CuPy for research-mode CA work, PyTorch for neural CA training.
 **Use for:** MPM (the canonical Taichi MLS-MPM demo and extensions), Lenia FFT-convolution research and parameter sweeps, neural CA training (deployment is in Stack B/C).
 
-### Stack assignments are documented per sim (see §6). Stack overrides are allowed with cause; the cause goes in the per-sim spec.
+### Stack assignments are documented per sim (see §6). Stack overrides are allowed with cause; the cause goes in the per-sim spec
 
 ---
 

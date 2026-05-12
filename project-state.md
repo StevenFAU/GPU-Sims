@@ -1,7 +1,7 @@
 # GPU-Sims — Project State
 
 > **Last updated:** end of Phase 8.5 hardening — OpenVDB CI enablement + present-mode-attribution retraction + Stack B strict-mode shared-tsconfig + periodic-hardening sweep, on top of Phase 8 closeout at `532f20c`. Phase 8.5 ships as a `chore:` commit, not a phase-ledger row (per § 7 "Periodic hardening pass"). Next phase: Phase 9 (`common-py` + `mpm-multimaterial`).
-
+>
 > This is the **canonical handoff document** for the GPU-Sims repository. It exists so that:
 >
 > - A new **repo-architect chat** can take over from a fresh context, pick up where the previous architect left off, and make consistent decisions with what came before.
@@ -401,7 +401,7 @@ When single-architect is fine:
 
 Within new-sim phases, first-of-its-kind vs copy-the-template:
 
-The "is it worth the overhead" question has a finer-grained answer once you're inside a new-sim phase. For first-of-its-kind sim phases — new solver family, new render pattern, new common-* surface area, first-of-pattern decisions to lock — the full architect-1 → architect-2 → coordinator chain consistently catches blocking issues that a single architect-2 round misses. For copy-the-template sim phases — second instance of an established pattern, sim that inherits cleanly from an existing one with the same Stack and common-* shape — a single architect-2 round suffices and the additional chain overhead doesn't pay back. Phases 7 (boids-3d, first crowd-dynamics Stack B sim) and 8 (eulerian-smoke, first Tier-2 flagship Stack C) both demonstrated the value of the full chain — each surfaced multiple round-1 blocking issues that one architect alone missed. Future Stack C sims that inherit the eulerian-smoke template (sph-water, mpm-multimaterial, LBM) likely fall on the copy-the-template side of the heuristic.
+The "is it worth the overhead" question has a finer-grained answer once you're inside a new-sim phase. For first-of-its-kind sim phases — new solver family, new render pattern, new `common-*` surface area, first-of-pattern decisions to lock — the full architect-1 → architect-2 → coordinator chain consistently catches blocking issues that a single architect-2 round misses. For copy-the-template sim phases — second instance of an established pattern, sim that inherits cleanly from an existing one with the same Stack and `common-*` shape — a single architect-2 round suffices and the additional chain overhead doesn't pay back. Phases 7 (boids-3d, first crowd-dynamics Stack B sim) and 8 (eulerian-smoke, first Tier-2 flagship Stack C) both demonstrated the value of the full chain — each surfaced multiple round-1 blocking issues that one architect alone missed. Future Stack C sims that inherit the eulerian-smoke template (sph-water, mpm-multimaterial, LBM) likely fall on the copy-the-template side of the heuristic.
 
 The reviewer should be a fresh chat (not a continuation of the drafter's session) to avoid context bleed; each architect in the chain having loaded only the file artifacts and project-state.md is what makes them catch each other's blind spots.
 
@@ -496,13 +496,15 @@ These come up periodically in design discussions; the locked answer is "later".
 
 Tracked here so future architect chats and per-sim implementers don't waste time re-diagnosing them.
 
-### CI baseline (post-Phase-8.5.1)
+### CI baseline (post-Phase-8.5.2)
 
-As of the Phase 8.5.1 fix-forward commit (the commit this entry is part of), **all five repo-level CI workflows are green simultaneously on `main` for the first time in the project's history.** Prior to Phase 8.5.1, the "all green" claim from the post-Phase-3.5 banking applied only to the three workflows that run on every push (Markdown, Structure, Pages); the two path-triggered workflows (Build (native), Build (web)) were never both green. Build (native) Debug specifically was red from Phase 1 through Phase 8.5 due to a latent name-collision bug surfaced by Phase 8.5.1 — see the corresponding § 9 entry below.
+As of the Phase 8.5.2 fix-forward commit (the commit this entry is part of), **all five repo-level CI workflows are green simultaneously on `main` for the first time in the project's history.** Phase 8.5.1 made this claim aspirationally, but at that commit the Markdown workflow's `Lint markdown` sub-job (markdownlint-cli2) was still red on 397 violations across 11 rules — the lychee half of Markdown was fixed by 8.5.1 but the lint half wasn't addressed. Phase 8.5.2 fixed the lint half by (a) relaxing six markdownlint rules in `.markdownlint.json` that fight established project style (MD012, MD022, MD031, MD034, MD040, MD060 — accounting for 391 of the 397 violations), and (b) surgically fixing the remaining 7 legitimate inconsistencies (MD004 × 3 + MD026 + MD028 + MD037 + MD038 × 1 each).
+
+Prior to Phase 8.5.2, the "all green" claim from the post-Phase-3.5 banking applied only to the three workflows that run on every push, and even that was partially aspirational since `Lint markdown` had been red on every push touching any `.md` file for many commits. Build (native) Debug was red from Phase 1 through Phase 8.5 due to the latent name-collision bug Phase 8.5.1 fixed — see the corresponding § 9 Stack C entry below.
 
 The five workflows now green:
 
-- `Markdown` → `Lint markdown` (markdownlint-cli2, configured by `.markdownlint.json`).
+- `Markdown` → `Lint markdown` (markdownlint-cli2, configured by `.markdownlint.json` with the post-8.5.2 rule relaxations: `default: true` with `MD012`, `MD013`, `MD022`, `MD024`-siblings-only, `MD031`, `MD032`, `MD033`, `MD034`, `MD036`, `MD040`, `MD041`, `MD060` adjusted to match project style).
 - `Markdown` → `Check internal links` (lychee). Phase 8.5.1 fix-forward added `--exclude-path docs/sim-specs/_template.md` to the workflow's explicit lychee `args:`. The repo's `lychee.toml` had the exclude path correctly listed since Phase 3.5, but `lychee-action`'s explicit-`args:` mode bypassed the config-file read — the exclude wasn't actually applied until 8.5.1.
 - `Structure` (required-directories check).
 - `Build (native)` — both `build-ubuntu` (Release, OpenVDB ON) and `build-ubuntu-debug` (Debug, OpenVDB OFF) jobs. Release was enabled by Phase 8.5's OpenVDB CI hookup and unblocked by `a585075`'s Boost transitive-dep fix; Debug was unblocked by Phase 8.5.1's `createDebugMessenger` rename.

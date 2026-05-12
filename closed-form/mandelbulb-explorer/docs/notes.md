@@ -72,8 +72,8 @@ makes the slider feel more like a paintbrush.
 
 For future architect chats, banking the lesson:
 
-- § 12.1 anchor was wrong. Spec expected a 10-leading-space command line
-  (`          npm run build --workspace=@gpusims/strange-attractors-web`),
+- § 12.1 anchor was wrong. Spec expected a 10-space-indented command line
+  (`npm run build --workspace=@gpusims/strange-attractors-web`),
   but the as-built `deploy-pages.yml` uses per-step `name:` / `run:`
   blocks where each workspace is its own step.
 - § 12.2 anchor was wrong. Spec expected

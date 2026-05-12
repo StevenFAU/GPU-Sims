@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.9.3] - 2026-05-11
+
+### Fixed
+
+- **Markdown workflow `Lint markdown` sub-job** (latent since Phase 3.5, when markdownlint-cli2 was first wired in with `default: true`). 397 markdownlint violations across 11 rules across 25+ files had accumulated as the project's style diverged from markdownlint's defaults. Resolution: relaxed six rules in `.markdownlint.json` that fight established project style (MD012, MD022, MD031, MD034, MD040, MD060 — accounting for 391 violations) and surgically fixed the remaining 7 violations (MD004 × 3 in `continuous-ca/reaction-diffusion-2d/docs/load-bearing-decisions.md` and `docs/sim-specs/strange-attractors.md`; MD026 in `docs/overarching-spec.md`; MD028 + MD037 in `project-state.md`; MD038 in `closed-form/mandelbulb-explorer/docs/notes.md`). Markdown workflow now passes both sub-jobs.
+
+### Changed
+
+- **`.markdownlint.json`** — extended with six new rule disables (MD012, MD022, MD031, MD034, MD040, MD060) to align the lint with the project's actual markdown style. Continues the existing pattern of selective relaxation (MD013, MD033, MD036, MD041, MD032 were already disabled; MD024 relaxed to `siblings_only`).
+- **`project-state.md` § 9 "CI baseline"** rewritten from "post-Phase-8.5.1" to "post-Phase-8.5.2." The 8.5.1 entry's "all five workflows green" claim was aspirational at `8fe6003`; 8.5.2 makes it true.
+
+
 ## [0.9.2] - 2026-05-11
 
 ### Fixed

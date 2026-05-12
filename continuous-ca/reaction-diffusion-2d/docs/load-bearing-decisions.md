@@ -6,8 +6,7 @@ follow-up polish work.
 
 ## Locked
 
-- **Stack A artifact is multi-file.** `shadertoy/BufA.glsl` + `shadertoy/Image.glsl`
-  + `shadertoy/README.md` together. **First multi-buffer Stack A artifact in
+- **Stack A artifact is multi-file.** `shadertoy/BufA.glsl` + `shadertoy/Image.glsl` + `shadertoy/README.md` together. **First multi-buffer Stack A artifact in
   the repo** — extends Phase 4's single-file convention to sims with persistent
   state. Future multi-buffer ports (physarum, neural-CA) inherit this layout.
 - **Compute pipeline for the RD update step.** `ComputePipeline.create` from
@@ -15,8 +14,7 @@ follow-up polish work.
   First Stack B sim with compute ping-pong on persistent 2D state.
 - **Storage textures `rg32float` (R = u, G = v).** Two ping-pong textures.
   FP32 precision; matches Phase 3's per-field FP32 in C++.
-- **Read access via sampled-texture binding** (`unfilterable-float`) + NEAREST
-  + REPEAT sampler. Periodic BCs come for free from REPEAT addressing.
+- **Read access via sampled-texture binding** (`unfilterable-float`) + NEAREST + REPEAT sampler. Periodic BCs come for free from REPEAT addressing.
 - **Manual bilinear in the visualize fragment** (4 textureLoad + lerp). `rg32float`
   is not in baseline filterable; manual bilinear avoids the `'float32-filterable'`
   optional feature and keeps display smooth at any canvas scale.

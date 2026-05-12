@@ -272,10 +272,89 @@ def main() -> None:
         "real" if VdbWriter.is_available() else "stub",
     )
 
+    def do_save_state() -> None:
+        # Per tier1-capture-format-reference.md § 1: single sim-namespaced
+        # meta wrapper. Tier-3's MPM module activates on this exact key.
+        state_writer.begin_frame(frame_idx)
+        state_writer.set_meta("mpmMultimaterial", {
+            "camera": camera.to_json(),
+            "gravity": gravity,
+            "preset": preset_names[curr_preset_idx],
+            "tier_idx": tier_idx,
+            "n_particles": state.n_particles,
+            "n_grid": state.n_grid,
+            "material_colors": material_colors,
+            "user_emitter_count": user_emitter_count,
+            "place_material": place_material,
+        })
+        # Per-buffer schema follows § 2-3 of the capture-format reference.
+        # `count` is total scalar elements; `shape` is logical layout.
+        # For (N, 3) vec3 buffers: count = N*3, shape = [N, 3], format = r32f.
+        # For (N,) scalar buffers:  count = N,   shape = [N],   format = r32f/r32i.
+        # For (N, 3, 3) matrix buffers: count = N*9, shape = [N, 3, 3], format = r32f.
+        N = state.n_particles
+        state_writer.save_buffer("x",  state.x.to_numpy().astype(np.float32),  shape=[N, 3])
+        state_writer.save_buffer("v",  state.v.to_numpy().astype(np.float32),  shape=[N, 3])
+        state_writer.save_buffer("F",  state.F.to_numpy().astype(np.float32),  shape=[N, 3, 3])
+        state_writer.save_buffer("C",  state.C.to_numpy().astype(np.float32),  shape=[N, 3, 3])
+        state_writer.save_buffer("Jp", state.Jp.to_numpy().astype(np.float32), shape=[N])
+        state_writer.save_buffer("materials", state.materials.to_numpy().astype(np.int32), shape=[N])
+        state_writer.save_buffer("used",      state.used.to_numpy().astype(np.int32),      shape=[N])
+        state_writer.end_frame()
+        log.info("saved capture at frame=%d → %s", frame_idx, state_writer.current_dir())
+
+    def do_load_state() -> None:
+        nonlocal gravity, tier_idx, state, frame_idx
+        latest = state_reader.find_latest()
+        if latest is None:
+            log.warn("no captures to load")
+            return
+        meta_blob = state_reader.load_meta(latest)
+        # Unwrap the sim-namespaced meta. Captures from older Phase-9
+        # drafts that used flat top-level keys won't have `mpmMultimaterial`;
+        # fall back to top-level lookup with a warning so old captures
+        # remain partially usable during the transition.
+        if "mpmMultimaterial" in meta_blob.get("meta", {}):
+            sim_meta = meta_blob["meta"]["mpmMultimaterial"]
+        else:
+            log.warn(
+                "capture at %s lacks 'mpmMultimaterial' meta wrapper; "
+                "falling back to flat top-level keys (legacy format).",
+                latest,
+            )
+            sim_meta = meta_blob.get("meta", {})
+        cam_json = sim_meta.get("camera")
+        if cam_json is not None:
+            camera.from_json(cam_json)
+        saved_gravity = sim_meta.get("gravity", list(GRAVITY_DEFAULT))
+        gravity = [float(g) for g in saved_gravity]
+        saved_tier_idx = int(sim_meta.get("tier_idx", tier_idx))
+        if saved_tier_idx != tier_idx:
+            log.warn(
+                "loaded capture is tier=%d; current tier=%d; reallocating fields",
+                saved_tier_idx, tier_idx,
+            )
+            tier_idx = saved_tier_idx
+            _, n_particles_new, n_grid_new, _ = TIERS[tier_idx]
+            state = SimState(n_particles=n_particles_new, n_grid=n_grid_new)
+        state.x.from_numpy(state_reader.load_buffer_reshaped(latest, "x").astype(np.float32))
+        state.v.from_numpy(state_reader.load_buffer_reshaped(latest, "v").astype(np.float32))
+        state.F.from_numpy(state_reader.load_buffer_reshaped(latest, "F").astype(np.float32))
+        state.C.from_numpy(state_reader.load_buffer_reshaped(latest, "C").astype(np.float32))
+        state.Jp.from_numpy(state_reader.load_buffer(latest, "Jp").astype(np.float32))
+        state.materials.from_numpy(state_reader.load_buffer(latest, "materials").astype(np.int32))
+        state.used.from_numpy(state_reader.load_buffer(latest, "used").astype(np.int32))
+        frame_idx = int(meta_blob.get("frame", 0))
+        log.info("loaded capture from %s (frame=%d)", latest, frame_idx)
+
     while window.running:
         # ------------------------------ input ----------------------------
         if window.get_event(ti.ui.PRESS):
             ev = window.event
+            # Diagnostic log — banks the actual Taichi event-key strings observed
+            # at runtime. Remove or demote to debug-level once F-key behavior is
+            # confirmed against the user's hardware/backend.
+            log.info("key event: %r", ev.key)
             if ev.key == ti.ui.ESCAPE:
                 window.running = False
             elif ev.key == "r":
@@ -288,78 +367,10 @@ def main() -> None:
             elif ev.key == "m":
                 place_material = (place_material + 1) % 3
                 log.info("place material → %s", MATERIAL_NAMES[place_material])
-            elif ev.key == "f5":
-                # Per tier1-capture-format-reference.md § 1: single sim-namespaced
-                # meta wrapper. Tier-3's MPM module activates on this exact key.
-                state_writer.begin_frame(frame_idx)
-                state_writer.set_meta("mpmMultimaterial", {
-                    "camera": camera.to_json(),
-                    "gravity": gravity,
-                    "preset": preset_names[curr_preset_idx],
-                    "tier_idx": tier_idx,
-                    "n_particles": state.n_particles,
-                    "n_grid": state.n_grid,
-                    "material_colors": material_colors,
-                    "user_emitter_count": user_emitter_count,
-                    "place_material": place_material,
-                })
-                # Per-buffer schema follows § 2-3 of the capture-format reference.
-                # `count` is total scalar elements; `shape` is logical layout.
-                # For (N, 3) vec3 buffers: count = N*3, shape = [N, 3], format = r32f.
-                # For (N,) scalar buffers:  count = N,   shape = [N],   format = r32f/r32i.
-                # For (N, 3, 3) matrix buffers: count = N*9, shape = [N, 3, 3], format = r32f.
-                N = state.n_particles
-                state_writer.save_buffer("x",  state.x.to_numpy().astype(np.float32),  shape=[N, 3])
-                state_writer.save_buffer("v",  state.v.to_numpy().astype(np.float32),  shape=[N, 3])
-                state_writer.save_buffer("F",  state.F.to_numpy().astype(np.float32),  shape=[N, 3, 3])
-                state_writer.save_buffer("C",  state.C.to_numpy().astype(np.float32),  shape=[N, 3, 3])
-                state_writer.save_buffer("Jp", state.Jp.to_numpy().astype(np.float32), shape=[N])
-                state_writer.save_buffer("materials", state.materials.to_numpy().astype(np.int32), shape=[N])
-                state_writer.save_buffer("used",      state.used.to_numpy().astype(np.int32),      shape=[N])
-                state_writer.end_frame()
-                log.info("saved capture at frame=%d", frame_idx)
-            elif ev.key == "f9":
-                latest = state_reader.find_latest()
-                if latest is None:
-                    log.warn("no captures to load")
-                else:
-                    meta_blob = state_reader.load_meta(latest)
-                    # Unwrap the sim-namespaced meta. Captures from older Phase-9
-                    # drafts that used flat top-level keys won't have `mpmMultimaterial`;
-                    # fall back to top-level lookup with a warning so old captures
-                    # remain partially usable during the transition.
-                    if "mpmMultimaterial" in meta_blob.get("meta", {}):
-                        sim_meta = meta_blob["meta"]["mpmMultimaterial"]
-                    else:
-                        log.warn(
-                            "capture at %s lacks 'mpmMultimaterial' meta wrapper; "
-                            "falling back to flat top-level keys (legacy format).",
-                            latest,
-                        )
-                        sim_meta = meta_blob.get("meta", {})
-                    cam_json = sim_meta.get("camera")
-                    if cam_json is not None:
-                        camera.from_json(cam_json)
-                    saved_gravity = sim_meta.get("gravity", list(GRAVITY_DEFAULT))
-                    gravity = [float(g) for g in saved_gravity]
-                    saved_tier_idx = int(sim_meta.get("tier_idx", tier_idx))
-                    if saved_tier_idx != tier_idx:
-                        log.warn(
-                            "loaded capture is tier=%d; current tier=%d; reallocating fields",
-                            saved_tier_idx, tier_idx,
-                        )
-                        tier_idx = saved_tier_idx
-                        _, n_particles_new, n_grid_new, _ = TIERS[tier_idx]
-                        state = SimState(n_particles=n_particles_new, n_grid=n_grid_new)
-                    state.x.from_numpy(state_reader.load_buffer_reshaped(latest, "x").astype(np.float32))
-                    state.v.from_numpy(state_reader.load_buffer_reshaped(latest, "v").astype(np.float32))
-                    state.F.from_numpy(state_reader.load_buffer_reshaped(latest, "F").astype(np.float32))
-                    state.C.from_numpy(state_reader.load_buffer_reshaped(latest, "C").astype(np.float32))
-                    state.Jp.from_numpy(state_reader.load_buffer(latest, "Jp").astype(np.float32))
-                    state.materials.from_numpy(state_reader.load_buffer(latest, "materials").astype(np.int32))
-                    state.used.from_numpy(state_reader.load_buffer(latest, "used").astype(np.int32))
-                    frame_idx = int(meta_blob.get("frame", 0))
-                    log.info("loaded capture from %s (frame=%d)", latest, frame_idx)
+            elif str(ev.key).lower() == "f5":
+                do_save_state()
+            elif str(ev.key).lower() == "f9":
+                do_load_state()
 
         # LMB place — sample-and-edge-trigger via window.is_pressed
         # (Taichi GGUI doesn't fire LMB-press events the way it does keys; poll instead.)
@@ -484,7 +495,7 @@ def main() -> None:
                     state.colors, state.materials,
                     np.array(material_colors, dtype=np.float32),
                 )
-        with panel.folder("Export", 0.02, 0.79, 0.22, 0.18) as f:
+        with panel.folder("Export", 0.02, 0.79, 0.22, 0.20) as f:
             export_vdb_enabled = f.checkbox(
                 f"VDB density ({'real' if VdbWriter.is_available() else 'stub'})",
                 export_vdb_enabled,
@@ -496,6 +507,13 @@ def main() -> None:
                 init_volumes(state, preset_list[curr_preset_idx][1])
                 user_emitter_count = 0
                 frame_idx = 0
+            mpm_save_clicked = f.button("save state (F5)")
+            mpm_load_clicked = f.button("load latest (F9)")
+
+        if mpm_save_clicked:
+            do_save_state()
+        if mpm_load_clicked:
+            do_load_state()
 
         # Capture-mode confirmation modal
         if pending_capture_mode_modal is not None:

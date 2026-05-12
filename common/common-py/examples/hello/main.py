@@ -139,6 +139,37 @@ def main() -> None:
     export_abc_enabled = False
     frame_idx = 0
 
+    def do_save_state() -> None:
+        state_writer.begin_frame(frame_idx)
+        state_writer.set_meta("helloPy", {
+            "camera": camera.to_json(),
+            "gravity_y": gravity_y,
+            "paused": paused,
+        })
+        state_writer.save_buffer("x", x.to_numpy().astype(np.float32), shape=[N_PARTICLES, 3])
+        state_writer.save_buffer("v", v.to_numpy().astype(np.float32), shape=[N_PARTICLES, 3])
+        state_writer.end_frame()
+        log.info("saved state at frame=%d → %s", frame_idx, state_writer.current_dir())
+
+    def do_load_state() -> None:
+        nonlocal gravity_y, frame_idx
+        latest = state_reader.find_latest()
+        if latest is None:
+            log.warn("no captures to load")
+            return
+        meta = state_reader.load_meta(latest)
+        sim_meta = meta.get("meta", {}).get("helloPy", meta.get("meta", {}))
+        cam_json = sim_meta.get("camera")
+        if cam_json is not None:
+            camera.from_json(cam_json)
+        gravity_y = float(sim_meta.get("gravity_y", GRAVITY_DEFAULT))
+        x_np = state_reader.load_buffer_reshaped(latest, "x").astype(np.float32)
+        v_np = state_reader.load_buffer_reshaped(latest, "v").astype(np.float32)
+        x.from_numpy(x_np)
+        v.from_numpy(v_np)
+        frame_idx = int(meta.get("frame", 0))
+        log.info("loaded state from %s (frame=%d)", latest, frame_idx)
+
     log.info(
         "hello-py started. N=%d, VDB available=%s, Alembic available=%s",
         N_PARTICLES,
@@ -150,6 +181,11 @@ def main() -> None:
         # ------------------------------ input ----------------------------
         if window.get_event(ti.ui.PRESS):
             ev = window.event
+            # Diagnostic log — banks the actual Taichi event-key strings observed
+            # at runtime. Remove or demote to debug-level once F-key behavior is
+            # confirmed against the user's hardware/backend (see Phase 9 retro
+            # banking for the "Taichi GGUI key constants are undocumented" gap).
+            log.info("key event: %r", ev.key)
             if ev.key == ti.ui.ESCAPE:
                 window.running = False
             elif ev.key == "r":
@@ -159,35 +195,10 @@ def main() -> None:
             elif ev.key == ti.ui.SPACE:
                 paused = not paused
                 log.info("paused=%s", paused)
-            elif ev.key == "f5":
-                # Single sim-namespaced meta wrapper per tier1-capture-format-reference.md § 1.
-                state_writer.begin_frame(frame_idx)
-                state_writer.set_meta("helloPy", {
-                    "camera": camera.to_json(),
-                    "gravity_y": gravity_y,
-                    "paused": paused,
-                })
-                state_writer.save_buffer("x", x.to_numpy().astype(np.float32), shape=[N_PARTICLES, 3])
-                state_writer.save_buffer("v", v.to_numpy().astype(np.float32), shape=[N_PARTICLES, 3])
-                state_writer.end_frame()
-                log.info("saved state at frame=%d", frame_idx)
-            elif ev.key == "f9":
-                latest = state_reader.find_latest()
-                if latest is None:
-                    log.warn("no captures to load")
-                else:
-                    meta = state_reader.load_meta(latest)
-                    sim_meta = meta.get("meta", {}).get("helloPy", meta.get("meta", {}))
-                    cam_json = sim_meta.get("camera")
-                    if cam_json is not None:
-                        camera.from_json(cam_json)
-                    gravity_y = float(sim_meta.get("gravity_y", GRAVITY_DEFAULT))
-                    x_np = state_reader.load_buffer_reshaped(latest, "x").astype(np.float32)
-                    v_np = state_reader.load_buffer_reshaped(latest, "v").astype(np.float32)
-                    x.from_numpy(x_np)
-                    v.from_numpy(v_np)
-                    frame_idx = int(meta.get("frame", 0))
-                    log.info("loaded state from %s (frame=%d)", latest, frame_idx)
+            elif str(ev.key).lower() == "f5":
+                do_save_state()
+            elif str(ev.key).lower() == "f9":
+                do_load_state()
 
         # ------------------------------ sim ------------------------------
         if not paused:
@@ -229,7 +240,7 @@ def main() -> None:
             if f.button("reset (R)"):
                 initialize_particles()
                 frame_idx = 0
-        with panel.folder("Export", 0.05, 0.24, 0.2, 0.18) as f:
+        with panel.folder("Export", 0.05, 0.24, 0.2, 0.22) as f:
             export_vdb_enabled = f.checkbox(
                 f"VDB ({'real' if VdbWriter.is_available() else 'stub'})",
                 export_vdb_enabled,
@@ -238,7 +249,15 @@ def main() -> None:
                 f"Alembic ({'real' if abc_writer is not None else 'stub'})",
                 export_abc_enabled,
             )
-            f.text("F5 save state / F9 load")
+            f.text("save / load:")
+            save_clicked = f.button("save state")
+            load_clicked = f.button("load latest")
+            f.text("(F5/F9 keys also try — may not fire on all backends)")
+
+        if save_clicked:
+            do_save_state()
+        if load_clicked:
+            do_load_state()
 
         window.show()
 

@@ -23,6 +23,22 @@ shape-locking choices; `notes.md` captures non-load-bearing followups.
 - **A100 hero-render animation pass.** Once A100 access is available, render
   the Mixed Sandbox preset at the 1M / 192^3 tier as a 4-second animation
   (120 frames @ 24 fps; ~10 hours of A100 Cycles rendering at 256 spp).
+- **1M @ 192³ stretch tier — stability investigation.** Phase 9's original
+  spec proposed 1 000 000 particles on a 192³ grid as the capture-mode
+  stretch tier. Visual verification on the RX 6800 XT showed particle-NaN
+  explosion on unpause. Root cause hypothesis: dt=2e-4 violates CFL at
+  192³ resolution (particles cross multiple grid cells per substep);
+  BOUND=3 is relatively thin at 192³ (1.6% of grid). Fix path: introduce
+  tier-dependent dt (`dt = DT_BASE * (96 / n_grid)` or similar scaling)
+  and consider scaling BOUND too. Banked v1.1; reintroduce 1M tier to
+  TIERS list once stable. Phase 9 ships 500k/128³ as the stretch tier
+  instead (stable at current dt).
+- **Substep count tuning vs. upstream.** Phase 9's SUBSTEPS_PER_FRAME=25
+  is 2.5× upstream mpm3d_ggui's typical ~10. Architect-1 chat drafted
+  this value without measuring against upstream. Reducing to 10 would
+  cut per-frame work 2.5× at the cost of sim time per visual frame
+  (effective sim slows). Polish item: tune substep count and dt
+  jointly so both visual sim speed and FPS are acceptable.
 
 ## Performance polish
 

@@ -228,19 +228,29 @@ deferral rationale; the natural sph-water phase becomes Alembic consumer #1.
 
 ## 8. Scale tiers
 
-| Tier | Particles | Grid | Target FPS | Interactive? |
-|---|---|---|---|---|
-| **Default** | 250 000 | 96³ | 60 fps on RX 6800 XT + Taichi Vulkan; 60 fps on RTX 2080 Ti + Taichi CUDA | yes |
-| **Mid** | 500 000 | 128³ | 30–60 fps; expect dips with mixed-material scenes | yes |
-| **Stretch** | 1 000 000 | 192³ | 5–15 fps | **no** — capture-mode-only |
+| Tier | Particles | Grid | Notes |
+|---|---|---|---|
+| **Default** | 128 000 | 64³ | matches canonical Taichi `mpm3d_ggui` upstream baseline; target 60 fps interactive |
+| **Mid** | 250 000 | 96³ | larger demo scenes; ~15-30 fps expected |
+| **Stretch (capture-mode)** | 500 000 | 128³ | offline-render frame capture; ~5-10 fps |
 
-The 1M tier shows a confirmation modal on selection ("This tier is for offline-render
-frame capture only. The simulation will run at 5–15 fps and the UI may stutter.
-Continue?") matching the eulerian-smoke 384³ stretch tier idiom.
+The capture-mode stretch tier shows a confirmation modal on selection
+("This tier is for offline-render frame capture only. The simulation will
+run at 5–15 fps and the UI may stutter. Continue?") matching the eulerian-smoke
+384³ stretch tier idiom.
 
-Performance numbers will be added per-tier on dev hardware (AMD RX 6800 XT
-desktop with Vulkan; RTX 2080 Ti lab PC with CUDA) once user-driven visual
-verification ships.
+**1M / 192³ tier deferred to v1.1.** The original Phase 9 spec proposed
+1 000 000 particles on a 192³ grid as the stretch tier. Visual verification
+on the AMD RX 6800 XT showed particle-NaN explosion on unpause, root-caused
+to CFL violation at 192³ resolution with the current dt=2e-4 — the
+boundary-cell band (BOUND=3) is also relatively thinner at higher
+resolution. Stable shipping of the 1M tier requires tier-dependent dt
+scaling and possibly larger BOUND. Banked in `docs/notes.md` for v1.1
+investigation.
+
+Per-tier framerates on the RX 6800 XT + Taichi Vulkan dev desktop are
+documented in the sim's README after each measurement pass. CUDA numbers
+on RTX 2080 Ti TBD.
 
 ---
 

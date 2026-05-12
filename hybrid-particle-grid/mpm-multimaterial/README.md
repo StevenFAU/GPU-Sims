@@ -57,13 +57,17 @@ banked rationale.
 
 ## Performance
 
-Performance numbers will be added here once visual verification on the dev hardware
-(AMD RX 6800 XT + Taichi Vulkan; RTX 2080 Ti + Taichi CUDA) is complete.
+Measured on AMD RX 6800 XT + Taichi Vulkan (Phase 9 visual verification, polish-4 recalibration):
 
-Target: 60 fps interactive at the 250k / 96³ default tier; 30–60 fps at 500k / 128³;
-5–15 fps capture-mode at 1M / 192³. Refer to `docs/sim-specs/mpm-multimaterial.md` § 8
-for full per-tier targets and `docs/load-bearing-decisions.md` for the polish-pass
-pattern if defaults underperform.
+| Tier | Particles | Grid | Vulkan / RX 6800 XT |
+|---|---|---|---|
+| Default | 128 000 | 64³ | _TBD — fill in after Phase 9 polish-4 verification_ |
+| Mid | 250 000 | 96³ | _TBD_ |
+| Stretch (capture-mode) | 500 000 | 128³ | _TBD_ |
+
+CUDA / RTX 2080 Ti numbers TBD once that hardware is exercised. The 1M / 192³ tier
+referenced in the original Phase 9 spec is deferred to v1.1 — current dt=2e-4 violates
+CFL at 192³ grid resolution. Investigation banked in `docs/notes.md`.
 
 ## Hero render
 

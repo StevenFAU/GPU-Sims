@@ -61,10 +61,18 @@ RES: Final[tuple[int, int]] = (1280, 720)
 DEFAULT_TIER_IDX: Final[int] = 0
 
 # (label_for_dropdown, n_particles, n_grid, capture_mode)
+# Tiers recalibrated post-Phase-9 visual verification on RX 6800 XT +
+# Vulkan. Original spec asserted 60 fps at 250k/96³ via confident-recall
+# extrapolation from upstream mpm3d_ggui's 128k/64³ baseline; actual
+# measurement showed 10-15 fps at 250k/96³. Default now matches upstream
+# baseline exactly. 1M/192³ capture-mode tier deferred to v1.1 — current
+# dt=2e-4 violates CFL at 192³ grid resolution, causing particle
+# NaN-explosion on unpause. Investigation banked in
+# hybrid-particle-grid/mpm-multimaterial/docs/notes.md.
 TIERS: Final[list[tuple[str, int, int, bool]]] = [
-    ("250 000 @ 96^3 (default)",                250_000, 96,  False),
-    ("500 000 @ 128^3",                          500_000, 128, False),
-    ("1 000 000 @ 192^3 (capture-mode, not interactive)", 1_000_000, 192, True),
+    ("128 000 @ 64^3 (default)",         128_000, 64,  False),
+    ("250 000 @ 96^3",                   250_000, 96,  False),
+    ("500 000 @ 128^3 (capture-mode)",   500_000, 128, True),
 ]
 
 SUBSTEPS_PER_FRAME: Final[int] = 25
@@ -260,6 +268,38 @@ def main() -> None:
     pending_tier_change: int | None = None
     pending_capture_mode_modal: int | None = None
 
+    # LMB place gating — track LMB edge transition and panel occlusion
+    # to prevent clicks on GUI buttons from also placing material cubes
+    # (the spec polls window.is_pressed(LMB) every frame; without edge
+    # detection a held click places ~3 cubes, and without panel gating
+    # clicking "save state" places a cube in the corner where the
+    # cursor-to-ground unproject lands).
+    lmb_was_pressed = False
+    # Known GUI panel rects in window-normalized coords (x, y, w, h) with
+    # y=0 at top to match the panel.folder() argument convention. Update
+    # this list if any panel dimensions change below.
+    GUI_PANEL_RECTS: list[tuple[float, float, float, float]] = [
+        (0.02, 0.02, 0.22, 0.20),  # Presets
+        (0.02, 0.24, 0.22, 0.15),  # Tier
+        (0.02, 0.41, 0.22, 0.14),  # Gravity
+        (0.02, 0.57, 0.22, 0.20),  # Materials
+        (0.02, 0.79, 0.22, 0.20),  # Export
+    ]
+
+    def _cursor_in_any_panel(cur: tuple[float, float]) -> bool:
+        """Return True if window-cursor `cur` is inside any GUI panel.
+
+        Taichi GGUI returns cursor coords with y=0 at BOTTOM (NDC convention)
+        but panel.folder() positions panels with y=0 at TOP (screen-space
+        convention). We convert cursor y to top-origin before testing.
+        """
+        cx, cy_bottom = cur
+        cy_top = 1.0 - cy_bottom
+        for px, py, pw, ph in GUI_PANEL_RECTS:
+            if px <= cx <= px + pw and py <= cy_top <= py + ph:
+                return True
+        return False
+
     # Push initial colors into the field.
     kernels.set_color_by_material(
         state.colors, state.materials,
@@ -359,6 +399,10 @@ def main() -> None:
                 window.running = False
             elif ev.key == "r":
                 init_volumes(state, preset_list[curr_preset_idx][1])
+                kernels.set_color_by_material(
+                    state.colors, state.materials,
+                    np.array(material_colors, dtype=np.float32),
+                )
                 user_emitter_count = 0
                 frame_idx = 0
                 log.info("reset to preset '%s'", preset_names[curr_preset_idx])
@@ -372,10 +416,15 @@ def main() -> None:
             elif str(ev.key).lower() == "f9":
                 do_load_state()
 
-        # LMB place — sample-and-edge-trigger via window.is_pressed
-        # (Taichi GGUI doesn't fire LMB-press events the way it does keys; poll instead.)
-        # We debounce by requiring at least one frame between placements.
-        if window.is_pressed(ti.ui.LMB) and user_emitter_count < MAX_USER_EMITTERS:
+        # LMB place — edge-triggered on press transition + gated against
+        # GUI panels (Taichi GGUI doesn't expose ImGui's WantCaptureMouse,
+        # so we check cursor against known panel rects manually).
+        lmb_now = window.is_pressed(ti.ui.LMB)
+        lmb_pressed_this_frame = lmb_now and not lmb_was_pressed
+        lmb_was_pressed = lmb_now
+        if (lmb_pressed_this_frame
+            and user_emitter_count < MAX_USER_EMITTERS
+            and not _cursor_in_any_panel(window.get_cursor_pos())):
             cur = window.get_cursor_pos()
             hit = cursor_to_ground(camera, cur, ground_y=0.02)
             if hit is not None:
@@ -399,6 +448,12 @@ def main() -> None:
                     x_begin=cube.minimum[0], y_begin=cube.minimum[1], z_begin=cube.minimum[2],
                     x_size=cube.size[0],   y_size=cube.size[1],   z_size=cube.size[2],
                     material=cube.material,
+                )
+                # init_cube_volume writes hardcoded white to colors[]; re-apply
+                # material colors so the newly-placed cube shows its real color.
+                kernels.set_color_by_material(
+                    state.colors, state.materials,
+                    np.array(material_colors, dtype=np.float32),
                 )
                 user_emitter_count += 1
                 log.info(
@@ -465,6 +520,10 @@ def main() -> None:
                     if curr_preset_idx != i:
                         curr_preset_idx = i
                         init_volumes(state, preset_list[i][1])
+                        kernels.set_color_by_material(
+                            state.colors, state.materials,
+                            np.array(material_colors, dtype=np.float32),
+                        )
                         user_emitter_count = 0
                         frame_idx = 0
                         paused = True

@@ -74,27 +74,48 @@ v1 hero render is a single still or short animation; PLY frames + Blender's
 particle system handles that cleanly. The Alembic-specific advantage matters
 only once serious offline-render animation work begins — v1.1 polish territory.
 
-## 250k / 96^3 default tier; 1M / 192^3 = capture-mode-not-interactive
+## Tier calibration matches canonical upstream baseline (post-Phase-9 visual verification)
 
 Three discrete tiers via runtime dropdown:
 
-| Tier | Particles | Grid | Target FPS | Interactive? |
-|---|---|---|---|---|
-| Default | 250 000 | 96^3 | 60 fps on RX 6800 XT + Vulkan; 60 fps on RTX 2080 Ti + CUDA | yes |
-| Mid | 500 000 | 128^3 | 30–60 fps | yes |
-| Stretch | 1 000 000 | 192^3 | 5–15 fps | **no** (capture-mode-only) |
+| Tier | Particles | Grid | Notes |
+|---|---|---|---|
+| Default | 128 000 | 64³ | matches canonical `mpm3d_ggui` upstream baseline; 60 fps interactive target |
+| Mid | 250 000 | 96³ | larger demos; ~15-30 fps interactive |
+| Stretch | 500 000 | 128³ | capture-mode-only; ~5-10 fps |
 
-**Why 250k default vs upstream's 128k:** the canonical Taichi mpm3d_ggui ships
-128k @ 64^3 as a conservative default tuned for entry-level GPUs (laptop dGPU,
-integrated). The AMD RX 6800 XT (16 GB VRAM, ~250 W TDP) is meaningfully above
-that baseline; 250k @ 96^3 is realistic. **If underperformance shows up during
-user-driven visual verification, the tier-dropdown shape makes the adjustment
-cheap** — same polish-pass pattern as Phase 7's boids-3d 50k → 10k density
-reduction.
+**Original Phase 9 spec had different numbers.** The first draft proposed
+250k/96³ as the default with 60 fps target on RX 6800 XT + Vulkan, scaled
+up from upstream's 128k/64³ baseline by 2× particles + 3.4× grid cells
+via confident-recall extrapolation. Visual verification measured 10-15
+fps at that tier — meaningfully below interactive. The architect-1 chat
+drafted scaling assumptions without measuring upstream's actual baseline
+or running comparison benchmarks on the target hardware. Same
+fabrication-discipline shape as the Phase 9 schema and toolchain misses,
+different surface (perf rather than correctness). Banked under the § 7
+convention "Strict-mode CI configurations must be exercised against
+representative code at draft time" — extended-meta would be "Perf claims
+require measurement against representative code at draft time, not
+extrapolation."
 
-**Why 1M = capture-mode:** matches the eulerian-smoke 384^3 stretch tier
-framing — "not real-time-interactive; for offline-render frame generation."
-README warning + dropdown UX explicitly says so.
+**1M / 192^3 tier deferred to v1.1.** The original stretch tier proposed
+1 000 000 particles on a 192³ grid as capture-mode-only. Visual
+verification showed particle-NaN explosion on unpause at this tier,
+root-caused to two factors: (a) CFL violation at high grid resolution
+with the spec's dt=2e-4 — particles cross too many grid cells per
+substep to stay numerically stable, and (b) the BOUND=3 boundary-cell
+band is relatively thinner at 192³ (1.6% of grid) than at 96³ (3.1%),
+so particles approaching boundaries have less margin before exiting.
+Stable shipping of the 1M tier requires tier-dependent dt scaling
+(roughly dt ∝ 1/grid_size for explicit time integration of MPM-style
+flows) and possibly tier-dependent BOUND. Implementation banked v1.1.
+
+**Why 500k / 128³ becomes the stretch instead.** Same capture-mode
+framing as the original 1M tier — "not real-time-interactive; for
+offline-render frame generation." Same confirmation modal idiom
+inherited from eulerian-smoke's 384³ stretch tier. The user-facing
+expectation is unchanged; only the headline particle count shrinks
+by 2× to a value the current dt actually supports stably.
 
 ## Cross-backend optimization: CUDA + Vulkan both first-class
 

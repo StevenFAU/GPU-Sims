@@ -21,6 +21,38 @@ This document expands [`overarching-spec.md`](overarching-spec.md) § 8 with con
 - **Type hints:** Required for non-trivial functions. Module-level `from __future__ import annotations` is encouraged.
 - **Dependencies:** Per-sim `pyproject.toml`. Pin major versions; lock with `uv` or `poetry` lockfiles. Document GPU-specific install steps (e.g., Taichi backend selection) in the sim's README.
 - **Virtual environments:** Per-sim `.venv/`. Never commit virtualenv contents.
+- **Cross-backend posture (Stack D-specific).** Use `ti.init(arch=ti.gpu)` so Taichi
+  picks CUDA when available, else Vulkan. The AMD RX 6800 XT desktop and the RTX
+  2080 Ti lab PC are both first-class targets. CUDA-only hints
+  (`ti.loop_config(block_dim=N)`) are no-ops on Vulkan; preserve them. The upstream
+  MLS-MPM grid scatter via `+=` on a vector field compiles to vector-element-wise
+  atomic floats and works on both backends (CUDA native; Vulkan via
+  `VK_EXT_shader_atomic_float`). Avoid explicit `ti.atomic_add(vec_field[I], vec_value)`
+  in favor of the implicit `+=` lowering.
+- **Kernels in real files on disk.** Taichi `@ti.kernel` decoration captures the
+  function's Python AST via Python's `inspect.getsource`, which requires the function
+  to live in a real `.py` file. Tests that pass kernel code as strings via
+  `python -c "…"` fail with "Cannot find source code for Object." All Stack D
+  per-sim tests live at `tests/test_kernels.py` on disk; never collapse them into
+  parametrized fixtures or string-based dynamic compilation.
+- **No `np.float64` anywhere.** Taichi defaults to `ti.f32`; mismatched dtypes between
+  numpy round-trip and Taichi field cause silent precision degradation and downstream
+  `from_numpy` shape errors. Every numpy operation in Stack D uses `.astype(np.float32)`
+  or initializes with `dtype=np.float32` explicitly. State capture writes float32
+  bytes; state load reads float32.
+- **No in-process kernel hot-reload.** Taichi's @ti.kernel decoration is JIT;
+  editing kernel source requires a fresh Python process. Dev workflow is Ctrl+C,
+  edit, rerun. `common-py` deliberately ships no HotReloader — a future
+  `gpusims_common.process_watcher` (file-watcher + child-process re-exec) would be
+  added once a Stack D sim demands true hot-iteration.
+- **Capture format follows `docs/tier1-capture-format-reference.md`.** Stack D
+  state capture inherits the cross-stack contract: top-level `state.json.meta` uses
+  **exactly one** sim-namespaced wrapper key (camelCase, named after the sim);
+  per-buffer fields are `{name, file, count, stride, format, shape}` (NOT
+  `{bytes, dtype}`). Format strings follow the existing table (`r32f` /
+  `rgba16f` / `rgba16float`); Phase 9 introduces `r32i` for int32 buffers as a
+  natural extension. Tier-1 / Tier-3 diagnostics tooling reads this schema; new
+  Stack D sims must conform.
 
 ## TypeScript (Stack B)
 

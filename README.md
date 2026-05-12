@@ -24,7 +24,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 | [Lattice Boltzmann](volumetric-grid/lattice-boltzmann/) | Volumetric grid | Native C++ | Not started |
 | [SPH water](particle-fluids/sph-water/) | Particle fluids | Native C++ | Not started |
 | [PIC/FLIP](particle-fluids/pic-flip/) | Particle fluids | Native C++ | Stretch |
-| [MPM multi-material](hybrid-particle-grid/mpm-multimaterial/) | Hybrid particle-grid | Python (Taichi) | Not started |
+| [MPM multi-material](hybrid-particle-grid/mpm-multimaterial/) | Hybrid particle-grid | Python (Taichi) | Implemented (Phase 9) |
 | [Ising on D-Wave](quantum/ising-dwave/) | Quantum | D-Wave + WebGPU | Not started |
 
 > Gallery preview images and offline-rendered hero stills will be added per sim as they ship. See [`docs/sim-specs/`](docs/sim-specs/) for per-sim specifications.

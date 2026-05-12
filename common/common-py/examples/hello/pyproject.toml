@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpusims-hello-py"
+version = "0.1.0"
+description = "common-py hello example: exercises every Phase 9 module"
+requires-python = ">=3.11"
+dependencies = [
+    "gpusims-common-py",
+    "taichi>=1.7.4,<1.8",
+    "numpy>=1.26,<3",
+]
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true

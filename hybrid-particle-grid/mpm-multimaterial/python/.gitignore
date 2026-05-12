@@ -1,0 +1,14 @@
+# Local Python venvs
+.venv/
+__pycache__/
+*.egg-info/
+
+# Captures and exports — generated at runtime; not tracked.
+captures/
+vdb_export/*.vdb
+ply_export/*.ply
+
+# Test cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

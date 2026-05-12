@@ -70,8 +70,8 @@ Seven categories. Each lives in its own top-level folder.
 | 6 | physarum | First agent-system Stack B sim and **first user of `atomic<u32>` storage buffers** in the repo. Multi-species Jones 2010 model: discrete agents on a continuous 2D periodic domain, three species with mutual repulsion (RGB-per-species visualization). Discrete agent-count tier dropdown (256k / 1M / 4M / 10M, default 4M); first sim with raised `requiredLimits` (`maxStorageBufferBindingSize: 200_000_000`) for the 10M-tier 160 MB agent buffer; first sim using `@workgroup_size(256, 1, 1)` on 1D-dispatch kernels (4M tier exceeds baseline `maxComputeWorkgroupsPerDimension` at 64-wide). Persistent food-source pins as the headline interactive moment (LMB places, RMB removes, cap 32; new `pin_deposit.compute.wgsl` pass). Capture/load: trail map + RNG seed + parameters; agents reseeded from seed on load (literal positions not preserved by design). **First sim to ship without a Stack A counterpart** — the `agent-based/physarum/` folder contains `web/`, `docs/`, sim-level `README.md` only; no `shadertoy/`. Establishes the no-port pattern for future Stack B-originated sims. Live at <https://stevenfau.github.io/GPU-Sims/physarum/>. | ✅ Shipped | `1250971` |
 | 7 | boids-3d | First 3D Stack B sim and **first user of spatial-hash counting-sort** (counting + multi-block prefix scan + scatter). Multi-species 3D Reynolds flocking with **persistent leader attractors** (LMB-place, Shift+LMB-remove; cap 32) AND **dynamic predators** (auto-spawned, three runtime-switchable hunting modes — nearest-prey, stochastic-prey, flock-center). Discrete tier dropdown (5k / 10k / 25k / 50k / 75k / 100k boids; default 10k after polish pass at `cda37d3`). First sim with: free-fly 3D camera driving rasterization (vs. mandelbulb's raymarcher); manual render-pass construction with depth attachment (mandelbulb-pattern, bypassing `Renderer.beginRendering` which doesn't support depth); instanced low-poly rendering with velocity-derived orientation + Gram-Schmidt singularity fallback; click-to-place ground-plane unproject; ping-pong on a unified entity buffer with explicit read-old-write-new invariant; 3-mode predator kernel with state-buffer union semantics + capture-restoring dropdown mode. Bit-exact-within-one-integration-step capture/load (~640 KB ZIP at default tier). **Second consumer of physarum's agent-buffer + sparse-source pattern; promotion review of these patterns scheduled for the third consumer (likely eulerian-smoke / sph-water / lattice-boltzmann) per rule-of-three.** Box size scaled 32u→80u edge in polish pass after visual verification showed the original cramped 32u box prevented visible flock structure at the original 50k default (volumetric density math missing from the original spec; see § 7). Live at <https://stevenfau.github.io/GPU-Sims/boids-3d/>. | ✅ Shipped | `38d9ab0` + polish `cda37d3` |
 | 8 | eulerian-smoke | First Tier-2 flagship Stack C; first real OpenVDB consumer; first Blender Cycles offline-render exercise. Stam stable-fluids w/ MacCormack + vorticity confinement + Jacobi pressure. 6 presets, sparse emitter UX, optional per-frame VDB density export. Hero render via render-pipelines/blender/render_smoke.py. | ✅ Shipped | ``867ea39`` |
-| 9 | common-py + first-d-sim | `common-py` infrastructure + first Stack D sim (likely `lenia-fft` or `mpm-multimaterial`). | ⬜ Not started | — |
-| 10+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. | ⬜ Not started | — |
+| 9 | common-py + mpm-multimaterial | `common-py` infrastructure (Camera, StateWriter/Reader, ParamPanel, VdbWriter, AlembicWriter permanent-stub, log) + `hybrid-particle-grid/mpm-multimaterial` MLS-MPM sim (water + jelly + snow; 250k/500k/1M tier dropdown). First Stack D infrastructure + first Stack D sim. First cross-backend optimization (CUDA + Vulkan both first-class via `ti.init(arch=ti.gpu)`). Alembic deferred to natural sph-water consumer; water/jelly/snow rather than sand/jelly/water (overarching-spec § 6 deliberate divergence, banked in sim's docs/load-bearing-decisions.md). Capture schema rewritten per architect-2 cross-review to match `tier1-capture-format-reference.md` (sim-namespaced `mpmMultimaterial` meta wrapper; `{count, stride, format, shape}` per-buffer fields). Hero render via render-pipelines/blender/render_mpm.py (PLY particles + Geometry Nodes per-material instancing). | ✅ Shipped | ``<HEAD>`` |
+| 10+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. Per Phase 9 banking, the natural Alembic-real-impl consumer is sph-water (Stack C). The natural cross-stack lenia-fft consumer (Stack D Taichi + Stack B WebGPU) is post-MPM. | ⬜ Not started | — |
 
 (Phase numbering is for the architect's reference; commit messages don't need to use it.)
 
@@ -154,9 +154,18 @@ Hello-world: `common/common-web/examples/hello/`. Run with `npm run dev:hello-we
 
 Per-sim Vite dev ports (assigned in numerical order as sims ship): hello-web 5173, strange-attractors 5174, mandelbulb-explorer 5175, reaction-diffusion-2d 5176, physarum 5177, boids-3d 5178. Next sim takes 5179.
 
-### `common-py` (Stack D, Python/Taichi) — not yet implemented
+### `common-py` (Stack D, Python/Taichi)
 
-Lands with the first Stack D sim phase.
+Slim, demand-driven surface for Stack D Python+Taichi sims. PyPI project `gpusims-common-py`; import as `gpusims_common`. Phase 9 establishes the package; first consumer is `hybrid-particle-grid/mpm-multimaterial`. Rule-of-three convention applies — second consumer triggers promotion review, third triggers any new abstractions.
+
+- `Camera` — wraps `ti.ui.Camera` with our conceptual surface (FreeFly / Arcball / Orbit modes; `view()` / `projection()` / `view_projection()` getters; `to_json()` / `from_json()` for state capture). FreeFly delegates to `ti.ui.Camera.track_user_inputs(window, hold_key=ti.ui.RMB)`.
+- `StateWriter` / `StateReader` — loose-directory state capture matching the cross-stack schema in `tier1-capture-format-reference.md`. Per-buffer fields `{name, file, count, stride, format, shape}`; top-level `meta` uses **exactly one** sim-namespaced wrapper per the established convention.
+- `ParamPanel` — context-manager wrapper around `gui.sub_window` for named-folder organization; `bind(gui)` per frame. `persist_key` ctor arg is a no-op in v1; localStorage-equivalent persistence banked v1.1.
+- `VdbWriter` — real-or-stub gated on `import pyopenvdb` (apt: `python3-openvdb`, not pip-installable). Mirrors Stack C `gpusims::vdb::writeFloatGrid` / `writeFloatFrame` signatures.
+- `AlembicWriter` — **permanent stub** mirroring Stack C `gpusims::abc::ParticleWriter::create()` signature for future drop-in. Real Python Alembic binding banked to whichever phase ships sph-water (Decision #8 inheritance + Phase 9 banking).
+- `log` — stdlib logging wrapper with `log.info / log.warn / log.error / log.debug` proxy methods matching common-cpp `gpusims::log` shape.
+
+Hello example at `common/common-py/examples/hello/` exercises every module. Tests at `common/common-py/tests/test_kernels.py` verify Taichi-CPU-backend kernel-compile path under CI (file-on-disk required — see § 7 "Taichi @ti.kernel AST inspection requires file-on-disk").
 
 ---
 
@@ -176,7 +185,7 @@ Lands with the first Stack D sim phase.
 | `volumetric-grid/lattice-boltzmann/` | lattice-boltzmann | C | Sim-spec stub |
 | `particle-fluids/sph-water/` | sph-water | C | Sim-spec stub; flagship sim — likely Alembic consumer; **Phase 5 candidate** |
 | `particle-fluids/pic-flip/` | pic-flip | C | Sim-spec stub |
-| `hybrid-particle-grid/mpm-multimaterial/` | mpm-multimaterial | C or D | Sim-spec stub |
+| `hybrid-particle-grid/mpm-multimaterial/` | mpm-multimaterial | D | **Implemented (Phase 9)** — first Stack D sim; water/jelly/snow MLS-MPM; tier dropdown 250k/500k/1M @ 96³/128³/192³ (1M = capture-mode-not-interactive); hero render via `render-pipelines/blender/render_mpm.py` (PLY particles + Geometry Nodes per-material instancing) |
 | `quantum/ising-dwave/` | ising-dwave | special | Eventually D-Wave-backed; details deferred |
 
 ---
@@ -476,6 +485,26 @@ The architect-1 fabrication convention (`grep before asserting`) applies not onl
 
 The "build green on local dev hardware" practice is not a sufficient ship gate when local-build and CI-build configurations diverge. Phase 8.5.1 surfaced this: Build (native) Debug-job had been red on `main` for 9 days (since Phase 3, the first sim phase to touch Stack C path triggers) due to a name-collision bug in `common/common-cpp/src/vk/context.cpp:207` that was wrapped in `#if GPU_SIMS_VALIDATION_LAYERS` and thus only compiled in Debug. The user's documented local build command at § 11 is Release-only, so the Debug-only failure never surfaced locally; CI's Debug-job badge was the only ground truth and the badge wasn't being watched. The `project-state.md` § 9 "CI baseline (positive)" entry from Phase 3.5 also reinforced the wrong picture, claiming "all three repo-level CI workflows are green" without distinguishing the three always-on workflows from the two path-triggered workflows that ran separately and could be (and were) red independently. Conventions banked: (1) every push that touches the path-trigger surface of `Build (native)` (`common/common-cpp/**`, root `CMakeLists.txt`, or the workflow YAML) should be followed by an explicit `gh run list --workflow=build-native.yml --branch=main --limit=1` check confirming BOTH `build-ubuntu` (Release) AND `build-ubuntu-debug` (Debug) jobs are green — not just "the workflow completed." Same for Build (web) on Stack B-touching commits. (2) The documented local build command at § 11 should include both Release and Debug variants so Debug-only failures surface during the local-build phase, not 9 days later in a fresh architect chat's CI investigation. Phase 8.5.1 also amends § 11 accordingly.
 
+### Stack D dual-backend posture
+
+Stack D sims use `ti.init(arch=ti.gpu)` so Taichi picks CUDA when available, else Vulkan. The AMD RX 6800 XT dev desktop (Vulkan) and the RTX 2080 Ti lab PC (CUDA) are both first-class dev hardware; both backends are exercised during user-driven visual verification. CUDA-only hints (`ti.loop_config(block_dim=N)`) are no-ops on Vulkan and should be preserved unchanged. The upstream MLS-MPM grid scatter via `+=` on a vector field compiles to vector-element-wise atomic floats on the GPU — native float atomics on CUDA, requires `VK_EXT_shader_atomic_float` on Vulkan (widely supported on modern AMD/NVIDIA drivers as of 2024). Avoid explicit `ti.atomic_add(vec_field[I], vec_value)` calls; the implicit `+=` lowering is fine and matches upstream. Banked Phase 9.
+
+### Taichi @ti.kernel AST inspection requires file-on-disk
+
+Kernel code must live in real `.py` files. Tests cannot pass kernel code via `python -c "…"` strings — the AST inspector reports "Cannot find source code for Object" because Python's `inspect.getsource` requires the function's source to live in a file `inspect` can stat. All Stack D per-sim tests live at `tests/test_kernels.py` on disk and are exercised under CI via `build-py.yml`. Banked Phase 9.
+
+### Deliberate overarching-spec divergences are banked at the divergence site
+
+When a sim ships content differing from the original `overarching-spec.md` catalog entry (e.g., MPM-multimaterial's water/jelly/snow rather than water/jelly/sand; PLY rather than Alembic particle export), the divergence rationale lands in the sim's `docs/load-bearing-decisions.md` AND in the sim-spec sheet so future architect chats re-reading the overarching-spec don't conclude content was missed. Phase 9 originated the convention with two divergences (water/jelly/snow trio matching the canonical Taichi upstream; Alembic export deferred to natural sph-water consumer with permanent-stub mirror in `common-py`). Banked Phase 9.
+
+### Stack D has no HotReloader
+
+Taichi's `@ti.kernel` decoration captures the function's Python AST at decoration time, so editing kernel source requires a fresh Python process. `common-py` deliberately ships no `HotReloader` module — the dev workflow is `Ctrl+C, edit, rerun`. A future `gpusims_common.process_watcher` (watchfiles-based child-process re-exec) would land when a Stack D sim demands true hot-iteration. Banked Phase 9.
+
+### Architect-1 onboarding includes `tier1-capture-format-reference.md`
+
+The cross-stack capture-format contract documented in `docs/tier1-capture-format-reference.md` is part of the standard architect-1 onboarding read list. Phase 9's first draft invented a non-conforming schema (`{bytes, dtype}` per-buffer + 5 flat top-level meta keys instead of the contract's `{count, stride, format, shape}` + single sim-namespaced wrapper) because the reference wasn't read at drafting time despite being in the `/mnt/project/` context. Architect-2's cross-review caught it via grep against the actual reference. Banked Phase 9: every architect-1 chat drafting a sim that emits captures reads this file as part of the project-state.md / overarching-spec / conventions / known-issues reading. Same fabrication-discipline principle as the existing "grep before asserting" convention — the discipline must include the cross-stack schema references, not just first-order API surfaces.
+
 ---
 
 ## 8. Things explicitly deferred
@@ -536,6 +565,14 @@ A red badge on `main` after this commit is a real regression. The `Build (native
 - **Eulerian-smoke runs hot on the dev hardware — cause uncharacterized, retraction of the Phase 8 present-mode hypothesis (banked Phase 8.5).** During Phase 8 visual verification, eulerian-smoke at the 256³ default tier produced sustained RX 6800 XT fan noise. The original Phase 8 retro (`9ad5120`) attributed this to `choosePresentMode()` in `common/common-cpp/src/vk/window.cpp` selecting `VK_PRESENT_MODE_MAILBOX_KHR` over FIFO, and banked a `Window`-ctor `VkPresentModeKHR` amendment as the proper fix. **That attribution was made without measurement and was falsified by direct test.** Launching eulerian-smoke with `vblank_mode=3 ./build/bin/eulerian_smoke` (forces FIFO at the Mesa driver layer, identical effect to the proposed API amendment for the user's purposes) did not reduce the fan load — fans remained loud under FIFO. The Phase 8.5 amendment scope was therefore dropped, and § 7's architect-1-fabrication entry at line 457(d) is the canonical record of why. **Actual cause: unknown.** Candidate hypotheses: (a) normal heavy-compute baseline for a Tier-2 256³ solver on a 250 W TDP card — the sim does ~30+ compute dispatches per frame at 60 Hz, sustained for the demo window; (b) eulerian-smoke's render loop lacks an explicit CPU-side frame-pacing cap, so even with FIFO at the swapchain layer, compute-pass scheduling may not be presentation-bound; (c) a specific solver kernel (Jacobi pressure inner-loop is the prime suspect at 40 iterations/frame default) is the actual hot path independent of present mode; (d) something else entirely. Banked as a **v1.1 diagnostic item** owned by the eulerian-smoke category architect or whoever first sits down with `radeontop` / `nvtop` / Vulkan-profiler data. The `choosePresentMode()` MAILBOX-preferred default in `window.cpp` is mildly sloppy as a library default but is not the heat source and is not blocking any consumer; per Pearson's-law-of-three (§ 7), the API amendment waits for a consumer that actually has a use case asking for caller-controlled VSync.
 
 - **OpenVDB writer first-exercise: clean — Phase 8 (positive).** Phase 8 enabled `-DGPU_SIMS_USE_OPENVDB=ON` for the first time, exercising `gpusims::vdb::writeFloatFrame` end-to-end against the OpenVDB 10.0.1 system package on Ubuntu 24.04. The writer code shipped as a stub at Phase 1 and was unexercised through Phases 2–7. No `vdb_writer.cpp` API-drift defects surfaced at build time or runtime. Output VDB files inspected via `vdb_print`: valid file format, correct grid metadata (class `"fog volume"`, identity-scaled transform, blosc compression), value ranges sensible. Hard-rule-8 in-flight fix authorization went unused. Notable validation of the Phase 1 architect-1 work that the stub-shipped API surface was specified well enough to ship correctly without exercise for seven phases. **Build-system note:** `common/common-cpp/cmake/optional_deps.cmake` was patched in this commit to add a block-scoped `CMAKE_MODULE_PATH` hint for Debian/Ubuntu's multi-arch `FindOpenVDB.cmake` location. See commit ``ae192a6`` for the patch (back-filled by the follow-up commit after this one). Future consumers on Fedora / Arch / vcpkg are unaffected (those distros ship `OpenVDBConfig.cmake` which the existing CONFIG-mode `find_package` finds without hint).
+
+### Stack D (common-py)
+
+- **Taichi `@ti.kernel` cannot live-reload.** Decoration captures Python AST at decoration time; source-edit-then-re-run-kernel does not work in-process. Workaround: `Ctrl+C, edit, rerun`. Banked as expected behavior in `project-state.md` § 7 "Stack D has no HotReloader". Future mitigation: a `gpusims_common.process_watcher` (watchfiles + child-process re-exec) module when a Stack D sim demands true hot-iteration. Banked Phase 9.
+
+- **Tier-change kernel recompile latency.** Taichi specializes `@ti.kernel` on `ti.template()` field shapes; changing the MPM tier dropdown triggers a 1–3 s recompile on first substep call after the change. The UI shows a "Recompiling…" overlay (v1.1 polish item — not in Phase 9 v1). Banked Phase 9; non-blocking for ship.
+
+- **VFX Alembic Python binding not pip-installable.** PyPI's `alembic` is the SQLAlchemy migration tool (same-name collision); Ubuntu apt's `python3-alembic` likewise. Real VFX-Alembic Python bindings require source-build, conda-forge, or Houdini's `hou` module — none compatible with the overarching-spec § 5 pip+pyproject.toml framing. Phase 9 ships `common-py`'s `AlembicWriter` as a permanent stub mirroring Stack C's `gpusims::abc::ParticleWriter::create()` signature; real impl banked to whichever phase ships sph-water (the natural particle-cloud consumer per Decision #8). The discriminator for real-vs-stub at that future phase is `from alembic import AbcGeom` (VFX has it; SQL doesn't). Banked Phase 9.
 
 ---
 
@@ -689,7 +726,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `9c2f900` — Phase 8.5 hardening pass (on top of `532f20c`, Phase 8 closeout SHA back-fill).
+- Latest commit: ``<HEAD>`` — Phase 9 (common-py + mpm-multimaterial; first Stack D infrastructure + first Stack D sim, on top of ``35bc0fa``, Phase 8.5.2 markdownlint cleanup).
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)
@@ -704,3 +741,10 @@ Begin by summarizing the current state and what's next.
 - Stack B build: `npm run typecheck && npm run build:web`
 - Per-sim Vite dev ports: hello-web 5173, strange-attractors 5174, mandelbulb-explorer 5175, reaction-diffusion-2d 5176, physarum 5177, boids-3d 5178, next sim 5179
 - Ubuntu deps for Stack C: see `common/common-cpp/README.md`
+- Stack D editable install: `cd common/common-py && python3 -m venv .venv && source .venv/bin/activate && pip install -e .[dev]`
+- Stack D hello-world: `cd common/common-py/examples/hello && pip install -e . && python main.py`
+- Stack D MPM sim: `cd hybrid-particle-grid/mpm-multimaterial/python && pip install -e . && python main.py`
+- Stack D CI smoke locally (lint + typecheck + Taichi-CPU kernel smoke): `cd common/common-py && ruff check . && mypy --strict gpusims_common && pytest tests/ -v`
+- Stack D Taichi backend pin: `python -c "import taichi as ti; ti.init(arch=ti.cuda)"` (NVIDIA lab PC) or `ti.vulkan` (AMD dev desktop) or `ti.cpu` (CI smoke path)
+- Stack D hero render (Blender Cycles): `blender -b -P render-pipelines/blender/render_mpm.py -- --ply-input hybrid-particle-grid/mpm-multimaterial/python/ply_export/particles_0060.ply --output /tmp/mpm_hero.png --frame 60 --resolution 1920 1080 --samples 256`
+- Stack D OpenVDB enable (optional): `sudo apt install python3-openvdb` (Ubuntu) or `conda install -c conda-forge openvdb` — `pyopenvdb` is NOT pip-installable

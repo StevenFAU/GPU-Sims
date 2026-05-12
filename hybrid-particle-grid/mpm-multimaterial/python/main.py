@@ -88,6 +88,17 @@ PLY_EXPORT_BASE: Final[Path] = Path("ply_export/particles")
 
 MAX_USER_EMITTERS: Final[int] = 8
 
+# Per-emitter particle slot size. Sized for visual density-parity with typical
+# preset water at 64³ grid — a 0.08³ user cube at 2000 particles gives ~3.9M
+# particles/unit³, within order-of-magnitude of typical preset water density
+# (~1-3M particles/unit³). The reserve region (MAX_USER_EMITTERS × EMITTER_SLOT_SIZE
+# = 16 000 particles at default constants) is held back from preset allocation
+# by init_volumes; presets fill indices 0..(n_particles - EMITTER_RESERVE_SIZE)
+# and the tail stays F_used=0 until claimed by LMB-place. See
+# docs/load-bearing-decisions.md "User-emitter reserve-tail allocation".
+EMITTER_SLOT_SIZE: Final[int] = 2000
+EMITTER_RESERVE_SIZE: Final[int] = MAX_USER_EMITTERS * EMITTER_SLOT_SIZE
+
 MATERIAL_NAMES: Final[list[str]] = ["water", "jelly", "snow"]
 
 
@@ -135,6 +146,11 @@ def init_volumes(state: SimState, vols: list[CubeVolume]) -> None:
     Mirrors upstream `init_vols` (mpm3d_ggui.py): first marks all particles
     unused (parked at a far position so they don't render), then walks the
     volume list assigning particle ranges by volume share.
+
+    **Reserve-tail allocation (polish-5):** presets allocate from indices
+    0..(n_particles - EMITTER_RESERVE_SIZE), leaving the tail region as
+    F_used=0 reserve for LMB-place user emitters. See
+    `docs/load-bearing-decisions.md` "User-emitter reserve-tail allocation".
     """
     kernels.set_all_unused(state.x, state.v, state.C, state.F, state.Jp, state.used)
     total_vol = sum(v.volume for v in vols)
@@ -142,13 +158,14 @@ def init_volumes(state: SimState, vols: list[CubeVolume]) -> None:
         log.warn("init_volumes: total volume is zero; no particles will be initialized")
         return
 
+    max_particles = state.n_particles - EMITTER_RESERVE_SIZE
     next_p = 0
     for i, vol in enumerate(vols):
-        # Last volume gets all remaining particles to absorb int-trunc roundoff.
+        # Last volume gets all remaining preset particles to absorb int-trunc roundoff.
         if i == len(vols) - 1:
-            par_count = state.n_particles - next_p
+            par_count = max_particles - next_p
         else:
-            par_count = int(vol.volume / total_vol * state.n_particles)
+            par_count = int(vol.volume / total_vol * max_particles)
         if par_count <= 0:
             continue
         kernels.init_cube_volume(
@@ -344,7 +361,7 @@ def main() -> None:
         log.info("saved capture at frame=%d → %s", frame_idx, state_writer.current_dir())
 
     def do_load_state() -> None:
-        nonlocal gravity, tier_idx, state, frame_idx
+        nonlocal gravity, tier_idx, state, frame_idx, user_emitter_count, place_material
         latest = state_reader.find_latest()
         if latest is None:
             log.warn("no captures to load")
@@ -385,7 +402,16 @@ def main() -> None:
         state.materials.from_numpy(state_reader.load_buffer(latest, "materials").astype(np.int32))
         state.used.from_numpy(state_reader.load_buffer(latest, "used").astype(np.int32))
         frame_idx = int(meta_blob.get("frame", 0))
-        log.info("loaded capture from %s (frame=%d)", latest, frame_idx)
+        # Restore LMB-place bookkeeping (saved by do_save_state at the mpmMultimaterial
+        # wrapper). user_emitter_count default 0 = "no emitters in scene"; place_material
+        # default WATER. Polish-5 fix: pre-polish-5 these weren't restored, so F9 load
+        # could clobber loaded emitter slots on the next click.
+        user_emitter_count = int(sim_meta.get("user_emitter_count", 0))
+        place_material = int(sim_meta.get("place_material", WATER))
+        log.info(
+            "loaded capture from %s (frame=%d, emitters=%d, place_material=%s)",
+            latest, frame_idx, user_emitter_count, MATERIAL_NAMES[place_material],
+        )
 
     while window.running:
         # ------------------------------ input ----------------------------
@@ -437,10 +463,14 @@ def main() -> None:
                     size=(size, size, size),
                     material=place_material,
                 )
-                # Find an unused range of particles to claim (cap-managed).
-                slot_size = state.n_particles // MAX_USER_EMITTERS
-                first = state.n_particles - (user_emitter_count + 1) * slot_size
-                last = first + slot_size
+                # Claim a slot from the reserve region at the tail of the
+                # particle array. Presets fill 0..(n_particles - EMITTER_RESERVE_SIZE);
+                # LMB-place claims EMITTER_SLOT_SIZE particles per click from
+                # the reserve at indices (n_particles - EMITTER_RESERVE_SIZE)..n_particles.
+                # The reserve was F_used=0 (parked) until this point.
+                first = (state.n_particles - EMITTER_RESERVE_SIZE
+                         + user_emitter_count * EMITTER_SLOT_SIZE)
+                last = first + EMITTER_SLOT_SIZE
                 kernels.init_cube_volume(
                     state.x, state.v, state.C, state.F, state.Jp, state.materials,
                     state.colors, state.used,

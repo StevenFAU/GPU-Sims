@@ -165,3 +165,90 @@ time; editing kernel source requires a fresh Python process. Stack D's dev
 workflow is therefore Ctrl+C, edit, rerun. Documented in this sim's README and
 banked in `project-state.md` § 7 "Stack D has no HotReloader" as expected
 behavior, not a missing feature.
+
+## User-emitter reserve-tail allocation (polish-5)
+
+LMB-place "sparse user-placed material-cube emitters" need to introduce NEW
+material into the running simulation without destructively reclaiming
+preset particles. The constraint: Taichi fields are fixed-size allocations,
+so the total particle count is bounded at tier-creation time and cannot
+grow mid-simulation without a kernel-recompile penalty (1-3 s UI lockup).
+
+**Pre-polish-5 (broken):** `init_volumes` distributed `state.n_particles`
+across preset volumes; the last volume took `state.n_particles - next_p`
+to absorb roundoff (filling the entire pool). LMB-place computed
+`slot_size = state.n_particles // MAX_USER_EMITTERS` and claimed
+particles from `state.n_particles - (user_emitter_count + 1) * slot_size`
+onward — i.e., from the END of the array, which the preset had already
+filled. Result: each LMB-place destructively re-tagged 16 000 of the
+preset's particles (default tier) as the new emitter material, teleporting
+them from their preset position to the click location and resetting their
+v/C/F/Jp state. Visually: the scene lost preset water in proportion to
+emitters placed. Physically: a magic transmuter that no MLS-MPM equation
+supports — particles are the simulation's mass-carrying state, and
+arbitrary relabeling violates the data → visual fidelity contract.
+
+**Post-polish-5 (reserve-tail):** two new module-level constants in
+`main.py`:
+
+```python
+EMITTER_SLOT_SIZE: Final[int] = 2000
+EMITTER_RESERVE_SIZE: Final[int] = MAX_USER_EMITTERS * EMITTER_SLOT_SIZE  # = 16 000
+```
+
+`init_volumes` now distributes `max_particles = state.n_particles -
+EMITTER_RESERVE_SIZE` across preset volumes (instead of the full
+`state.n_particles`). The tail region — indices
+`(state.n_particles - EMITTER_RESERVE_SIZE)..state.n_particles` — stays
+`F_used=0` (parked at `_UNUSED_PARK_POS`, invisible, not advanced by
+the MLS-MPM substep).
+
+LMB-place now computes
+`first = state.n_particles - EMITTER_RESERVE_SIZE + user_emitter_count * EMITTER_SLOT_SIZE`
+and claims `EMITTER_SLOT_SIZE` particles from the reserve. Physically:
+mass introduced into the simulation from outside the domain, the same
+open-system model Houdini / Mantaflow / Blender's Mantaflow integration
+use for fluid emitters. Each click adds exactly
+`EMITTER_SLOT_SIZE × p_mass` to the system; the value is documentable
+in capture metadata for experimental logs.
+
+**Sizing rationale for `EMITTER_SLOT_SIZE = 2000`:** at 64³ grid, the
+natural per-particle volume is `p_vol = (dx * 0.5)³ ≈ 4.77e-7 unit³`.
+A 0.08³ user cube has volume `5.12e-4 unit³`; density-matched count
+`≈ 1070`. 2000 gives ~2× the natural density, within order-of-magnitude
+of typical preset water (~1-3M particles/unit³). Total reserve at
+default tier: `8 × 2000 = 16 000 particles = 12.5% of the 128k pool`.
+Preset capacity drops from 128k to 112k — visually negligible. Tunable
+per-tier in v1.1 if hero renders demand it.
+
+**Inheritance from rule-of-three:** Option B (dynamic recycle from
+inactive-particle scan) was considered and deferred. Rule-of-three says
+defer abstractions until consumer #3. v1 has one consumer
+(mpm-multimaterial); reserve-tail is sufficient. Future Stack D sims
+that delete particles mid-sim (e.g., spalling fracture, particles
+exiting the domain) would promote to Option B; that's the natural
+consumer-#3 trigger.
+
+**Save/load roundtrip (polish-5 bonus fix):** `do_save_state` writes
+both `user_emitter_count` and `place_material` into the
+`mpmMultimaterial` meta wrapper; `do_load_state` now restores both
+(pre-polish-5 it didn't, latent roundtrip bug). After F9 load, the
+next LMB-place resumes from the saved emitter slot index using the
+saved place_material.
+
+**Known corner case (banked, not fixed):** State captures saved BEFORE
+polish-5 have `used=1` across positions `0..n_particles-1` (legacy
+preset fills the entire pool). Loading those captures post-polish-5
+restores the legacy layout; the reserve region is still active from
+the loaded scene. The first LMB-place after such a load destructively
+overwrites particles in the reserve tail (legacy behavior). Workaround:
+after loading a legacy capture, press R to re-initialize from the
+current preset under reserve-tail allocation, then place emitters.
+Auto-migration of legacy captures was considered and rejected (would
+silently delete loaded particles, worse UX than the corner case).
+
+Cross-reference: convention `§ 7 "Stack D dual-backend posture"` and
+`§ 7 "Architect-1 onboarding includes tier1-capture-format-reference.md"`
+in `project-state.md` — both apply here as inheritance points (the
+fix preserves Stack D backend agnosticism; the saved-state contract
+follows the cross-stack schema from the capture-format reference).

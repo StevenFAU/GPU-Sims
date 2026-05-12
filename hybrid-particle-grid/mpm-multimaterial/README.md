@@ -59,11 +59,13 @@ banked rationale.
 
 Measured on AMD RX 6800 XT + Taichi Vulkan (Phase 9 visual verification, polish-4 recalibration):
 
-| Tier | Particles | Grid | Vulkan / RX 6800 XT |
+| Tier | Particles (preset / reserve) | Grid | Vulkan / RX 6800 XT |
 |---|---|---|---|
-| Default | 128 000 | 64³ | _TBD — fill in after Phase 9 polish-4 verification_ |
-| Mid | 250 000 | 96³ | _TBD_ |
-| Stretch (capture-mode) | 500 000 | 128³ | _TBD_ |
+| Default | 128 000 (112 000 preset / 16 000 reserve) | 64³ | _TBD — fill in after Phase 9 polish-5 verification_ |
+| Mid | 250 000 (234 000 preset / 16 000 reserve) | 96³ | _TBD_ |
+| Stretch (capture-mode) | 500 000 (484 000 preset / 16 000 reserve) | 128³ | _TBD_ |
+
+The "reserve" column is `MAX_USER_EMITTERS × EMITTER_SLOT_SIZE = 8 × 2000 = 16 000` particles held back at the tail of the particle array for LMB-place user emitters. Presets fill the "preset" column from index 0; the reserve stays `F_used=0` until claimed by a click. See [`docs/load-bearing-decisions.md`](docs/load-bearing-decisions.md) "User-emitter reserve-tail allocation".
 
 CUDA / RTX 2080 Ti numbers TBD once that hardware is exercised. The 1M / 192³ tier
 referenced in the original Phase 9 spec is deferred to v1.1 — current dt=2e-4 violates

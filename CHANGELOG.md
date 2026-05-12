@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.10.1] - Phase 9.5: docs retro (tier1 reference + conventions futures caveat + project-state lenia-fft phase-tag fix)
+
+### Added
+- `docs/tier1-capture-format-reference.md`: descriptive capture-format reference covering top-level meta key conventions, complete `saveBuffer` enumeration across all 7 shipped sims, format-string normalization table, GpuProfiler CSV reality, and Stack B ZIP vs Stack C directory transport. Referenced from 7+ synced files (state_writer.py docstring, state_reader.py docstring, project-state.md § 7, diagnostics-overview.md, multiple sim phase specs) but never actually committed; this lands it.
+
+### Fixed
+- `docs/conventions.md` line 21: type-hints bullet now correctly notes that `from __future__ import annotations` is incompatible with `@ti.kernel` modules in Taichi 1.7.4. Phase 9 polish-2 banked this in `project-state.md` § 7 but `conventions.md` wasn't updated, leaving the two docs contradicting each other.
+- `project-state.md` line 180: lenia-fft row's "tied to Phase 7 (common-py)" data error corrected to "tied to Phase 9 (common-py)" — common-py shipped in Phase 9, not Phase 7.
+
+### Phase Ledger
+- New row 9.5 added to project-state.md § 3 documenting this docs retro.
+
+
 ## [0.10.0] - 2026-05-12
 
 ### Added

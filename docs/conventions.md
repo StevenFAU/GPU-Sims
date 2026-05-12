@@ -18,7 +18,7 @@ This document expands [`overarching-spec.md`](overarching-spec.md) § 8 with con
 
 - **Standard:** Python 3.11+.
 - **Formatter and linter:** `ruff` (replaces both `black` and `flake8`). Config in `pyproject.toml`.
-- **Type hints:** Required for non-trivial functions. Module-level `from __future__ import annotations` is encouraged.
+- **Type hints:** Required for non-trivial functions. Module-level `from __future__ import annotations` is encouraged EXCEPT in modules that define `@ti.kernel` functions with annotated arguments — Taichi 1.7.4 reads argument annotations via `isinstance()` at decoration time and rejects PEP-563-stringified annotations. Stack D sims with kernel-defining modules omit the future import per-file; see `project-state.md` § 7 (Phase 9 polish-2 banking) for the convention.
 - **Dependencies:** Per-sim `pyproject.toml`. Pin major versions; lock with `uv` or `poetry` lockfiles. Document GPU-specific install steps (e.g., Taichi backend selection) in the sim's README.
 - **Virtual environments:** Per-sim `.venv/`. Never commit virtualenv contents.
 - **Cross-backend posture (Stack D-specific).** Use `ti.init(arch=ti.gpu)` so Taichi

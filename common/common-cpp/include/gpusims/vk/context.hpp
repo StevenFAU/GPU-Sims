@@ -75,7 +75,7 @@ public:
 
 private:
     void createInstance(const ContextCreateInfo& info);
-    void createDebugMessenger();
+    void initDebugMessenger();
     void pickPhysicalDevice(const ContextCreateInfo& info);
     void createDevice(const ContextCreateInfo& info);
     void createAllocator();

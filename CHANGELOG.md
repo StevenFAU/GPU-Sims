@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.9.2] - 2026-05-11
+
+### Fixed
+
+- **`common/common-cpp/src/vk/context.cpp:207` name-collision** (latent since Phase 1, surfaced by Phase 8.5's CI fix-forward). Renamed the private member `Context::createDebugMessenger()` to `Context::initDebugMessenger()` so the line-207 unqualified call resolves to the namespace-scope free function `gpusims::vk::createDebugMessenger(...)` instead of shadowing on the class member. Three sites touched: `context.hpp:78` (declaration), `context.cpp:116` (ctor call), `context.cpp:202` (definition). Build (native) Debug-job now compiles cleanly for the first time since Phase 1.
+- **`.github/workflows/markdown.yml` lychee args** (latent since Phase 3.5). The repo's `lychee.toml` had `exclude_path = ["docs/sim-specs/_template.md"]` but `lychee-action`'s explicit-`args:` mode bypassed the config-file read. Added `--exclude-path docs/sim-specs/_template.md` to the workflow args. Markdown `Check internal links` job now passes.
+
+### Changed
+
+- **`project-state.md` § 9 "CI baseline"** rewritten as "CI baseline (post-Phase-8.5.1)" — honestly reflects that this is the first time in the project's history all five repo-level CI workflows are simultaneously green. Prior banking only addressed the three always-on workflows; the two path-triggered workflows had been red on at least one job each.
+- **`project-state.md` § 9 Stack C known-issues** added entry banking the line-207 name-collision episode (latent since Phase 1, root cause, resolution at Phase 8.5.1).
+- **`project-state.md` § 7 conventions** added two new entries: "Architect-1 fabrication discipline extends to transitive-dependency closures" (banks the Phase 8.5 Boost-dep lesson) and "Watch the actual CI surface, not the assumed CI surface" (banks the Phase 8.5.1 Debug-job-red-for-9-days lesson).
+- **`project-state.md` § 11 Quick reference** added a Stack C Debug build command alongside the existing Release command, so local builds catch Debug-only defects before they surface in CI.
+
+### Convention
+
+- **§ 7 "Architect-1 fabrication discipline extends to transitive-dependency closures"** — for any new system-package CI enablement, verify the transitive dep closure against the bare CI runner before locking the spec.
+- **§ 7 "Watch the actual CI surface, not the assumed CI surface"** — every Stack C-touching push should be followed by an explicit `gh run list --workflow=build-native.yml` check confirming both Release AND Debug jobs are green; same for Build (web) on Stack B pushes.
+
+
 ## [0.9.1] - 2026-05-11
 
 ### Added

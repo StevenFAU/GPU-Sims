@@ -113,7 +113,7 @@ Context::Context(const ContextCreateInfo& info) {
         throw std::runtime_error("Context: GLFW reports Vulkan unsupported on this system");
     }
     createInstance(info);
-    createDebugMessenger();
+    initDebugMessenger();
     pickPhysicalDevice(info);
     createDevice(info);
     createAllocator();
@@ -199,7 +199,7 @@ void Context::createInstance(const ContextCreateInfo& info) {
     }
 }
 
-void Context::createDebugMessenger() {
+void Context::initDebugMessenger() {
 #if GPU_SIMS_VALIDATION_LAYERS
     if (!checkValidationLayerSupport()) return;
     VkDebugUtilsMessengerCreateInfoEXT ci{};

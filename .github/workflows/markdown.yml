@@ -43,5 +43,6 @@ jobs:
             --exclude-path node_modules
             --exclude-path build
             --exclude-path dist
+            --exclude-path docs/sim-specs/_template.md
             './**/*.md'
           fail: true

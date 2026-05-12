@@ -23,7 +23,6 @@ free function is the canonical sim-side call site.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 
@@ -31,7 +30,7 @@ from gpusims_common.log import log
 
 # Try-import pyopenvdb. If absent, this module operates in stub-only mode.
 try:
-    import pyopenvdb as _vdb  # type: ignore[import-not-found]
+    import pyopenvdb as _vdb
     _HAS_VDB: bool = True
 except ImportError:
     _vdb = None

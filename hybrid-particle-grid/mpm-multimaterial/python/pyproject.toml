@@ -8,7 +8,13 @@ version = "0.1.0"
 description = "MLS-MPM multi-material (water + jelly + snow) using Taichi"
 requires-python = ">=3.11"
 dependencies = [
-    "gpusims-common-py @ file://../../../common/common-py",
+    # gpusims-common-py is installed editable by the prior CI step
+    # (.github/workflows/build-py.yml: "Install common-py + dev deps"),
+    # and locally by `pip install -e ../../../common/common-py` before
+    # running `pip install -e .` in this directory. The plain-name dep
+    # resolves to the editable install. (PEP 508 file:// URLs with
+    # relative paths are rejected by modern pip — banked Phase 9 retro.)
+    "gpusims-common-py",
     "taichi>=1.7.4,<1.8",
     "numpy>=1.26,<3",
 ]
@@ -29,7 +35,11 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "C4", "PIE", "RUF"]
-ignore = ["E501", "B008"]
+ignore = [
+    "E501",  # long kernel lines are OK
+    "B008",  # function calls in argument defaults are idiomatic with Taichi types
+    "E741",  # `for I in ti.grouped(...)` is canonical Taichi multi-dim index naming
+]
 
 [tool.mypy]
 python_version = "3.11"
@@ -38,6 +48,21 @@ warn_unused_ignores = true
 [[tool.mypy.overrides]]
 module = ["taichi.*", "pyopenvdb.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# @ti.kernel functions diverge from Python type semantics in multiple ways:
+# - Taichi 1.7.4 rejects `-> None` return annotations at decoration time.
+# - `ti.template()` arg annotation is call-form (Taichi runtime requirement);
+#   mypy --strict valid-type wants subscript form.
+# - Inside @ti.kernel scope, `int(vec)` returns ti.Vector[int] (with .cast()
+#   method); mypy infers Python int (no .cast). Same gap, different mypy code.
+# Cannot satisfy both Taichi runtime and mypy --strict simultaneously; relax
+# the affected mypy rules on kernel + kernel-test modules. Non-kernel modules
+# of the sim keep full mypy --strict.
+module = ["kernels", "tests.test_kernels"]
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+disable_error_code = ["valid-type", "no-untyped-def", "attr-defined"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

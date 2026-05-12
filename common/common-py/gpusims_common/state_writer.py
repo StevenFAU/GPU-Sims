@@ -159,7 +159,7 @@ class StateWriter:
         data: np.ndarray,
         count: int | None = None,
         stride: int | None = None,
-        format: str | None = None,  # noqa: A002 (shadows builtin; matches schema field name)
+        format: str | None = None,  # shadows builtin; matches schema field name (see tier1-capture-format-reference.md)
         shape: list[int] | tuple[int, ...] | None = None,
     ) -> None:
         """Save a numpy array as a binary blob.

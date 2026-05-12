@@ -238,8 +238,9 @@ The 1M tier shows a confirmation modal on selection ("This tier is for offline-r
 frame capture only. The simulation will run at 5–15 fps and the UI may stutter.
 Continue?") matching the eulerian-smoke 384³ stretch tier idiom.
 
-Performance numbers will be added per-tier on dev hardware (AMD RX 6800 XT desktop
-+ Vulkan; RTX 2080 Ti lab PC + CUDA) once user-driven visual verification ships.
+Performance numbers will be added per-tier on dev hardware (AMD RX 6800 XT
+desktop with Vulkan; RTX 2080 Ti lab PC with CUDA) once user-driven visual
+verification ships.
 
 ---
 

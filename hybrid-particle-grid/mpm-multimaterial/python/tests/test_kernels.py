@@ -16,7 +16,7 @@ import taichi as ti
 
 def test_kernels_imports() -> None:
     """kernels.py + presets.py import cleanly."""
-    import kernels  # noqa: F401
+    import kernels
     import presets  # noqa: F401
     assert kernels.WATER == 0
     assert kernels.JELLY == 1

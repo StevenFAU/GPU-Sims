@@ -21,7 +21,16 @@ which works on both backends; no `ti.atomic_add(vec_field[I], vec_value)`
 calls are made.
 """
 
-from __future__ import annotations
+# NOTE: deliberately NO `from __future__ import annotations`. Taichi 1.7.4's
+# @ti.kernel decorator reads argument annotations via isinstance() against
+# the actual annotation value; PEP 563 stringifies all annotations, which
+# causes Taichi to reject `ti.template()` arg annotations with
+# `TaichiSyntaxError: Invalid type annotation`. Verified against Taichi
+# 1.7.4 empirically. Other @ti.kernel-containing files in the repo
+# (examples/hello/main.py, common-py and sim tests/test_kernels.py) keep
+# `from __future__ import annotations` because their kernels use only
+# primitive-type annotations (float, int) which Taichi resolves correctly
+# from string form; only ti.template() requires the evaluated form.
 
 from typing import Final
 
@@ -42,7 +51,7 @@ _UNUSED_PARK_POS: Final[float] = 533799.0
 
 
 @ti.kernel
-def substep(  # noqa: PLR0913 — kernel needs every field + constant explicitly
+def substep(
     x: ti.template(),
     v: ti.template(),
     C: ti.template(),
@@ -56,7 +65,7 @@ def substep(  # noqa: PLR0913 — kernel needs every field + constant explicitly
     n_grid: ti.template(),
     g_x: float, g_y: float, g_z: float,
     e_young: float, nu_poisson: float,
-) -> None:
+):
     """One MLS-MPM substep: clear grid, P2G, grid update, G2P.
 
     The four phases are fused into a single @ti.kernel for backend perf —
@@ -173,7 +182,7 @@ def substep(  # noqa: PLR0913 — kernel needs every field + constant explicitly
 
 
 @ti.kernel
-def init_cube_volume(  # noqa: PLR0913
+def init_cube_volume(
     x: ti.template(),
     v: ti.template(),
     C: ti.template(),
@@ -186,7 +195,7 @@ def init_cube_volume(  # noqa: PLR0913
     x_begin: float, y_begin: float, z_begin: float,
     x_size: float, y_size: float, z_size: float,
     material: int,
-) -> None:
+):
     """Initialize particles [first_par, last_par) inside a cube volume.
 
     Position: uniform random.  Velocity: zero.  F: identity.  Jp: 1.0.
@@ -215,7 +224,7 @@ def set_all_unused(
     F: ti.template(),
     Jp: ti.template(),
     used: ti.template(),
-) -> None:
+):
     """Park all particles as 'unused'; reset to identity / zero so a subsequent
     init_cube_volume call doesn't inherit stale state."""
     for p in used:
@@ -232,7 +241,7 @@ def set_color_by_material(
     colors: ti.template(),
     materials: ti.template(),
     mat_color: ti.types.ndarray(),
-) -> None:
+):
     """Apply per-material colors. `mat_color` shape: (3 materials, 3 RGB)."""
     for p in colors:
         m = materials[p]

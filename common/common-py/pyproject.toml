@@ -38,6 +38,7 @@ select = ["E", "F", "W", "I", "UP", "B", "C4", "PIE", "RUF"]
 ignore = [
     "E501",  # line-length handled by formatter; long Taichi kernel lines are OK
     "B008",  # function calls in argument defaults are idiomatic with Taichi types
+    "E741",  # `for I in ti.grouped(...)` is canonical Taichi multi-dim index naming
 ]
 
 [tool.mypy]
@@ -54,6 +55,16 @@ warn_unreachable = true
 [[tool.mypy.overrides]]
 module = ["taichi.*", "pyopenvdb.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# @ti.kernel decorations strip return annotations (Taichi 1.7.4 rejects -> None
+# at decoration time) and use ti.template() argument annotations in call form
+# (Taichi runtime requirement; mypy --strict's valid-type wants subscript form).
+# Relaxing strict on test modules that exercise @ti.kernel.
+module = ["tests.test_kernels"]
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+disable_error_code = ["valid-type", "no-untyped-def"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

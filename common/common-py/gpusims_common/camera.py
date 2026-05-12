@@ -222,7 +222,8 @@ class Camera:
         return m
 
     def view_projection(self) -> np.ndarray:
-        return self.projection() @ self.view()
+        result: np.ndarray = self.projection() @ self.view()
+        return result
 
     # ------------------------------------------------------------------
     # Position / orientation accessors

@@ -34,11 +34,10 @@ Run:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Final
+from typing import Final
 
 import numpy as np
 import taichi as ti
-
 from gpusims_common import (
     Camera,
     CameraMode,
@@ -51,7 +50,7 @@ from gpusims_common import (
 
 import kernels
 import presets
-from kernels import JELLY, SNOW, WATER
+from kernels import WATER
 from presets import CubeVolume
 
 # ----------------------------------------------------------------------
@@ -243,7 +242,6 @@ def main() -> None:
     # Runtime mutables
     gravity = list(GRAVITY_DEFAULT)
     paused = is_capture_mode  # capture-mode tiers start paused
-    use_random_colors = False
     material_colors = [
         [0.1, 0.6, 0.9],   # water — blue
         [0.93, 0.33, 0.23],# jelly — red-orange
@@ -456,7 +454,7 @@ def main() -> None:
                         frame_idx = 0
                         paused = True
         with panel.folder("Tier", 0.02, 0.24, 0.22, 0.15) as f:
-            for i, (label, _np_, _ng_, capture_mode_i) in enumerate(TIERS):
+            for i, (label, _, _, capture_mode_i) in enumerate(TIERS):
                 if f.checkbox(label, tier_idx == i):
                     if tier_idx != i:
                         if capture_mode_i:
@@ -511,7 +509,7 @@ def main() -> None:
         # Applied after window.show() so the panel state is consistent across the frame.
         if pending_tier_change is not None:
             new_idx = pending_tier_change
-            new_label, new_n, new_g, new_capture_mode = TIERS[new_idx]
+            _new_label, new_n, new_g, new_capture_mode = TIERS[new_idx]
             log.info(
                 "tier change: %d → %d (%d particles, %d^3 grid). Recompiling kernels…",
                 tier_idx, new_idx, new_n, new_g,

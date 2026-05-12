@@ -39,16 +39,17 @@ def test_cpu_kernel_compile_and_run() -> None:
     out_sig = ti.field(ti.f32, n)
 
     @ti.kernel
-    def init() -> None:
+    def init():
         for i in range(n):
             x[i] = ti.Vector([ti.random(), ti.random(), ti.random()])
             F[i] = ti.Matrix.identity(ti.f32, dim)
 
     @ti.kernel
-    def svd_smoke() -> None:
+    def svd_smoke():
         for I in ti.grouped(x):
             # Exercise the SVD path used by MPM plasticity.
-            U, sig, V = ti.svd(F[I], ti.f32)
+            # U / V intentionally unused — this smoke test only verifies sig.
+            _U, sig, _V = ti.svd(F[I], ti.f32)
             # Capture trace(sig) into a scalar field.
             s = 0.0
             for d in ti.static(range(dim)):
@@ -72,7 +73,7 @@ def test_field_to_numpy_roundtrip() -> None:
     x = ti.Vector.field(3, ti.f32, n)
 
     @ti.kernel
-    def fill() -> None:
+    def fill():
         for i in range(n):
             x[i] = ti.Vector([float(i), float(i) * 2.0, float(i) * 3.0])
 

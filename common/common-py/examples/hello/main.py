@@ -69,7 +69,7 @@ colors = ti.Vector.field(4, ti.f32, shape=N_PARTICLES)
 
 
 @ti.kernel
-def initialize_particles() -> None:
+def initialize_particles():
     for i in range(N_PARTICLES):
         x[i] = ti.Vector([ti.random() * 0.6 + 0.2, ti.random() * 0.3 + 0.6, ti.random() * 0.6 + 0.2])
         v[i] = ti.Vector([0.0, 0.0, 0.0])
@@ -77,7 +77,7 @@ def initialize_particles() -> None:
 
 
 @ti.kernel
-def step(dt: float, gravity_y: float) -> None:
+def step(dt: float, gravity_y: float):
     for i in range(N_PARTICLES):
         v[i].y += dt * gravity_y
         x[i] += dt * v[i]

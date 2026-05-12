@@ -242,10 +242,14 @@ def main() -> None:
     # Runtime mutables
     gravity = list(GRAVITY_DEFAULT)
     paused = is_capture_mode  # capture-mode tiers start paused
-    material_colors = [
-        [0.1, 0.6, 0.9],   # water — blue
-        [0.93, 0.33, 0.23],# jelly — red-orange
-        [0.95, 0.95, 1.0], # snow — near-white
+    # Material RGB tuples. MUST be tuples not lists — Taichi 1.7.4's
+    # gui.color_edit_3 pybind11 binding strict-rejects list args at runtime
+    # (caught in user-driven visual verification, not CI — GGUI surface
+    # isn't exercised by CI since there's no display).
+    material_colors: list[tuple[float, float, float]] = [
+        (0.1, 0.6, 0.9),     # water — blue
+        (0.93, 0.33, 0.23),  # jelly — red-orange
+        (0.95, 0.95, 1.0),   # snow — near-white
     ]
     particles_radius = 0.005
     export_vdb_enabled = False
@@ -472,7 +476,10 @@ def main() -> None:
             jelly_c = f.color_edit_3("jelly", material_colors[1])
             snow_c  = f.color_edit_3("snow",  material_colors[2])
             if water_c != material_colors[0] or jelly_c != material_colors[1] or snow_c != material_colors[2]:
-                material_colors = [list(water_c), list(jelly_c), list(snow_c)]
+                # color_edit_3 returns tuple; preserve tuple shape so the
+                # next frame's call doesn't re-trigger the list-vs-tuple
+                # pybind11 rejection.
+                material_colors = [water_c, jelly_c, snow_c]
                 kernels.set_color_by_material(
                     state.colors, state.materials,
                     np.array(material_colors, dtype=np.float32),

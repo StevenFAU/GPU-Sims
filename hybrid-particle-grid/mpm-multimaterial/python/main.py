@@ -91,7 +91,7 @@ MAX_USER_EMITTERS: Final[int] = 8
 # Per-emitter particle slot size. Sized for visual density-parity with typical
 # preset water at 64³ grid — a 0.08³ user cube at 2000 particles gives ~3.9M
 # particles/unit³, within order-of-magnitude of typical preset water density
-# (~1-3M particles/unit³). The reserve region (MAX_USER_EMITTERS × EMITTER_SLOT_SIZE
+# (~1-3M particles/unit³). The reserve region (MAX_USER_EMITTERS * EMITTER_SLOT_SIZE
 # = 16 000 particles at default constants) is held back from preset allocation
 # by init_volumes; presets fill indices 0..(n_particles - EMITTER_RESERVE_SIZE)
 # and the tail stays F_used=0 until claimed by LMB-place. See

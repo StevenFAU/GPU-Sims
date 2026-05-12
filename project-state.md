@@ -672,7 +672,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: `<Phase 8.5 commit SHA — back-fill in a separate follow-up commit per § 7 "Commit-SHA back-fill must use a separate follow-up commit, not `git commit --amend`">` — Phase 8.5 hardening pass (on top of `532f20c`, Phase 8 closeout SHA back-fill).
+- Latest commit: `9c2f900` — Phase 8.5 hardening pass (on top of `532f20c`, Phase 8 closeout SHA back-fill).
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)

@@ -1,29 +1,7 @@
 {
+  "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "types": ["@webgpu/types", "vite/client", "node"],
-
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": true,
-
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-
-    "resolveJsonModule": true,
-    "isolatedModules": true
+    "types": ["@webgpu/types", "vite/client", "node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "examples"]

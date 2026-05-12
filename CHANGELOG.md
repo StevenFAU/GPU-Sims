@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.9.1] - 2026-05-11
+
+### Added
+
+- `tsconfig.shared.json` at repo root — single source of truth for Stack B TypeScript compiler flags. Every Stack B workspace tsconfig `extends:` it. Strict superset including `noUncheckedIndexedAccess: true`, formalized in `project-state.md` § 7 "Stack B shared `tsconfig.shared.json` extends-from-root pattern."
+
+### Changed
+
+- **CI: `.github/workflows/build-native.yml` Release job** — added `libopenvdb-dev` to apt-get install list; added `-DGPU_SIMS_USE_OPENVDB=ON` to the CMake configure step. The Release job now exercises eulerian-smoke's OpenVDB-enabled code path on every push. Debug job continues to verify stub-mode compilation.
+- **Stack B tsconfigs (seven files)** refactored to extends-from-root pattern: `common/common-web/tsconfig.json`, `common/common-web/examples/hello/tsconfig.json`, `closed-form/strange-attractors/web/tsconfig.json`, `closed-form/mandelbulb-explorer/web/tsconfig.json`, `continuous-ca/reaction-diffusion-2d/web/tsconfig.json`, `agent-based/physarum/web/tsconfig.json`, `agent-based/boids-3d/web/tsconfig.json`.
+- **`common-web/src/gpuProfiler.ts` and `common-web/src/stateReader.ts`** — fixed all strict-mode sites flagged by `noUncheckedIndexedAccess: true` (exact site count in the commit body and the Phase 8.5 completion report). Fix pattern: explicit guard + `log.warn` or `throw`, fail-loud; no `!` non-null assertions.
+- **Root `README.md` gallery row** — mandelbulb-explorer status flipped from "Not started" (stale since Phase 4 shipped at `8d8334f`) to live link + Phase 4 reference.
+- **`project-state.md`** — Phase 8.5 entries: "Last updated" prologue updated; § 7 "Stack B tsconfig.json shape parity" rewritten as "Stack B shared `tsconfig.shared.json` extends-from-root pattern"; § 9 strict-mode-gaps entry marked resolved; § 9 present-mode entry rewritten as a retraction of the Phase 8 attribution (see "Retracted" section below); § 11 Quick reference latest-commit pointer, live-sims list, and Vite port list all refreshed.
+- **`volumetric-grid/eulerian-smoke/docs/notes.md` Priority 1.12** — rewritten as "Diagnose actual cause of sustained fan load" (was: "VSync default + panel toggle"). See "Retracted" section.
+
+### Retracted
+
+- **Present-mode-as-heat-source attribution (Phase 8 retro, commit `9ad5120`).** The original Phase 8.5 brief banked a `Window`-ctor `VkPresentModeKHR` API amendment as the proper fix for eulerian-smoke's sustained fan load on the RX 6800 XT. The hypothesis was made without measurement and was falsified by direct test (`vblank_mode=3 ./build/bin/eulerian_smoke` — forces FIFO at the Mesa driver layer, equivalent to the proposed API amendment for the user-facing effect — did not reduce fan load). The `Window` API amendment scope was dropped from Phase 8.5. `project-state.md` § 9 line 519 and `volumetric-grid/eulerian-smoke/docs/notes.md` Priority 1.12 were both amended to retract the framing; § 7 line 457 instance (d) (the architect-1 fabrication-pattern entry that itself surfaced the contradiction) stands as-is. The actual cause of the sustained fan load is uncharacterized and banked as a v1.1 diagnostic item.
+
+### Convention
+
+- **§ 7 "Stack B shared `tsconfig.shared.json` extends-from-root pattern"** added (replaces "Stack B `tsconfig.json` shape parity").
+
+
 ## [0.9.0] - 2026-05-11
 
 ### Added

@@ -41,6 +41,7 @@ jobs:
             libvulkan-dev \
             vulkan-tools \
             vulkan-validationlayers \
+            libopenvdb-dev \
             spirv-tools \
             glslang-tools
 
@@ -49,12 +50,13 @@ jobs:
           vulkaninfo --summary || true
           glslangValidator --version
 
-      - name: Configure (Release, examples ON)
+      - name: Configure (Release, examples ON, OpenVDB ON)
         run: |
           cmake -S . -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
-            -DGPU_SIMS_BUILD_EXAMPLES=ON
+            -DGPU_SIMS_BUILD_EXAMPLES=ON \
+            -DGPU_SIMS_USE_OPENVDB=ON
 
       - name: Build
         run: cmake --build build --parallel

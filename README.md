@@ -13,7 +13,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 | Sim | Category | Stack | Status |
 |---|---|---|---|
 | [Strange attractors](closed-form/strange-attractors/) | Closed-form | WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/strange-attractors/) (Phase 2) |
-| [Mandelbulb explorer](closed-form/mandelbulb-explorer/) | Closed-form | Shadertoy → WebGPU | Not started |
+| [Mandelbulb explorer](closed-form/mandelbulb-explorer/) | Closed-form | Shadertoy → WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/) (Phase 4) |
 | [Physarum](agent-based/physarum/) | Agent-based | WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/physarum/) (Phase 6) |
 | [Boids-3D](agent-based/boids-3d/) | Agent-based | WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/boids-3d/) (Phase 7) |
 | [Reaction-diffusion 2D](continuous-ca/reaction-diffusion-2d/) | Continuous CA | Shadertoy → WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/) (Phase 5) |

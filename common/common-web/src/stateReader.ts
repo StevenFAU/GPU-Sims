@@ -39,7 +39,12 @@ export class StateReader {
             }
             const dirName = stateKey.slice(0, -'/state.json'.length);
 
-            const stateText = strFromU8(entries[stateKey]);
+            const stateBytes = entries[stateKey];
+            if (!stateBytes) {
+                log.error('StateReader: no state.json bytes in archive');
+                return null;
+            }
+            const stateText = strFromU8(stateBytes);
             const state = JSON.parse(stateText) as {
                 frame: number; meta: JsonObject; buffers: JsonObject[];
             };

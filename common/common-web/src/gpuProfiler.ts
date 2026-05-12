@@ -40,7 +40,7 @@ export class GpuProfiler {
         this.hasTimestamp = device.features.has('timestamp-query');
 
         for (let i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            this.frames.push({
+            const frame: FrameData = {
                 passNames: new Array<string>(MAX_PASSES).fill(''),
                 cpuBegin: new Array<number>(MAX_PASSES).fill(0),
                 cpuEnd: new Array<number>(MAX_PASSES).fill(0),
@@ -49,7 +49,7 @@ export class GpuProfiler {
                 resultBuffer: null,
                 readbackBuffer: null,
                 readbackState: 'idle',
-            });
+            };
 
             if (this.hasTimestamp) {
                 const qs = device.createQuerySet({
@@ -57,17 +57,19 @@ export class GpuProfiler {
                     count: QUERIES_PER_FRAME,
                 });
                 this.querySets.push(qs);
-                this.frames[i].resultBuffer = device.createBuffer({
+                frame.resultBuffer = device.createBuffer({
                     size: QUERIES_PER_FRAME * 8,
                     usage: GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC,
                 });
-                this.frames[i].readbackBuffer = device.createBuffer({
+                frame.readbackBuffer = device.createBuffer({
                     size: QUERIES_PER_FRAME * 8,
                     usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
                 });
             } else {
                 this.querySets.push(null);
             }
+
+            this.frames.push(frame);
         }
 
         if (!this.hasTimestamp) {
@@ -91,6 +93,10 @@ export class GpuProfiler {
     beginFrame(frameInFlightIdx: number): void {
         this.currentIdx = frameInFlightIdx;
         const f = this.frames[this.currentIdx];
+        if (!f) {
+            log.warn(`GpuProfiler: beginFrame idx ${this.currentIdx} out of bounds`);
+            return;
+        }
         f.passCount = 0;
 
         // Only kick off a new readback if no prior readback is still pending.
@@ -144,7 +150,7 @@ export class GpuProfiler {
         if (!this.hasTimestamp) return;
         const f = this.frames[this.currentIdx];
         const qs = this.querySets[this.currentIdx];
-        if (!qs || !f.resultBuffer || !f.readbackBuffer) return;
+        if (!f || !qs || !f.resultBuffer || !f.readbackBuffer) return;
         if (f.passCount === 0) return;
         encoder.resolveQuerySet(qs, 0, 2 * f.passCount, f.resultBuffer, 0);
         encoder.copyBufferToBuffer(f.resultBuffer, 0, f.readbackBuffer, 0, 2 * f.passCount * 8);
@@ -172,6 +178,10 @@ export class GpuProfiler {
 
     private beginPass(name: string): number {
         const f = this.frames[this.currentIdx];
+        if (!f) {
+            log.warn(`GpuProfiler: beginPass idx ${this.currentIdx} out of bounds`);
+            return -1;
+        }
         if (f.passCount >= MAX_PASSES) {
             log.warn(`GpuProfiler: pass count exceeded; '${name}' ignored`);
             return -1;
@@ -185,11 +195,19 @@ export class GpuProfiler {
     private endPass(slot: number): void {
         if (slot < 0) return;
         const f = this.frames[this.currentIdx];
+        if (!f) {
+            log.warn(`GpuProfiler: endPass idx ${this.currentIdx} out of bounds`);
+            return;
+        }
         f.cpuEnd[slot] = performance.now();
     }
 
     private async readBack(idx: number): Promise<void> {
         const f = this.frames[idx];
+        if (!f) {
+            log.warn(`GpuProfiler: readBack idx ${idx} out of bounds`);
+            return;
+        }
         if (f.readbackState !== 'pending') return;
         if (!this.hasTimestamp || !f.readbackBuffer) {
             this.publishCpuOnly(f);
@@ -214,10 +232,15 @@ export class GpuProfiler {
         for (let i = 0; i < f.passCount; i++) {
             const t0 = view[2 * i + 0];
             const t1 = view[2 * i + 1];
+            const name = f.passNames[i];
+            const cpuBegin = f.cpuBegin[i];
+            const cpuEnd = f.cpuEnd[i];
+            if (t0 === undefined || t1 === undefined || name === undefined
+                || cpuBegin === undefined || cpuEnd === undefined) continue;
             const gpuNs = t1 > t0 ? Number(t1 - t0) : 0;  // ns per WebGPU spec
             out.push({
-                name: f.passNames[i],
-                cpuMs: f.cpuEnd[i] - f.cpuBegin[i],
+                name,
+                cpuMs: cpuEnd - cpuBegin,
                 gpuMs: gpuNs / 1e6,
             });
         }
@@ -227,9 +250,13 @@ export class GpuProfiler {
     private publishCpuOnly(f: FrameData): void {
         const out: PassResult[] = [];
         for (let i = 0; i < f.passCount; i++) {
+            const name = f.passNames[i];
+            const cpuBegin = f.cpuBegin[i];
+            const cpuEnd = f.cpuEnd[i];
+            if (name === undefined || cpuBegin === undefined || cpuEnd === undefined) continue;
             out.push({
-                name: f.passNames[i],
-                cpuMs: f.cpuEnd[i] - f.cpuBegin[i],
+                name,
+                cpuMs: cpuEnd - cpuBegin,
                 gpuMs: 0,
             });
         }

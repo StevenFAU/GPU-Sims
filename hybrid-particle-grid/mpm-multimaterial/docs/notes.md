@@ -47,6 +47,23 @@ shape-locking choices; `notes.md` captures non-load-bearing followups.
 - **F5 / F9 toast notifications.** On-screen 1-second toast on save/load.
 - **Camera presets.** "Top-down" / "Side-view" / "Hero-angle" buttons matching
   the Blender render setup.
+- **F-key save/load keybinding investigation.** Phase 9's `49c0559` polish
+  pass added "save state" / "load latest" buttons in both hello and MPM
+  Export panels because the spec's `F5`/`F9` keybindings did not fire on
+  the AMD RX 6800 XT + Taichi Vulkan + X11 dev setup — captures dir
+  empty when only F-keys pressed, populated when buttons clicked. Root
+  cause unverified: either Taichi GGUI doesn't route F-keys through its
+  event system on this backend (no F-key constants in
+  `taichi/ui/constants.py`; zero F-key references in Taichi's own
+  examples), or the event-string is uppercase `"F5"` while the spec used
+  lowercase `"f5"`. The polish-3 commit kept the F-key handlers with
+  case-insensitive matching plus added a `log.info("key event: %r", ev.key)`
+  diagnostic. Next-session investigation: run either sim, press
+  Fn+5/Fn+9/regular letters/space, copy the `key event:` lines from
+  stderr, and decide between (a) one-line keybinding fix if Taichi
+  reports a known string, or (b) drop the F-key handlers entirely and
+  demote the diagnostic if Taichi doesn't fire F-key events at all.
+  Banked Phase 9.
 
 ## Banked CI workflow items
 

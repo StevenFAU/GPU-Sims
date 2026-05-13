@@ -132,6 +132,27 @@ void Buffer::stage(Context& ctx, const void* src, std::size_t bytes, std::size_t
     });
 }
 
+void Buffer::readback(Context& ctx, void* dst, std::size_t bytes, std::size_t offset) {
+    assert(dst && "readback dst must be non-null");
+    assert(offset + bytes <= size_ && "readback range out of bounds");
+
+    Buffer staging = Buffer::create(ctx, bytes,
+                                    VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                    MemoryUsage::HostVisibleRandom,
+                                    "buffer-readback");
+
+    ctx.runOneShot([&](VkCommandBuffer cb) {
+        VkBufferCopy region{};
+        region.srcOffset = offset;
+        region.dstOffset = 0;
+        region.size      = bytes;
+        vkCmdCopyBuffer(cb, buffer_, staging.handle(), 1, &region);
+    });
+
+    vmaInvalidateAllocation(ctx.allocator(), staging.allocation_, 0, bytes);
+    std::memcpy(dst, staging.mapped(), bytes);
+}
+
 VkDeviceAddress Buffer::deviceAddress(VkDevice device) const {
     if (buffer_ == VK_NULL_HANDLE) return 0;
     VkBufferDeviceAddressInfo bi{};

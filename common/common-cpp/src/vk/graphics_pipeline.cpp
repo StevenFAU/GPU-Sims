@@ -131,12 +131,12 @@ VkPipeline buildPipeline(Context& ctx,
                             VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     cb_att.blendEnable    = d.blend_enable ? VK_TRUE : VK_FALSE;
     if (d.blend_enable) {
-        cb_att.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-        cb_att.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        cb_att.colorBlendOp        = VK_BLEND_OP_ADD;
-        cb_att.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-        cb_att.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        cb_att.alphaBlendOp        = VK_BLEND_OP_ADD;
+        cb_att.srcColorBlendFactor = d.src_color_blend_factor;
+        cb_att.dstColorBlendFactor = d.dst_color_blend_factor;
+        cb_att.colorBlendOp        = d.color_blend_op;
+        cb_att.srcAlphaBlendFactor = d.src_alpha_blend_factor;
+        cb_att.dstAlphaBlendFactor = d.dst_alpha_blend_factor;
+        cb_att.alphaBlendOp        = d.alpha_blend_op;
     }
 
     VkPipelineColorBlendStateCreateInfo cb{};

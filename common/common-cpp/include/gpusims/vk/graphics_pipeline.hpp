@@ -40,6 +40,18 @@ struct GraphicsPipelineDesc {
     bool                                       depth_write = false;
     bool                                       blend_enable= false;
 
+    // Blend factors / op. Read by graphics_pipeline.cpp ONLY when blend_enable
+    // is true. Defaults match the historical hardcoded behavior (premultiplied-
+    // alpha blend), so consumers that just flip blend_enable=true get the same
+    // result as before. Phase 11 sph-water thickness pass needs additive blend
+    // (SRC=ONE, DST=ONE, OP=ADD) and uses this surface to opt in.
+    VkBlendFactor                              src_color_blend_factor = VK_BLEND_FACTOR_SRC_ALPHA;
+    VkBlendFactor                              dst_color_blend_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    VkBlendOp                                  color_blend_op         = VK_BLEND_OP_ADD;
+    VkBlendFactor                              src_alpha_blend_factor = VK_BLEND_FACTOR_ONE;
+    VkBlendFactor                              dst_alpha_blend_factor = VK_BLEND_FACTOR_ZERO;
+    VkBlendOp                                  alpha_blend_op         = VK_BLEND_OP_ADD;
+
     // No vertex input by default (suitable for fullscreen triangle drawn
     // from gl_VertexIndex). Per-sim code overrides as needed.
     std::vector<VkVertexInputBindingDescription>   vertex_bindings;

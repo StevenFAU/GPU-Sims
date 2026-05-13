@@ -51,6 +51,13 @@ public:
     // queue. Synchronous (waits for copy to complete).
     void stage(Context& ctx, const void* src, std::size_t bytes, std::size_t offset = 0);
 
+    // Symmetric counterpart to stage(): copy bytes out of a DeviceLocal buffer
+    // into host memory. Allocates a transient host-visible staging buffer,
+    // submits a vkCmdCopyBuffer on the graphics queue, waits, and memcpys
+    // the staging contents into dst. Synchronous. Phase 11 sph-water consumer
+    // for F5 capture-save + Alembic-export per-frame readback.
+    void readback(Context& ctx, void* dst, std::size_t bytes, std::size_t offset = 0);
+
     // Get a VkBufferDeviceAddress (for buffer device addresses).
     VkDeviceAddress deviceAddress(VkDevice device) const;
 

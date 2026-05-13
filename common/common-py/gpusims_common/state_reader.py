@@ -43,21 +43,29 @@ class StateReader:
         self._root: Path = Path(root_dir)
 
     def find_latest(self) -> Path | None:
+        """Return the most recently written capture directory, or None.
+
+        'Latest' means most-recent mtime — the capture the user most
+        recently saved, regardless of frame index. Frame indices reset
+        when a sim restarts, so capture_2301 from a previous session is
+        NOT 'later' than capture_0319 from the current session despite
+        the higher index. Banked Phase 10 polish-stream rule-of-three
+        reverse fire (Convention 4): consumer #2 (lenia-fft) surfaced
+        this defect by exercising F9 across multiple sessions in one
+        captures/ dir; MPM (consumer #1) hadn't.
+        """
         if not self._root.is_dir():
             return None
-        best_idx = -1
-        best_path: Path | None = None
+        candidates: list[Path] = []
         for child in self._root.iterdir():
             if not child.is_dir():
                 continue
-            m = _CAPTURE_NAME_RE.match(child.name)
-            if not m:
+            if not _CAPTURE_NAME_RE.match(child.name):
                 continue
-            idx = int(m.group(1))
-            if idx > best_idx:
-                best_idx = idx
-                best_path = child
-        return best_path
+            candidates.append(child)
+        if not candidates:
+            return None
+        return max(candidates, key=lambda p: p.stat().st_mtime)
 
     def find_by_frame(self, frame_idx: int) -> Path | None:
         candidate = self._root / f"capture_{frame_idx:04d}"

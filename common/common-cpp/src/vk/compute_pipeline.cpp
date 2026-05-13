@@ -102,6 +102,22 @@ ComputePipeline ComputePipeline::create(Context&                   ctx,
     ss.module = p.shader_module_;
     ss.pName  = "main";
 
+    // Phase 11 sph-water: subgroup-size-control extension. See INVARIANT in
+    // compute_pipeline.hpp. The extension struct is stack-allocated; its
+    // lifetime must span vkCreateComputePipelines below, so it lives in the
+    // enclosing scope.
+    VkPipelineShaderStageRequiredSubgroupSizeCreateInfo subgroup_size_ci{};
+    if (desc.required_subgroup_size != 0) {
+        subgroup_size_ci.sType =
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO;
+        subgroup_size_ci.requiredSubgroupSize = desc.required_subgroup_size;
+        subgroup_size_ci.pNext = const_cast<void*>(ss.pNext);
+        ss.pNext = &subgroup_size_ci;
+    }
+    if (desc.require_full_subgroups) {
+        ss.flags |= VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT;
+    }
+
     VkComputePipelineCreateInfo cpi{};
     cpi.sType  = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
     cpi.stage  = ss;
@@ -176,6 +192,20 @@ bool ComputePipeline::reload(Context&        ctx,
     ss.stage  = VK_SHADER_STAGE_COMPUTE_BIT;
     ss.module = new_module;
     ss.pName  = "main";
+
+    // Phase 11 sph-water: preserve subgroup-size pin on hot reload. Same
+    // conditional invariant as ComputePipeline::create (see header).
+    VkPipelineShaderStageRequiredSubgroupSizeCreateInfo subgroup_size_ci{};
+    if (desc_.required_subgroup_size != 0) {
+        subgroup_size_ci.sType =
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO;
+        subgroup_size_ci.requiredSubgroupSize = desc_.required_subgroup_size;
+        subgroup_size_ci.pNext = const_cast<void*>(ss.pNext);
+        ss.pNext = &subgroup_size_ci;
+    }
+    if (desc_.require_full_subgroups) {
+        ss.flags |= VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT;
+    }
 
     VkComputePipelineCreateInfo cpi{};
     cpi.sType  = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;

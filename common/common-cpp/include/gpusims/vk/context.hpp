@@ -37,6 +37,13 @@ struct ContextCreateInfo {
 
     // Enable VK_KHR_swapchain. true unless this is a headless render-only sim.
     bool                       enable_swapchain = true;
+
+    // Phase 11 (sph-water) consumer #1 of subgroup-size-control.
+    // When true: enables VkPhysicalDeviceVulkan13Features::subgroupSizeControl
+    // and queries VkPhysicalDeviceSubgroupSizeControlProperties at device-create
+    // time. Throws if the device does not support the feature — fail-loud rather
+    // than silently producing platform-dependent wavefront-size behavior.
+    bool                       enable_subgroup_size_control = false;
 };
 
 class Context {
@@ -64,6 +71,20 @@ public:
     // want to scale parameters by hardware capability.
     const VkPhysicalDeviceProperties&    deviceProperties()    const { return props_; }
     const VkPhysicalDeviceMemoryProperties& memoryProperties() const { return mem_props_; }
+
+    // Subgroup-size-control properties.
+    //
+    // Populated at device-create time when ContextCreateInfo::
+    // enable_subgroup_size_control was true. When the feature was NOT requested
+    // these return 0 / 0 / 0 / false — consult them only when the feature was
+    // requested.
+    //
+    // Values originate from VkPhysicalDeviceSubgroupSizeControlProperties
+    // queried via vkGetPhysicalDeviceProperties2 during Context construction.
+    std::uint32_t subgroupSizeMin()              const { return subgroup_size_min_; }
+    std::uint32_t subgroupSizeMax()              const { return subgroup_size_max_; }
+    std::uint32_t requiredSubgroupSizeStages()   const { return required_subgroup_size_stages_; }
+    bool          subgroupSizeControlEnabled()   const { return subgroup_size_control_enabled_; }
 
     // Wait until all work submitted to all queues is complete. Use sparingly
     // (mostly at shutdown or before reloading large resources).
@@ -97,6 +118,13 @@ private:
 
     VkPhysicalDeviceProperties             props_{};
     VkPhysicalDeviceMemoryProperties       mem_props_{};
+
+    // Cached subgroup-size-control properties (populated when
+    // ContextCreateInfo::enable_subgroup_size_control was true; otherwise zeros).
+    std::uint32_t subgroup_size_min_              = 0;
+    std::uint32_t subgroup_size_max_              = 0;
+    std::uint32_t required_subgroup_size_stages_  = 0;
+    bool          subgroup_size_control_enabled_  = false;
 };
 
 }  // namespace gpusims::vk

@@ -2,11 +2,14 @@
 // gpu_sims_hello — common-cpp Phase 1 reference application
 // =============================================================================
 
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <optional>
+#include <stdexcept>
 
 #include <GLFW/glfw3.h>
 #include <imgui.h>
@@ -140,12 +143,86 @@ struct GradientPush {
     float pad;
 };
 
+// =============================================================================
+// Phase 11 sph-water smoke test for subgroup-size-control surface.
+//
+// Exercises the new common-cpp APIs added by the Phase 11 follow-up:
+//   - ContextCreateInfo::enable_subgroup_size_control
+//   - Context::subgroupSizeMin/Max/requiredSubgroupSizeStages/...Enabled
+//   - ComputePipelineDesc::required_subgroup_size / require_full_subgroups
+//
+// Ships with the surface-addition commit so the new API has proof-of-life
+// independent of the Turn 4 main.cpp consumer code.
+// =============================================================================
+static int runSubgroupSizeControlSmokeTest() {
+    using namespace gpusims;
+    logInfo("hello: subgroup-size-control smoke test starting");
+
+    gv::ContextCreateInfo cdesc{};
+    cdesc.application_name              = "gpu_sims_hello_subgroup";
+    cdesc.enable_subgroup_size_control  = true;
+    gv::Context ctx(cdesc);
+
+    logInfo("hello: subgroup-size min={} max={} stages=0x{:x} enabled={}",
+            ctx.subgroupSizeMin(),
+            ctx.subgroupSizeMax(),
+            ctx.requiredSubgroupSizeStages(),
+            ctx.subgroupSizeControlEnabled());
+
+    // Sanity checks.
+    if (ctx.subgroupSizeMin() == 0u ||
+        ctx.subgroupSizeMax() < ctx.subgroupSizeMin() ||
+        !ctx.subgroupSizeControlEnabled()) {
+        logError("hello: subgroup-size sanity check failed");
+        return 1;
+    }
+
+    // Build a trivial compute pipeline with required_subgroup_size pinned.
+    // The shader uses local_size_x = 32 so we pick a required size in
+    // [min, max] that's also a multiple of/compatible with the kernel's
+    // local-size (clamp the chosen value into the device's reported range).
+    gv::ShaderCompiler compiler(ctx);
+    const std::filesystem::path shader_dir = GPU_SIMS_HELLO_SHADER_DIR;
+    compiler.addIncludeDir(shader_dir);
+
+    gv::ComputePipelineDesc pdesc;
+    pdesc.shader_path = shader_dir / "trivial.comp.glsl";
+    pdesc.bindings.push_back({0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT});
+    pdesc.push_constant_size = 0;
+    pdesc.required_subgroup_size = std::clamp(
+        std::max(32u, ctx.subgroupSizeMin()),
+        ctx.subgroupSizeMin(),
+        ctx.subgroupSizeMax());
+    pdesc.require_full_subgroups = true;
+
+    try {
+        auto pipe = gv::ComputePipeline::create(ctx, compiler, pdesc);
+        logInfo("hello: compute pipeline with required_subgroup_size={} created OK",
+                pdesc.required_subgroup_size);
+        (void)pipe;  // destruct at scope end — exercises the destructor path too
+    } catch (const std::exception& e) {
+        logError("hello: pipeline creation with required_subgroup_size={} failed: {}",
+                 pdesc.required_subgroup_size, e.what());
+        return 1;
+    }
+
+    logInfo("hello: subgroup-size-control smoke test PASSED");
+    return 0;
+}
+
 // -----------------------------------------------------------------------------
 // Main
 // -----------------------------------------------------------------------------
-int main() {
+int main(int argc, char** argv) {
     using namespace gpusims;
     initLogger();
+
+    for (int i = 1; i < argc; ++i) {
+        if (std::strcmp(argv[i], "--test-subgroup-size") == 0) {
+            return runSubgroupSizeControlSmokeTest();
+        }
+    }
+
     logInfo("hello: starting up");
 
     // ---- Vulkan + window + renderer -----------------------------------------

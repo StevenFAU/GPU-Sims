@@ -32,6 +32,24 @@ struct ComputePipelineDesc {
     std::filesystem::path        shader_path;       // for hot-reload tracking
     std::vector<DescriptorBinding> bindings;
     std::uint32_t                push_constant_size = 0;       // bytes; 0 = none
+
+    // Phase 11 sph-water: subgroup-size-control fields. Both default to
+    // sentinel "unconstrained" values; the existing default-null pNext-chain
+    // path is preserved when both fields are at their defaults.
+    //
+    // INVARIANT (must be preserved by all future maintainers):
+    //   If required_subgroup_size != 0 OR require_full_subgroups == true,
+    //   compute_pipeline.cpp builds VkPipelineShaderStageRequiredSubgroupSize
+    //   CreateInfo and chains it into VkPipelineShaderStageCreateInfo.pNext
+    //   (and/or sets the REQUIRE_FULL_SUBGROUPS_BIT flag). Otherwise pNext
+    //   stays null and the flag stays zero.
+    //
+    //   Collapsing the conditional (always building the extension struct
+    //   regardless of values) would force every compute pipeline to carry the
+    //   subgroup-size extension, breaking compatibility with drivers/devices
+    //   that don't support VK_EXT_subgroup_size_control.
+    std::uint32_t                required_subgroup_size = 0;     // 0 = unconstrained
+    bool                         require_full_subgroups = false; // false = unconstrained
 };
 
 class ComputePipeline {

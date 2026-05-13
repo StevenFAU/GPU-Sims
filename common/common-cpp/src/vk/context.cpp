@@ -116,6 +116,28 @@ Context::Context(const ContextCreateInfo& info) {
     initDebugMessenger();
     pickPhysicalDevice(info);
     createDevice(info);
+
+    // Phase 11 sph-water: query VkPhysicalDeviceSubgroupSizeControlProperties
+    // and cache results. Only fires when the consumer requested the feature
+    // (and createDevice's pre-flight verified the device supports it);
+    // otherwise the private cache members stay at their zero defaults.
+    if (info.enable_subgroup_size_control) {
+        VkPhysicalDeviceSubgroupSizeControlProperties sgs_props{};
+        sgs_props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_PROPERTIES;
+        VkPhysicalDeviceProperties2 props2{};
+        props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+        props2.pNext = &sgs_props;
+        vkGetPhysicalDeviceProperties2(physical_device_, &props2);
+
+        subgroup_size_min_              = sgs_props.minSubgroupSize;
+        subgroup_size_max_              = sgs_props.maxSubgroupSize;
+        required_subgroup_size_stages_  = sgs_props.requiredSubgroupSizeStages;
+        subgroup_size_control_enabled_  = true;
+
+        logInfo("vk-context: subgroup-size-control enabled (min={}, max={}, stages=0x{:x})",
+                subgroup_size_min_, subgroup_size_max_, required_subgroup_size_stages_);
+    }
+
     createAllocator();
     createOneShotPool();
     logInfo("vk-context: ready ({}, {} MiB VRAM heap0)",
@@ -266,6 +288,32 @@ void Context::createDevice(const ContextCreateInfo& info) {
     f13.sType            = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
     f13.dynamicRendering = VK_TRUE;
     f13.synchronization2 = VK_TRUE;
+
+    // Phase 11 sph-water (consumer #1 of subgroup-size-control). When the
+    // consumer requested the feature, pre-flight verify the device actually
+    // supports it before setting the f13 flag — vkCreateDevice with an
+    // unsupported feature returns a generic error, so doing the check here
+    // lets us surface a descriptive fail-loud message instead. Silent fallback
+    // would defeat the architectural point of consumer-#1 requesting
+    // predictable wavefront-size.
+    if (info.enable_subgroup_size_control) {
+        VkPhysicalDeviceVulkan13Features actual_f13{};
+        actual_f13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+        VkPhysicalDeviceFeatures2 actual_f2{};
+        actual_f2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+        actual_f2.pNext = &actual_f13;
+        vkGetPhysicalDeviceFeatures2(physical_device_, &actual_f2);
+
+        if (!actual_f13.subgroupSizeControl) {
+            throw std::runtime_error(
+                "Context: ContextCreateInfo::enable_subgroup_size_control = true, "
+                "but VkPhysicalDeviceVulkan13Features::subgroupSizeControl is not "
+                "supported by this device. Cross-vendor wavefront-size "
+                "predictability cannot be guaranteed without it; failing loud "
+                "rather than silently producing platform-dependent behavior.");
+        }
+        f13.subgroupSizeControl = VK_TRUE;
+    }
 
     VkPhysicalDeviceVulkan12Features f12{};
     f12.sType                                = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;

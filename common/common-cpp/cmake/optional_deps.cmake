@@ -79,6 +79,7 @@ if(GPU_SIMS_USE_ALEMBIC)
     set(USE_TESTS            OFF CACHE BOOL "Alembic: skip test binaries" FORCE)
     set(USE_BINARIES         OFF CACHE BOOL "Alembic: skip CLI tools (abcconvert, abcecho, ...)" FORCE)
     set(USE_EXAMPLES         OFF CACHE BOOL "Alembic: skip Alembic-internal examples" FORCE)
+    set(ALEMBIC_DEBUG_WARNINGS_AS_ERRORS OFF CACHE BOOL "Alembic: don't promote our project flags to errors" FORCE)
 
     FetchContent_Declare(alembic
         GIT_REPOSITORY https://github.com/alembic/alembic.git
@@ -86,6 +87,18 @@ if(GPU_SIMS_USE_ALEMBIC)
         GIT_SHALLOW    TRUE
     )
     FetchContent_MakeAvailable(alembic)
+
+    # Alembic 1.8.10 source contains idiomatic C-style casts (TokenMap.cpp,
+    # Murmur3.cpp) and implicit-fallthroughs that the project's global
+    # -Wall -Wextra -Wpedantic -Wold-style-cast settings flag as warnings.
+    # Alembic's own CMakeLists adds -Werror to its targets, so those
+    # warnings get promoted to errors when our project flags meet
+    # Alembic's -Werror. Override -Werror to keep Alembic warnings as
+    # warnings rather than relaxing first-party project flags or rewriting
+    # upstream source.
+    if(TARGET Alembic)
+        target_compile_options(Alembic PRIVATE -Wno-error)
+    endif()
 
     # FetchContent_MakeAvailable should make the Alembic::Alembic target
     # available directly. find_package after MakeAvailable is a belt-and-

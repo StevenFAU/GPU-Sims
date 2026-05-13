@@ -60,9 +60,9 @@ public:
                     frame.positions[3 * i + 2]);
                 ids[i] = frame.ids ? frame.ids[i] : i;
             }
-            Alembic::AbcGeom::OPointsSchema::Sample sample(
+            Alembic::AbcGeom::OPointsSchema::Sample sample{
                 Alembic::Abc::V3fArraySample(positions),
-                Alembic::Abc::UInt64ArraySample(ids));
+                Alembic::Abc::UInt64ArraySample(ids)};
             if (frame.velocities) {
                 std::vector<Alembic::Abc::V3f> vels(frame.count);
                 for (std::size_t i = 0; i < frame.count; ++i) {

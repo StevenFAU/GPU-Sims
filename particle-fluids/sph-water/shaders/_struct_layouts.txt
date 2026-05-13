@@ -1,0 +1,108 @@
+================================================================================
+sph-water - SSBO struct layouts (single source of truth)
+================================================================================
+
+This file documents the per-particle and per-buffer layouts used by every
+compute / graphics pipeline in sph-water. All layouts use Vulkan std430
+packing (or std140 for uniform buffers; uniform buffers are documented in
+spec section 4.B.4 and not here -- this file is SSBOs only).
+
+--------------------------------------------------------------------------------
+1. particles_buf -- 128 bytes per particle
+--------------------------------------------------------------------------------
+Accessed by GLSL via:
+    layout(set=0, binding=0, std430) restrict buffer Particles { vec4 p[]; };
+where each particle occupies 8 consecutive vec4 entries (8 * 16 = 128 bytes).
+GLSL access pattern: p[i*8u + N] where N is the vec4-slot index 0..7.
+
+Slot  Offset  Size  Field name            Type    GLSL accessor                   Notes
+----  ------  ----  --------------------  ------  ------------------------------  ----------------------
+0     0       12    position              vec3    p[i*8 + 0].xyz                  world-space, meters
+      12      4     radius                float   p[i*8 + 0].w                    usually rt.particleRadius
+1     16      12    velocity              vec3    p[i*8 + 1].xyz                  m/s
+      28      4     density_cache         float   p[i*8 + 1].w                    UNUSED in v1; lives in da[i].x
+2     32      12    predicted_velocity    vec3    p[i*8 + 2].xyz                  reserved v1
+      44      4     alpha_cache           float   p[i*8 + 2].w                    UNUSED; lives in da[i].y
+3     48      4     pressure_v_cache      float   p[i*8 + 3].x                    UNUSED; in pressure_*_buf
+      52      4     pressure_cache        float   p[i*8 + 3].y                    UNUSED; in pressure_*_buf
+      56      4     predicted_density     float   p[i*8 + 3].z                    UNUSED; in da[i].z
+      60      4     density_advect        float   p[i*8 + 3].w                    UNUSED; in da[i].w
+4     64      16    _reserved_slot4       vec4    p[i*8 + 4]                      UNUSED -- 16 B for v1.1
+5     80      4     original_id           uint    floatBitsToUint(p[i*8 + 5].x)   preserved through Morton sort
+      84      4     cell_index_debug      uint    floatBitsToUint(p[i*8 + 5].y)   UNUSED in v1
+      88      4     flags                 uint    floatBitsToUint(p[i*8 + 5].z)   bit0: emitter; bit1: droplet
+      92      4     _pad5w                uint    floatBitsToUint(p[i*8 + 5].w)   reserved
+6     96      16    _reserved_slot6       vec4    p[i*8 + 6]                      UNUSED -- 16 B for v1.1
+7     112     16    _reserved_slot7       vec4    p[i*8 + 7]                      UNUSED -- 16 B for v1.1
+
+TOTAL                                                                             128 bytes/particle
+
+OBSERVED INEFFICIENCY (flagged for v1.1):
+  Slots 2.w, 3.x-3.w, 4, 6, 7 are unused/cache fields. 64 of 128 bytes wasted.
+  v1.1 compaction can shrink to 64 bytes/particle, halving the largest SSBO.
+
+--------------------------------------------------------------------------------
+2. density_alpha_buf -- 16 bytes per particle (1 vec4)
+--------------------------------------------------------------------------------
+Authoritative store for DFSPH per-particle scalar state.
+
+Slot  Offset  Size  Field                 Notes
+----  ------  ----  --------------------  ----------------------------------------
+.x    0       4     density               rho_i, kg/m^3
+.y    4       4     alpha_over_rho2       alpha_i / rho_i^2 (multiphase-compat)
+.z    8       4     predicted_density     rho_adv_i (density_solve Pass 1)
+.w    12      4     density_advect        rho_dot_i (divergence_solve Pass 1)
+
+--------------------------------------------------------------------------------
+3. pressure_ping_buf / pressure_pong_buf -- 4 bytes per particle (1 float)
+--------------------------------------------------------------------------------
+Pressure scalar across inner-loop iterations. Ping-pong each iteration. Same
+pair of SSBOs is reused across both DFSPH solvers (zeroed at the start of each).
+
+--------------------------------------------------------------------------------
+4. morton_codes_buf -- 4 bytes per particle (1 uint)
+--------------------------------------------------------------------------------
+Per-particle 30-bit Morton-encoded cell index (high 2 bits zero). Written by
+morton_code.comp.glsl; consumed by cell_count + scatter.
+
+--------------------------------------------------------------------------------
+5. sorted_index_buf -- 4 bytes per particle (1 uint)
+--------------------------------------------------------------------------------
+Counting sort output: at index k, stores the ORIGINAL particle index in cell-
+sorted slot k. Consumed by DFSPH neighbor iteration in all 5 solver kernels.
+
+--------------------------------------------------------------------------------
+6. cell_counts_buf / cell_counts_atomic_buf -- 4 bytes per cell (1 uint atomic)
+--------------------------------------------------------------------------------
+cell_counts_buf: per-cell particle count, populated by cell_count via atomicAdd.
+cell_counts_atomic_buf: SEPARATE atomic counter for scatter slot-claim
+  (reusing cell_counts_buf would race; must be zeroed before scatter).
+Size: total_morton_cells * 4 bytes, where total_morton_cells = (1 << bmax)^3,
+  bmax = log2(max(cellsPerAxisPow2)).
+
+--------------------------------------------------------------------------------
+7. cell_starts_buf -- 4 bytes per cell + 1 (1 uint)
+--------------------------------------------------------------------------------
+Exclusive scan output: cell_starts[m] = number of particles in cells [0, m).
+cell_starts[m+1] - cell_starts[m] = count in cell m.
+Size: (total_morton_cells + 1) * 4 bytes.
+
+--------------------------------------------------------------------------------
+8. block_sums_buf / block_prefixes_buf -- 4 bytes per block
+--------------------------------------------------------------------------------
+Two-level prefix-scan intermediates. Size: num_blocks * 4 bytes,
+num_blocks = ceil(total_morton_cells / WG_DIM_SORT).
+
+8a. block_sums_l2_buf / block_prefixes_l2_buf -- 4 bytes per L2 block
+Recursive scan intermediates (when num_blocks > WG_SIZE). Size:
+num_l2_blocks * 4 bytes, num_l2_blocks = ceil(num_blocks / WG_DIM_SORT) <= 256.
+
+--------------------------------------------------------------------------------
+9. per_block_prefixes_buf -- 4 bytes per cell (1 uint)
+--------------------------------------------------------------------------------
+Per-block Blelloch scan output before block-prefix add-back.
+Size: total_morton_cells * 4 bytes.
+
+================================================================================
+END
+================================================================================

@@ -1,0 +1,2 @@
+# Alembic export output is generated at runtime; do not check binaries into git.
+*.abc

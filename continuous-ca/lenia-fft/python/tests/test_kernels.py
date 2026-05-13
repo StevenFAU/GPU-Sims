@@ -14,9 +14,8 @@ import numpy as np
 import pytest
 import taichi as ti
 
-import kernels
-import presets
-from fft_backend import NumpyFFTConvolver, _pad_kernel_to_grid
+from lenia_fft import kernels, presets
+from lenia_fft.fft_backend import NumpyFFTConvolver, _pad_kernel_to_grid
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -232,7 +231,7 @@ def test_apply_preset_stability_2d(preset_name: str) -> None:
     CPU backend with quad4 kernel; this test re-validates that under CI
     on every push so preset regressions don't ship silently.
     """
-    from main import SimState
+    from lenia_fft.main import SimState
     preset_list = presets.build_presets()
     preset = next(p for (name, p) in preset_list if name == preset_name)
     sim_state = SimState(dim=2, n_grid=64, kernel_radius=preset.kernel_radius)
@@ -273,12 +272,12 @@ def test_select_backend_factory_falls_back() -> None:
     Phase 10's load-bearing new pattern; ensuring the factory works
     without GPU extras present is the CI-runnable contract surface.
     """
-    from fft_backend import (
+    from lenia_fft.fft_backend import (
         NumpyFFTConvolver,
         TaichiRealSpaceConvolver,
         select_backend,
     )
-    from main import SimState
+    from lenia_fft.main import SimState
     preset_list = presets.build_presets()
     orbium = next(p for (name, p) in preset_list if name == "Orbium unicaudatus")
     sim_state = SimState(dim=2, n_grid=32, kernel_radius=orbium.kernel_radius)
@@ -320,7 +319,7 @@ def test_capture_schema_round_trip(tmp_path: Path) -> None:
     """
     from gpusims_common import StateReader, StateWriter
 
-    from main import SimState
+    from lenia_fft.main import SimState
 
     captures_dir = tmp_path / "captures"
 

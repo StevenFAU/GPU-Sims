@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-py-modules = ["main"]
+packages = ["hello"]
 
 [tool.ruff]
 line-length = 120

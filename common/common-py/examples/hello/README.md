@@ -9,7 +9,7 @@ Copy this directory as the starting template for a new Stack D sim.
 cd common/common-py/examples/hello
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
-python main.py
+python -m hello.main
 ```
 
 `pip install -e .` resolves `gpusims-common-py` from `../../`. If you've not

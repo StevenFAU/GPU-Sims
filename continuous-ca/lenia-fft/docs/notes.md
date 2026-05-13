@@ -12,7 +12,7 @@ loose-leaf scratchpad.
 # From repo root:
 pip install -e common/common-py
 pip install -e continuous-ca/lenia-fft/python[cuda]
-python continuous-ca/lenia-fft/python/main.py
+python -m lenia_fft.main
 ```
 
 The `[cuda]` extra installs `cupy-cuda12x`. If the lab PC's CUDA is on a
@@ -30,7 +30,7 @@ pip install torch --index-url https://download.pytorch.org/whl/rocm6.0
 # torch>=2.1 dep; pip resolves to the already-installed wheel).
 pip install -e common/common-py
 pip install -e continuous-ca/lenia-fft/python[rocm]
-python continuous-ca/lenia-fft/python/main.py
+python -m lenia_fft.main
 ```
 
 PyTorch-ROCm on AMD desktop is finicky. Known gotchas:
@@ -46,7 +46,7 @@ PyTorch-ROCm on AMD desktop is finicky. Known gotchas:
 ```bash
 pip install -e common/common-py
 pip install -e continuous-ca/lenia-fft/python
-python continuous-ca/lenia-fft/python/main.py
+python -m lenia_fft.main
 ```
 
 The sim runs on Taichi real-space convolution (universal-baseline). On the

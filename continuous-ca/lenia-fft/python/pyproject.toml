@@ -40,7 +40,7 @@ dev = [
 ]
 
 [tool.setuptools]
-py-modules = ["main", "kernels", "presets", "fft_backend"]
+packages = ["lenia_fft"]
 
 [tool.ruff]
 line-length = 120
@@ -73,7 +73,7 @@ ignore_missing_imports = true
 # Cannot satisfy both Taichi runtime and mypy --strict simultaneously; relax
 # the affected mypy rules on kernel + kernel-test modules. Non-kernel modules
 # of the sim keep full mypy --strict.
-module = ["kernels", "tests.test_kernels"]
+module = ["lenia_fft.kernels", "tests.test_kernels"]
 disallow_untyped_defs = false
 disallow_untyped_decorators = false
 disable_error_code = ["valid-type", "no-untyped-def", "attr-defined"]

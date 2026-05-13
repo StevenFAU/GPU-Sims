@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from kernels import JELLY, SNOW, WATER
+from .kernels import JELLY, SNOW, WATER
 
 
 @dataclass(frozen=True)

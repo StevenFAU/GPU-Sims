@@ -33,7 +33,7 @@ Run:
 # constraint applies to ALL annotated-arg kernels (not just ti.template()
 # ones — verified empirically against Taichi 1.7.4 with primitive annotations
 # post-Phase-9). See the same comment in
-# hybrid-particle-grid/mpm-multimaterial/python/kernels.py for the canonical
+# hybrid-particle-grid/mpm-multimaterial/python/mpm_multimaterial/kernels.py for the canonical
 # banking of this constraint.
 
 from pathlib import Path

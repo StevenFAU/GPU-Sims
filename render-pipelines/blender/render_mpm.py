@@ -2,7 +2,7 @@
 """Blender Cycles render script for MPM-multimaterial PLY particle sequences.
 
 Renders a still or animation from PLY particle frames exported by
-`hybrid-particle-grid/mpm-multimaterial/python/main.py`. Run headless:
+`hybrid-particle-grid/mpm-multimaterial/python/mpm_multimaterial/main.py`. Run headless:
 
     blender -b -P render_mpm.py -- --ply-input <path> --output <path> [...]
 

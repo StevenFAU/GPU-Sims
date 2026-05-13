@@ -51,7 +51,7 @@ from typing import Any, Final
 import numpy as np
 from gpusims_common import log
 
-import kernels
+from . import kernels
 
 
 @dataclass(frozen=True)

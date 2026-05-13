@@ -86,3 +86,48 @@ jobs:
       - name: Taichi CPU-backend kernel smoke (lenia)
         working-directory: continuous-ca/lenia-fft/python
         run: pytest tests/ -v
+
+  combined-install-smoke:
+    name: Combined-install smoke (all Stack D sims)
+    runs-on: ubuntu-24.04
+    needs: [build-py]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install all Stack D sims in one venv
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./common/common-py[dev]
+          pip install -e ./common/common-py/examples/hello
+          pip install -e ./hybrid-particle-grid/mpm-multimaterial/python
+          pip install -e ./continuous-ca/lenia-fft/python
+
+      - name: Verify cross-package isolation
+        run: |
+          python - <<'PY'
+          from hello.main import *  # noqa: F401,F403
+          from mpm_multimaterial.main import SimState as MPMSimState
+          from mpm_multimaterial import kernels as mpm_kernels, presets as mpm_presets
+          from lenia_fft.main import SimState as LeniaSimState
+          from lenia_fft import kernels as lenia_kernels, presets as lenia_presets, fft_backend as lenia_fft_backend  # noqa: F401
+          assert MPMSimState is not LeniaSimState, "SimState collision"
+          assert mpm_kernels is not lenia_kernels, "kernels collision"
+          assert mpm_presets is not lenia_presets, "presets collision"
+          print("Stack D sim isolation verified across combined install")
+          PY
+
+      - name: Run mpm-multimaterial pytest in combined venv
+        working-directory: hybrid-particle-grid/mpm-multimaterial/python
+        run: pytest tests/ -v --no-header
+
+      - name: Run lenia-fft pytest in combined venv
+        working-directory: continuous-ca/lenia-fft/python
+        run: pytest tests/ -v --no-header

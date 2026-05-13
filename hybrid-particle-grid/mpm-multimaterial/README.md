@@ -20,7 +20,7 @@ overarching-spec § 6 divergence rationale.
 cd hybrid-particle-grid/mpm-multimaterial/python
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
-python main.py
+python -m mpm_multimaterial.main
 ```
 
 Optional: install `python3-openvdb` (Ubuntu apt) to enable real VDB density export

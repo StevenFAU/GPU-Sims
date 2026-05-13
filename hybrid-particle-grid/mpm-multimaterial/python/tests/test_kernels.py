@@ -16,8 +16,7 @@ import taichi as ti
 
 def test_kernels_imports() -> None:
     """kernels.py + presets.py import cleanly."""
-    import kernels
-    import presets  # noqa: F401
+    from mpm_multimaterial import kernels, presets  # noqa: F401
     assert kernels.WATER == 0
     assert kernels.JELLY == 1
     assert kernels.SNOW == 2
@@ -25,7 +24,7 @@ def test_kernels_imports() -> None:
 
 def test_presets_build() -> None:
     """presets.build_presets returns the four canonical presets."""
-    from presets import build_presets
+    from mpm_multimaterial.presets import build_presets
     presets_list = build_presets()
     names = [name for name, _ in presets_list]
     assert names == ["Single Dam Break", "Double Dam Break", "Water Snow Jelly", "Mixed Sandbox"]
@@ -40,7 +39,7 @@ def test_substep_compile_cpu() -> None:
 
     Small particle count (256) + small grid (16^3) for fast CI smoke.
     """
-    import kernels
+    from mpm_multimaterial import kernels
 
     ti.init(arch=ti.cpu, default_fp=ti.f32)
 

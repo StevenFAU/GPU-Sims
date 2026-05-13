@@ -57,9 +57,8 @@ from gpusims_common import (
     log,
 )
 
-import kernels
-import presets
-from fft_backend import LeniaConvolver, select_backend
+from . import kernels, presets
+from .fft_backend import LeniaConvolver, select_backend
 
 # ----------------------------------------------------------------------
 # Configuration

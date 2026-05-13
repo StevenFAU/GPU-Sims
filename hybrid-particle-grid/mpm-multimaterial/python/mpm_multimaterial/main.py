@@ -48,10 +48,9 @@ from gpusims_common import (
     log,
 )
 
-import kernels
-import presets
-from kernels import WATER
-from presets import CubeVolume
+from . import kernels, presets
+from .kernels import WATER
+from .presets import CubeVolume
 
 # ----------------------------------------------------------------------
 # Configuration

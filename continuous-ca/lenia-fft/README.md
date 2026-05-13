@@ -25,7 +25,7 @@ preset. Polyring (multi-peak) creatures banked v1.1+.
 # baseline (universal — works on both CUDA and Vulkan):
 pip install -e common/common-py
 pip install -e continuous-ca/lenia-fft/python
-python continuous-ca/lenia-fft/python/main.py
+python -m lenia_fft.main
 
 # OR with GPU-FFT extras (pick ONE matching your hardware):
 pip install -e continuous-ca/lenia-fft/python[cuda]         # NVIDIA CuPy

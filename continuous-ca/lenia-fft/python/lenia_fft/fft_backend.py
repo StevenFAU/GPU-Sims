@@ -208,7 +208,7 @@ class TaichiRealSpaceConvolver(LeniaConvolver):
         # the input first.
 
     def step(self, state_np: np.ndarray, dt: float, mu: float, sigma: float) -> np.ndarray:
-        import kernels
+        from . import kernels
         st = self._taichi_state
         # Copy input into Taichi state field.
         st.state_2d.from_numpy(state_np.astype(np.float32))

@@ -222,7 +222,7 @@ sim-local copies of all patterns identified here.
 `b914892`):
 
 1. **`_cursor_in_any_panel` GUI-occlusion test** (MPM
-   `hybrid-particle-grid/mpm-multimaterial/python/main.py:306–318`)
+   `hybrid-particle-grid/mpm-multimaterial/python/mpm_multimaterial/main.py:306–318`)
    **— STRONG PROMOTE at #3.** Every interactive Stack D sim with sliders
    needs a "don't drop a thing on the canvas when the cursor is over a
    panel" test. The pattern is structurally identical between MPM and
@@ -262,7 +262,7 @@ sim-local copies of all patterns identified here.
    renders the buttons and dispatches.
 
 5. **`set_color_by_material` re-apply pattern** (MPM
-   `hybrid-particle-grid/mpm-multimaterial/python/kernels.py`,
+   `hybrid-particle-grid/mpm-multimaterial/python/mpm_multimaterial/kernels.py`,
    `set_color_by_material`)
    **— KEEP SIM-LOCAL.** MPM-specific (Lenia has no discrete materials).
    The abstraction doesn't generalize to a continuous-CA sim.

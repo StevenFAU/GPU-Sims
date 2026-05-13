@@ -1,5 +1,8 @@
-// particle_sprite.frag.glsl — Sphere-imposter depth writer for the depth pass.
-// Writes gl_FragDepth; no color output.
+// particle_sprite.frag.glsl — Sphere-imposter depth writer.
+// Writes NDC Z to .r of the R32_SFLOAT color attachment.
+// The depth-pass attachment is COLOR, not DEPTH — there is
+// no depth buffer attached during this pass, so writing to
+// gl_FragDepth would be a no-op for the consumed texture.
 #version 460
 
 layout(set=0, binding=0, std430) restrict readonly buffer Particles {
@@ -21,16 +24,17 @@ layout(set=0, binding=1, std140) uniform RenderView {
 layout(location = 0) in vec3  v_view_pos;
 layout(location = 1) in float v_view_radius;
 
+layout(location = 0) out vec4 o_color;
+
 void main() {
     vec2  uv = gl_PointCoord * 2.0 - 1.0;
     float r2 = dot(uv, uv);
     if (r2 > 1.0) discard;
 
-    // Right-handed view space: front of camera is z < 0.
-    // Front surface of sphere is at center_z + sqrt(1-r²) * radius (less negative).
     float z_offset           = sqrt(1.0 - r2) * v_view_radius;
     vec3  surface_view_pos   = v_view_pos + vec3(uv * v_view_radius, z_offset);
-
     vec4  clip = proj * vec4(surface_view_pos, 1.0);
-    gl_FragDepth = clip.z / clip.w;
+    float ndc_z = clip.z / clip.w;     // Vulkan NDC Z in [0, 1]
+
+    o_color = vec4(ndc_z, 0.0, 0.0, 1.0);
 }

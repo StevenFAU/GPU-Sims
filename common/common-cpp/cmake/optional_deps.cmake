@@ -14,7 +14,9 @@
 #      stubs that log warnings and return failure when called.
 #
 # Ubuntu install:
-#   sudo apt install libopenvdb-dev libalembic-dev
+#   sudo apt install libopenvdb-dev libimath-dev
+# (Alembic is vendored via FetchContent in the Alembic block below; only
+# Alembic's transitive Imath dep needs an apt package.)
 # ============================================================================
 
 if(GPU_SIMS_USE_OPENVDB)
@@ -51,14 +53,59 @@ if(GPU_SIMS_USE_OPENVDB)
 endif()
 
 if(GPU_SIMS_USE_ALEMBIC)
-    find_package(Alembic CONFIG)
+    # ------------------------------------------------------------------
+    # Alembic 1.8.10 vendored via FetchContent (pinned SHA).
+    #
+    # Why vendored: `libalembic-dev` was dropped from Ubuntu 24.04 noble
+    # after Ubuntu 22.04 jammy (last shipped: 1.7.16-3 on jammy). The
+    # CMake-find_package path against a system install is no longer
+    # reliable on modern Ubuntu LTS.
+    #
+    # Why 1.8.10 not 1.8.11: Alembic 1.8.11 raises cmake_minimum_required
+    # to 3.29; Ubuntu 24.04 noble ships CMake 3.28.3 (the CI runner
+    # baseline). 1.8.10 still requires only CMake 3.13.
+    #
+    # Pinned SHA: c254caf2705ebf5271408dd37a091aa379258a38 (2025-11-17
+    # release tag for v1.8.10).
+    #
+    # Apt dep needed: libimath-dev (transitive — IMath types in
+    # Alembic's public API). HDF5 / OpenEXR / Boost are NOT reached
+    # for with the flag set below.
+    # ------------------------------------------------------------------
+    include(FetchContent)
+
+    set(USE_HDF5             OFF CACHE BOOL "Alembic: skip HDF5 backend; Ogawa only" FORCE)
+    set(ALEMBIC_SHARED_LIBS  ON  CACHE BOOL "Alembic: build shared libs" FORCE)
+    set(USE_TESTS            OFF CACHE BOOL "Alembic: skip test binaries" FORCE)
+    set(USE_BINARIES         OFF CACHE BOOL "Alembic: skip CLI tools (abcconvert, abcecho, ...)" FORCE)
+    set(USE_EXAMPLES         OFF CACHE BOOL "Alembic: skip Alembic-internal examples" FORCE)
+
+    FetchContent_Declare(alembic
+        GIT_REPOSITORY https://github.com/alembic/alembic.git
+        GIT_TAG        c254caf2705ebf5271408dd37a091aa379258a38   # v1.8.10
+        GIT_SHALLOW    TRUE
+    )
+    FetchContent_MakeAvailable(alembic)
+
+    # FetchContent_MakeAvailable should make the Alembic::Alembic target
+    # available directly. find_package after MakeAvailable is a belt-and-
+    # suspenders verification step that succeeds when the Alembic build
+    # has installed its CMake config into the FetchContent build tree.
+    find_package(Alembic CONFIG QUIET)
     if(NOT TARGET Alembic::Alembic)
-        message(FATAL_ERROR
-            "GPU_SIMS_USE_ALEMBIC=ON but Alembic was not found.\n"
-            "Install with:  sudo apt install libalembic-dev\n"
-            "Or:            see https://github.com/alembic/alembic\n"
-            "Then re-run CMake. To proceed without Alembic, set GPU_SIMS_USE_ALEMBIC=OFF."
-        )
+        # In-flight-fix-authorized fallback per Phase 11 spec § 0 hard
+        # rule 6. If find_package post-MakeAvailable doesn't resolve but
+        # the bare `Alembic` target exists, treat that as the target.
+        if(TARGET Alembic)
+            add_library(Alembic::Alembic ALIAS Alembic)
+        else()
+            message(FATAL_ERROR
+                "GPU_SIMS_USE_ALEMBIC=ON but Alembic FetchContent failed to produce a target.\n"
+                "Verify libimath-dev is installed:  sudo apt install libimath-dev\n"
+                "Verify CMake version is >= 3.13:   cmake --version\n"
+                "Then re-run CMake. To proceed without Alembic, set GPU_SIMS_USE_ALEMBIC=OFF."
+            )
+        endif()
     endif()
-    message(STATUS "Alembic:   FOUND (${Alembic_VERSION})")
+    message(STATUS "Alembic:   FOUND (1.8.10 via FetchContent at SHA c254caf2)")
 endif()

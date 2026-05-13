@@ -22,7 +22,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 | [Neural CA](continuous-ca/neural-ca/) | Continuous CA | Python (PyTorch) + WebGPU | Not started |
 | [Eulerian smoke](volumetric-grid/eulerian-smoke/) | Volumetric grid | Native C++ | Implemented (Phase 8) |
 | [Lattice Boltzmann](volumetric-grid/lattice-boltzmann/) | Volumetric grid | Native C++ | Not started |
-| [SPH water](particle-fluids/sph-water/) | Particle fluids | Native C++ | Not started |
+| [SPH water](particle-fluids/sph-water/) | Particle fluids | Native C++ | Implemented (Phase 11) |
 | [PIC/FLIP](particle-fluids/pic-flip/) | Particle fluids | Native C++ | Stretch |
 | [MPM multi-material](hybrid-particle-grid/mpm-multimaterial/) | Hybrid particle-grid | Python (Taichi) | Implemented (Phase 9) |
 | [Ising on D-Wave](quantum/ising-dwave/) | Quantum | D-Wave + WebGPU | Not started |

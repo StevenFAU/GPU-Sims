@@ -8,6 +8,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.12.0] - Phase 11: sph-water (Stack C particle-fluids flagship; first Alembic real-impl consumer)
+
+Stack C particle-fluids flagship. DFSPH-formulated Smoothed Particle Hydrodynamics water at 1M–4M particles, anchored to SPlisHSPlasH 1.8.10 at SHA `c254caf2705ebf5271408dd37a091aa379258a38`.
+
+### Added
+
+- **sph-water (Phase 11)** — Stack C particle-fluids flagship. DFSPH solver per Bender-Koschier 2015+2017 with two inner Jacobi pressure-correction loops (divergence-free + density-constancy), Jacobi relaxation 0.5, maxError as percent (0.01 = 0.01% of ρ₀ = 1e-4 fractional). Morton-sorted GPU spatial hash with two-level prefix scan supporting up to 16M cells. Screen-space fluid render (Müller-Fetterer 2007): point-sprite depth → bilateral filter → thickness pass → composite with Schlick Fresnel (F0=0.02 water) + Beer-Lambert thickness attenuation. Four canonical SPH scene presets: Dam-Break, Central-Fountain, Droplet-Impact, Pour-from-Source. LMB-paint emitter with reserve-tail allocation (Phase 9 polish-5 pattern). F5/F9 capture/load with DFSPH warm-up substep on re-derive.
+
+- **First Alembic real-impl consumer.** `gpusims::abc::ParticleWriter` (stub-shipped since Phase 1) first-exercised by sph-water for per-frame .abc particle-cache export. Alembic 1.8.10 vendored via CMake `FetchContent` at pinned SHA `c254caf2705ebf5271408dd37a091aa379258a38`.
+
+- **First Stack C user of `VK_EXT_subgroup_size_control`** (Vulkan 1.3 core). All counting-sort + bilateral kernels pin subgroup size at pipeline creation to eliminate cross-vendor wavefront-size divergence.
+
+- **First multi-pass off-screen render-pass construction in Stack C** via direct `vkCmdBeginRenderingKHR` calls. Phase 8 eulerian-smoke's raymarcher was single-pass color-only via `Renderer::beginRendering`.
+
+- **Blender Cycles hero-render script** at `render-pipelines/blender/render_sph.py` consuming Alembic `.abc` files via `bpy.ops.wm.alembic_import` with native velocity-driven motion blur.
+
+- **common-cpp surface additions** for subgroup-size-control: `Context::enable_subgroup_size_control` request, `Context::subgroupSizeMin()` / `subgroupSizeMax()` accessors, `ComputePipelineDesc::required_subgroup_size` / `require_full_subgroups` fields (per Phase 11 spec § 0 hard rule 5 in-flight authorization).
+
+### Changed
+
+- **`common/common-cpp/cmake/optional_deps.cmake`** Alembic block reworked from `find_package(Alembic CONFIG)` against the (no-longer-shipped on Ubuntu 24.04 noble) `libalembic-dev` to CMake `FetchContent`-vendored source build. Header install-hint updated.
+
+- **CI workflow `.github/workflows/build-native.yml`** adds `libimath-dev` to the apt list for both Release and Debug jobs; both add `-DGPU_SIMS_USE_ALEMBIC=ON` to the CMake configure. Debug job retains its no-OpenVDB posture.
+
+- **`docs/tier1-capture-format-reference.md`** § 1 table grows to 8 rows (sph-water adds `sphWater`). § 2 gains a non-pixel-format buffer convention covering packed-struct SSBOs (precedent: boids-3d `entities`).
+
+### Internal / docs
+
+- New `project-state.md` § 7 H3 entries banked: **Stack C source-builds for VFX/graphics libraries when distro packaging is unreliable** (Alembic at consumer #1; FetchContent + pinned SHA + slim apt deps); **Probe-before-draft-lock discipline** (sharpening of fabrication-discipline; five distinct fabrication shapes caught during Phase 11 spec drafting and execution).
+
+### Deferred to follow-up commits (per `phase11_deferred_backfill.md`)
+
+- Backfill rows for Phase 9 (mpm-multimaterial / `mpmMultimaterial`) and Phase 10 (lenia-fft / `lenia`) in `docs/tier1-capture-format-reference.md` § 1 table.
+- Backfill missing version compare-links (0.7.0 through 0.11.0) in `CHANGELOG.md` footer.
+- Update other stale sim rows in `project-state.md` § 6 (mpm-multimaterial, lenia-fft, etc.).
+
+
 ## [0.11.0] - Phase 10: lenia-fft (Stack D continuous-CA, runtime FFT-backend selection)
 
 ### Added
@@ -280,7 +317,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub-surface files: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CITATION.cff`, issue and PR templates.
 - CI workflows for markdown linting and structure validation.
 
-[Unreleased]: https://github.com/StevenFAU/GPU-Sims/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/StevenFAU/GPU-Sims/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.11.0...v0.12.0
 [0.6.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/StevenFAU/GPU-Sims/compare/v0.3.0...v0.4.0

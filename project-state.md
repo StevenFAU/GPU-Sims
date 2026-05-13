@@ -1,6 +1,6 @@
 # GPU-Sims — Project State
 
-> **Last updated:** end of Phase 9 — `common-py` Stack D infrastructure + `mpm-multimaterial` first Stack D sim, closed at `e73b4c8` (`50b8c2d` substantive landing; eleven follow-on commits comprising the fix-forward at `12cf303`, back-fill at `db41819`, retro convention at `d52bc7c`, five polish passes (`a6c5080` color_edit_3 tuple → `4cb70ee` `from __future__` × `@ti.kernel` all-args → `49c0559` F5/F9 UX + buttons → `f2c7e10` LMB gating + color refresh + tier recalibration → `8a33211` user-emitter reserve-tail allocation), one notes housekeeping (`2f5fa6f`), and one polish fix-forward (`e73b4c8` RUF003 unicode confusable). Phase 9 introduced the first cross-backend posture (Vulkan + CUDA both first-class via Taichi), the cross-stack capture schema corrected per architect-2 cross-review (`mpmMultimaterial` / `helloPy` sim-namespaced meta wrappers; `{count, stride, format, shape}` per-buffer), and three new § 7 conventions extending the strict-mode-toolchain discipline at `d52bc7c` (runtime/display-required surfaces, lint-config onboarding, perf-claims-need-measurement). **Next phase:** Phase 10 — `lenia-fft`, Stack D consumer #2 of `common-py`. Phase 10 doubles as the rule-of-three promotion review on the slim `common-py` surface (per the rule-of-three convention; consumer #2 triggers a structured pass on whether anything currently sim-local should be promoted to package-level before consumer #3 surfaces friction).
+> **Last updated:** end of Phase 11 — `sph-water` Stack C particle-fluids flagship, scaffold landed at `09c0d9f` with shaders and docs; main.cpp dispatch chain + cross-cutting edits in follow-up commits per `phase11_deferred_backfill.md`. Phase 11 is the first Alembic real-impl consumer (CMake `FetchContent` vendored at 1.8.10), the first Stack C user of `VK_EXT_subgroup_size_control` (Vulkan 1.3 core), and the first multi-pass off-screen render-pass construction in Stack C. The probe-before-draft-lock discipline (sharpening of the fabrication-discipline convention) is banked at this phase — five distinct fabrication shapes caught by empirical probes pre-execution, plus two more surfaced during execution itself. **Next phase:** TBD per coordinator; remaining sims at § 6.
 >
 > This is the **canonical handoff document** for the GPU-Sims repository. It exists so that:
 >
@@ -74,6 +74,7 @@ Seven categories. Each lives in its own top-level folder.
 | 9.5 | docs retro | Three pre-existing data fixes surfaced during Phase 10 architect-2 cross-review: committed `docs/tier1-capture-format-reference.md` (referenced from 7+ synced files including `state_writer.py` / `state_reader.py` / `project-state.md` § 7 / `diagnostics-overview.md` / Phase 9 spec retro but never actually committed); added the `from __future__ import annotations` × `@ti.kernel` caveat to `docs/conventions.md`:21 (the convention was banked in `project-state.md` § 7 at Phase 9 polish-2 but conventions.md wasn't updated alongside, leaving the two docs contradicting each other); fixed `project-state.md`:180 lenia-fft row data error ("tied to Phase 7" → "tied to Phase 9" — common-py shipped in Phase 9, not Phase 7). No sim code, no `common-*` changes, no CI changes. | ✅ Shipped | `18d8e84` |
 | 10 | lenia-fft (Stack D consumer #2, runtime FFT backend selection, 2D + opt-in 3D) | First Stack D continuous-CA sim and second Stack D consumer of `common-py`. Runtime FFT-backend selection (CuPy → PyTorch → Taichi-real-space → numpy) with priority-probe + smoke at init; backends gated behind pip extras. Three 2D tiers (512² default / 1024² mid / 2048² stretch — runtime-tier-label-mutated for FFT backend availability) plus opt-in 3D stretch tier (128³ capture-mode with cross-section slice viewer). Quad4 polynomial kernel `K(r) = (4·r·(1-r))^4` (upstream `LeniaNDK.py` kernel_core[0]; verified byte-for-byte against `animals.json` for the four shipped presets). Four canonical 2D creature presets verified upstream: Orbium unicaudatus (`O2u`), Vagorbium undulatus (`OV2u`), Gyrorbium gyrans (`OG2g`), Discutium valvatus (`S2v`). First `common-py` rule-of-three promotion-review (documentation-only, seven candidates inventoried). Two Blender Cycles hero render scripts (`render_lenia_2d.py` PNG-compositor + `render_lenia_3d.py` VDB volume scatter). **Visual verification gate on user hardware:** each preset must reach its published limit cycle on AMD desktop (Taichi-real-space backend at 512²) AND NVIDIA lab PC (CuPy backend at 512²) before phase-complete, per Phase 9 banked visual-verification convention. | ✅ Shipped | ``7065d32`` |
 | 10.1 | Stack D sim top-level module restructure to package layout | Three Stack D sibling sims (`hello`, `mpm-multimaterial`, `lenia-fft`) restructured from flat top-level modules (`main.py`, `kernels.py`, `presets.py`, `fft_backend.py`) into sim-namespaced packages (`hello/`, `mpm_multimaterial/`, `lenia_fft/`) so all three coexist in a unified venv without `main` / `kernels` / `presets` module-name collisions. Per-sim `pyproject.toml` switches from `py-modules = [...]` to `packages = [...]`; intra-package imports converted to relative (`from . import kernels`); test files updated to package-qualified imports (`from lenia_fft.kernels import X`); mypy override paths re-dotted (`kernels` → `lenia_fft.kernels`). Invocation pattern changes from `python main.py` to `python -m <sim_name>.main`; READMEs updated. Combined-install CI smoke job added to `.github/workflows/build-py.yml` (instantiates Convention 5 banked at `02f6db8` — "combined-install testing for shared-pattern adoption"); the new job installs all three sims in one venv, asserts cross-package isolation (the three sims' `kernels` / `presets` modules are distinct module objects post-restructure), and re-runs each sim's pytest in the combined venv. Architect-2 cross-review verdicts: α/α/α/β on bare sim names / relative cross-module imports / sibling tests / combined-install in Phase 10.1 scope. Structural-only; no code behavior changes. | ✅ Shipped | `a81e0d9` |
+| 11 | sph-water (Stack C particle-fluids flagship; DFSPH; first Alembic consumer) | DFSPH inner-iter Jacobi loops; Morton spatial hash; screen-space fluid render; subgroup-size pinning; FetchContent for Alembic 1.8.10. Scaffold shipped at ``09c0d9f``; main.cpp + § 5 cross-cutting edits land in follow-up commits per `phase11_deferred_backfill.md`. SHA-backfill follow-up tidies this row and § 11 below once Phase 11's third commit resolves. | ✅ Shipped | ``09c0d9f`` |
 | 10+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. Per Phase 9 banking, the natural Alembic-real-impl consumer is sph-water (Stack C). The natural cross-stack lenia-fft consumer (Stack D Taichi + Stack B WebGPU) is post-MPM. | ⬜ Not started | — |
 
 (Phase numbering is for the architect's reference; commit messages don't need to use it.)
@@ -124,7 +125,7 @@ target_link_libraries(my_sim PRIVATE gpusims::common_cpp)
 #include <gpusims/vk/context.hpp>
 ```
 
-Module list: `Camera`, `HotReloader`, `GpuProfiler`, `StateWriter`/`StateReader`, `ImGui` glue, `vdb_writer.hpp` / `alembic_writer.hpp` (stubs), `vk::Context`, `vk::Window`, `vk::Renderer`, `vk::Frame`, `vk::Buffer`, `vk::Image`, `vk::ShaderCompiler`, `vk::ComputePipeline`, `vk::GraphicsPipeline`, `vk::debug`.
+Module list: `Camera`, `HotReloader`, `GpuProfiler`, `StateWriter`/`StateReader`, `ImGui` glue, `vdb_writer.hpp` (stub; first-consumer TBD) / `alembic_writer.hpp` (real impl since Phase 11 sph-water; FetchContent-vendored at 1.8.10), `vk::Context`, `vk::Window`, `vk::Renderer`, `vk::Frame`, `vk::Buffer`, `vk::Image`, `vk::ShaderCompiler`, `vk::ComputePipeline`, `vk::GraphicsPipeline`, `vk::debug`.
 
 > **First-exercised in Phase 8.** Prior to Phase 8 the synced `vdb_writer.cpp` impl was stub-shipped but never invoked; the `writeFloatGrid` (used via `writeFloatFrame`) and `frameSequencePath` paths are exercised for the first time in eulerian-smoke's optional per-frame VDB export. Hard-rule-8 in `phase8_eulerian_smoke.md § 0` documents the in-flight-defect-fix posture if anything surfaces.
 
@@ -190,7 +191,7 @@ Hello example at `common/common-py/examples/hello/` exercises every module. Test
 | `continuous-ca/neural-ca/` | neural-ca | TBD | Sim-spec stub |
 | `volumetric-grid/eulerian-smoke/` | eulerian-smoke | C | **Implemented (Phase 8)** — first Tier-2 flagship Stack C sim; first real OpenVDB consumer. Stam stable-fluids w/ MacCormack + vorticity confinement + Jacobi pressure. Hero render via `render-pipelines/blender/render_smoke.py`. |
 | `volumetric-grid/lattice-boltzmann/` | lattice-boltzmann | C | Sim-spec stub |
-| `particle-fluids/sph-water/` | sph-water | C | Sim-spec stub; flagship sim — likely Alembic consumer; **Phase 5 candidate** |
+| `particle-fluids/sph-water/` | sph-water | C | Scaffold landed at 09c0d9f (Phase 11); main.cpp + § 5 edits in follow-up commits per `phase11_deferred_backfill.md`. First Alembic real-impl consumer; DFSPH solver + Morton spatial hash + screen-space fluid render. |
 | `particle-fluids/pic-flip/` | pic-flip | C | Sim-spec stub |
 | `hybrid-particle-grid/mpm-multimaterial/` | mpm-multimaterial | D | **Implemented (Phase 9)** — first Stack D sim; water/jelly/snow MLS-MPM; tier dropdown 250k/500k/1M @ 96³/128³/192³ (1M = capture-mode-not-interactive); hero render via `render-pipelines/blender/render_mpm.py` (PLY particles + Geometry Nodes per-material instancing) |
 | `quantum/ising-dwave/` | ising-dwave | special | Eventually D-Wave-backed; details deferred |
@@ -562,6 +563,42 @@ When a new sim adopts an existing Stack-N pattern (top-level module layout, pypr
 
 Canonical example: Phase 10's `main` namespace collision among `hello` / `mpm-multimaterial` / `lenia-fft` was latent in Phase 9 + `hello` + MPM but the combined-install test didn't exist; lenia-fft's pytest collection in a multi-sim venv was the test that finally fired. Phase 10.1 (banked in § 9) lands the structural correction. Banked Phase 10 retro.
 
+### Stack C source-builds for VFX/graphics libraries when distro packaging is unreliable
+
+When a Stack C sim needs a load-bearing VFX/graphics library (Alembic, USD, MaterialX, OCIO, OpenSubdiv) and Ubuntu's distro packaging is unreliable across LTS versions, vendor the library via CMake `FetchContent` against a pinned SHA, with the transitive apt dependency list slimmed to the minimum verified by empirical pre-spec-lock probe.
+
+Consumers (rule-of-three counting):
+
+- **Phase 11 sph-water** → Alembic 1.8.10 via FetchContent (consumer #1). `libalembic-dev` was dropped from Ubuntu 24.04 noble after 22.04 jammy. Apt deps: `libimath-dev` only.
+
+This pattern banks at consumer #1 because the distro-packaging-unreliability mode is a SPECIFIC, identifiable risk that the entire VFX-library ecosystem shares — not a property unique to Alembic. The load-bearing discipline is probe-before-FetchContent + pinned-SHA + slim-apt-deps, not the specific library.
+
+Future candidate consumers (banking pre-emptively): USD, MaterialX, OCIO, OpenSubdiv — all have similar VFX-industry pedigree and similar Ubuntu-packaging risk profile.
+
+### Probe-before-draft-lock discipline (sharpening of fabrication-discipline)
+
+For any external dependency assumption a spec is about to lock — synced-source API signature, distro packaging state, third-party CMake behavior, internal repo file-format conventions, line-citation correctness — run an empirical probe against the actual target environment before locking the spec, not after. Same root failure mode as the existing fabrication-discipline H3 ("Architects read the actual hello-world source before drafting"), extended laterally to external-dep behavior.
+
+Phase 11 sph-water caught five distinct fabrication shapes via pre-spec-lock, mid-revision, and pre-execute-handoff probes, plus two more surfaced during execution:
+
+1. **SPlisHSPlasH DFSPH formulas** (pre-draft probe). Jacobi relaxation = 0.5 (not 1.0); α stored as α/ρ² (not raw α); h = 4·particleRadius (not h = particleRadius); maxError stored as percent (0.01 = 0.01%, not fraction); specific line citations in `compute_DFSPH_factor()` and `divergenceSolveIteration()`.
+
+2. **Alembic packaging absence** (pre-draft probe). `libalembic-dev` dropped from Ubuntu 24.04 noble; 1.8.11 incompatible with noble's CMake 3.28.3; apt deps slim to `libimath-dev` only with `USE_HDF5=OFF`; two legacy CMake flags non-existent in 1.8.x; `find_package` resolves post-`FetchContent_MakeAvailable` without `add_subdirectory` fallback.
+
+3. **`StateWriter::saveBuffer` signature** (mid-revision probe). Synced is 4-arg `(name, data, bytes, meta = {})` with count/stride/format/shape in the nlohmann::json meta. Architect-1's 5-arg fabrication and architect-2's 3-arg recall were both wrong; only the probe was right.
+
+4. **Buffer-naming convention** (mid-revision probe). `StateWriter` auto-appends `.bin` at `state_writer.cpp:57`; six of seven shipped sims pass bare names; ES is the lone outlier producing real `velocity.bin.bin` files on disk. Phase 11 follows bare-name; ES bug stays out of scope.
+
+5. **Pre-execute-handoff line-citation verification** (final probe before Claude Code shipping). Caught four real defects: SPlisHSPlasH upstream directory is `SPlisHSPlasH/DFSPH/` not `SPlisHSPlasH/TimeStep/`; `optional_deps.cmake` Alembic block at lines 53-64 not 54-72; `build-native.yml` has no Alembic anchor yet (additions, not replacements); `project-state.md` § 3 Phase 11 slot was occupied by a placeholder row needing coordinator reclassification.
+
+Execution itself surfaced two more shapes:
+
+6. **§ 5 anchor drift across 7 of 8 subsections** (execution probe). The pre-execute-handoff probe verified 5 anchors and we extrapolated confidence; the remaining anchors were architect-1 memory and most were wrong. Lesson: partial probes give partial confidence, not full confidence by extrapolation.
+
+7. **main.cpp § 4.B.8 by-reference-to-synced-API drift** (execution probe). The spec used `Context::create(cdesc)` / `Window::create({...})` / `Camera::lookAt` / `Camera::setFov` — none of which exist on the synced common-cpp surface. Same root cause as #6 but in a different region. Lesson: spec drafts should probe the common-cpp surface for every API the spec calls, not just APIs flagged as risky.
+
+None of these were inferable from priors; each required actually running the probe. Iterated probing matters: each probe pass caught defects the prior pass didn't surface.
+
 ---
 
 ## 8. Things explicitly deferred
@@ -815,7 +852,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: ``e73b4c8`` — Phase 9 closed after five-polish-pass visual verification stream (on top of ``50b8c2d``, Phase 9 substantive landing). The polish stream caught five GGUI/runtime fabrications + one RUF003 lint-config miss that CI couldn't reach. Each polish was a tight-scoped fix-forward commit; all conventions banked are extensions to the strict-mode-toolchain convention at `d52bc7c`.
+- Latest commit: ``<PHASE_11_SHA>`` — Phase 11 sph-water sphere of substantive work fully landed (substantive scaffold ``09c0d9f`` + common-cpp subgroup-size-control surface + main.cpp DFSPH dispatch chain + § 5 cross-cutting edits). First Alembic real-impl consumer; CMake `FetchContent` vendored at 1.8.10. The probe-before-draft-lock discipline banked at this phase (sharpening of the fabrication-discipline convention) caught five distinct fabrication shapes during spec drafting plus two more during execution.
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)

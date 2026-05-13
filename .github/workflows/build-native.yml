@@ -43,6 +43,7 @@ jobs:
             vulkan-validationlayers \
             libopenvdb-dev \
             libboost-iostreams-dev \
+            libimath-dev \
             spirv-tools \
             glslang-tools
 
@@ -51,13 +52,14 @@ jobs:
           vulkaninfo --summary || true
           glslangValidator --version
 
-      - name: Configure (Release, examples ON, OpenVDB ON)
+      - name: Configure (Release, examples ON, OpenVDB ON, Alembic ON)
         run: |
           cmake -S . -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DGPU_SIMS_BUILD_EXAMPLES=ON \
-            -DGPU_SIMS_USE_OPENVDB=ON
+            -DGPU_SIMS_USE_OPENVDB=ON \
+            -DGPU_SIMS_USE_ALEMBIC=ON
 
       - name: Build
         run: cmake --build build --parallel
@@ -95,15 +97,17 @@ jobs:
             libxkbcommon-dev \
             libvulkan-dev \
             vulkan-validationlayers \
+            libimath-dev \
             spirv-tools \
             glslang-tools
 
-      - name: Configure (Debug)
+      - name: Configure (Debug, examples ON, Alembic ON)
         run: |
           cmake -S . -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DGPU_SIMS_BUILD_EXAMPLES=ON
+            -DGPU_SIMS_BUILD_EXAMPLES=ON \
+            -DGPU_SIMS_USE_ALEMBIC=ON
 
       - name: Build
         run: cmake --build build --parallel

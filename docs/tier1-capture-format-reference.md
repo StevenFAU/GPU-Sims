@@ -4,9 +4,11 @@
 
 ---
 
-## 1. Top-level `meta` keys observed across all 7 shipped sims
+## 1. Top-level `meta` keys observed across shipped sims (8 rows below)
 
 Every shipped sim writes **exactly one** sim-namespaced top-level key in `state.json.meta`. The key is the activation signature for the Tier-3 module that diagnoses that sim.
+
+> **Note (Phase 11):** This table currently lists sims through Phase 8 plus Phase 11 (sph-water). Phase 9 (mpm-multimaterial) and Phase 10 (lenia-fft) rows are scheduled for a separate ledger-backfill commit per `phase11_deferred_backfill.md` Item 1. Their top-level meta keys are `mpmMultimaterial` and `lenia` respectively; consult their CHANGELOG entries / project-state ledger for canonical confirmation.
 
 | Sim | Phase | Stack | Top-level meta key |
 |-----|-------|-------|--------------------|
@@ -17,12 +19,22 @@ Every shipped sim writes **exactly one** sim-namespaced top-level key in `state.
 | physarum | 6 | B (TS) | `physarum` |
 | boids-3d | 7 | B (TS) | `boids3d` |
 | eulerian-smoke | 8 | C (C++) | `eulerianSmoke` |
+| sph-water | 11 | C (C++) | `sphWater` |
 
 Convention: camelCase, named after the sim. Future sims should follow this.
 
 ---
 
 ## 2. Complete `saveBuffer` enumeration across all 7 shipped sims
+
+### Non-pixel-format buffer convention
+
+For SSBOs whose contents don't map to a single Vulkan pixel format — packed-struct per-particle / per-entity buffers — the per-buffer `format` meta key takes one of:
+
+- `"raw"` — the buffer is a contiguous byte sequence; consumers read per-field offsets from a sim-specific layout document. Phase 11 sph-water uses this for its 128-byte-per-particle struct; field offsets are at `particle-fluids/sph-water/shaders/_struct_layouts.txt`.
+- `"packed_struct"` — synonym for `"raw"` when struct identity matters more than the byte layout. Phase 7 boids-3d's `entities` is the historical precedent.
+
+In both cases, `"shape"` is a 2-element array `[count, stride]` rather than a 3-element pixel-format shape `[width, height, depth]`. Tier-3 diagnostics branch on `format == "raw" || format == "packed_struct"` to dispatch the right read path.
 
 ### strange-attractors (Phase 2)
 **No `saveBuffer` calls.** Meta-only capture. The trajectory is parameter-driven; given the same seed and params it re-derives. Tier-3 has no buffer data to analyze unless this sim adds a diagnostic-mode dump.

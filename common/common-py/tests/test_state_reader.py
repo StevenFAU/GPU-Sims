@@ -1,6 +1,6 @@
 """StateReader.find_latest semantics test.
 
-Locks in the mtime-based 'latest' semantics fixed at commit <commit SHA below>.
+Locks in the mtime-based 'latest' semantics fixed at commit `b6aa49e`.
 
 The old implementation picked the capture with the highest frame index,
 which fails when capture dirs span multiple sessions (frame indices reset

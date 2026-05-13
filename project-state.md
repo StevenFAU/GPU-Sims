@@ -852,7 +852,7 @@ Begin by summarizing the current state and what's next.
 
 - Repo: <https://github.com/StevenFAU/GPU-Sims>
 - License: MIT
-- Latest commit: ``<PHASE_11_SHA>`` — Phase 11 sph-water sphere of substantive work fully landed (substantive scaffold ``09c0d9f`` + common-cpp subgroup-size-control surface + main.cpp DFSPH dispatch chain + § 5 cross-cutting edits). First Alembic real-impl consumer; CMake `FetchContent` vendored at 1.8.10. The probe-before-draft-lock discipline banked at this phase (sharpening of the fabrication-discipline convention) caught five distinct fabrication shapes during spec drafting plus two more during execution.
+- Latest commit: ``0243278`` — Phase 11 sph-water sphere of substantive work fully landed (substantive scaffold ``09c0d9f`` + common-cpp subgroup-size-control surface + main.cpp DFSPH dispatch chain + § 5 cross-cutting edits). First Alembic real-impl consumer; CMake `FetchContent` vendored at 1.8.10. The probe-before-draft-lock discipline banked at this phase (sharpening of the fabrication-discipline convention) caught five distinct fabrication shapes during spec drafting plus two more during execution.
 - Live sims:
   - <https://stevenfau.github.io/GPU-Sims/strange-attractors/> (Phase 2)
   - <https://stevenfau.github.io/GPU-Sims/mandelbulb-explorer/> (Phase 4)

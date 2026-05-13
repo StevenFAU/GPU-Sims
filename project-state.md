@@ -389,6 +389,8 @@ Currently tracked at this stage:
 
 The pattern is informal currently; this entry formalizes it. Per-sim phases should call out which existing patterns they reuse (and which, if any, they promote at consumer #3).
 
+The rule also runs in reverse. Each new consumer accidentally validates the prior consumer's undocumented assumptions about the shared abstraction. When consumer N+1 ships, the spec should include an audit of the shared library for: (a) return-value contracts consumer N didn't exercise, (b) side-effect ordering consumer N happened not to interleave, (c) "happens to work" positional symmetries depending on consumer-N-specific layout. The audit runs before consumer N+1's spec finalizes, not after. Phase 10 lenia-fft exposed two `common-py` defects this way that MPM (consumer #1) had never tripped: `StateWriter.end_frame()` clearing `_current_dir` before main.py logged the return path (polish-3 fix), and the panel-rect Y-symmetry coincidence in `_cursor_in_any_panel` (polish-4 finding, banked as the canonical example for the platform-convention-citation rule below). Banked Phase 10 retro.
+
 ### Multi-architect cross-review for high-stakes phase specs
 
 For phases that touch wide common-* API surface area, lock load-bearing decisions, or establish first-of-pattern conventions, the spec benefits from a cross-review pass before going to Claude Code. The pattern, banked from Phase 4 (canonical example — first Stack A→B port, established the convention):
@@ -525,6 +527,8 @@ Phase 9 shipped (`50b8c2d`) with strict-mode CI configurations — `mypy --stric
 
 Banked Phase 9 retro. The Phase 9 fix-forward commit (`12cf303`) contains the implementing changes — per-module mypy overrides, `-> None` drops from every `@ti.kernel` function, the `from __future__ import annotations` removal from kernels.py with explanatory comment, the file:// → plain-name dependency fix, and the ruff lint cleanup.
 
+This discipline is role-agnostic. The failure mode is recall-without-verify regardless of seat: drafters assert false facts, verifiers flag false positives, executors skip steps based on misremembered context. Sandbox-probe before asserting/flagging/skipping, not after. Phase 10 surfaced three architect-2 instances of this in three verification rounds (`torch.real` API false-positive in round 1; Hydrogeminium b-string missed in round 2; Scutium-serratus saliens b-string missed in round 2); the cross-review chain caught all three before code landed. Banked Phase 10 retro.
+
 ### Runtime-only display-required surfaces require user-driven visual verification before phase-complete
 
 The strict-mode CI configuration convention (banked `d52bc7c`) covers surfaces CI can actually exercise — `ruff`, `mypy --strict`, `pytest` on CPU, markdown lint. It does NOT cover runtime-only display-required surfaces: GGUI windows, headless render pipelines that need a real GPU, interactive input handling, ImGui sub-window layouts. Phase 9's visual verification pass surfaced five distinct fabrications in this surface family — `color_edit_3` list-vs-tuple coercion (polish-1, `a6c5080`); `from __future__ import annotations` × `@ti.kernel` argument annotations breaking decoration at module import time across primitive types not just `ti.template()` (polish-2, `4cb70ee`); F5/F9 keybindings not firing because Taichi GGUI doesn't enumerate F-key constants (polish-3, `49c0559`); particle color reset paths missing `set_color_by_material` calls after R-reset / preset-change / LMB-place (polish-4, `f2c7e10`); LMB-place not gating against GUI panel rects so save/load button clicks placed material cubes (polish-4, `f2c7e10`). All five passed CI cleanly because CI is headless and didn't exercise the GGUI surface. Convention: every sim that ships a GGUI/HUD/interactive-render surface gets an explicit user-driven verification gate after CI-green and before "Phase complete." For Stack D sims specifically, the gate is "open the sim, exercise every panel/keybinding/click-target, F5/F9 round-trip a capture, render one hero frame." Discovered defects land as polish commits in the tight-scoped fix-forward pattern established by `12cf303` / `9a43f4c` / similar predecessors. Banked Phase 9 retro after five-polish-pass stream.
@@ -544,6 +548,18 @@ For Stack D sims with multiple backend paths (e.g., FFT backends in lenia-fft), 
 ### Tier-label runtime mutation post-init
 
 For sim-tier dropdowns whose interactivity depends on runtime conditions (FFT-backend availability, GPU device class), build the tier dropdown's labels at init time AFTER the relevant runtime probe. The tier-list data structure must be a mutable `list[tuple[...]]` (or similar), not a `Final[tuple[...]]`. The label string is the base + a runtime-determined suffix (`" (FFT)"` vs `" (real-space, capture-mode)"`). Diverges from Phase 9's compile-time-constant tier table. Banked Phase 10; see `continuous-ca/lenia-fft/python/main.py` `TIERS_BASE` + post-backend-select mutation block.
+
+### Comments asserting platform or library behavior must cite verification source
+
+Comments that assert non-obvious platform or library behavior (coordinate orientations, byte conventions, GPU driver quirks, OS-specific paths, library-internal contracts) must cite the verification source: an inline sandbox probe, a verification report at file:line, or a documented Claude Code escape-hatch test. "Verbatim inherited from prior sim" is not sufficient — the prior sim's working behavior may rely on positional symmetries that don't transfer. Spec drafters author these comments with citations; architect-2 review catches missing ones; Claude Code execution preserves them.
+
+Canonical example: Phase 10 polish-4 surfaced two contradictory comments in `main.py` about Taichi GGUI cursor-y origin — line 164 claimed y=0 at bottom, line 203 claimed y=0 at bottom (inherited verbatim from Phase 9 MPM main.py:306-318). Empirical reality on Taichi 1.7.4 / Vulkan / Ubuntu 24.04 is y=0 at TOP. MPM's flip worked despite the wrong comment because MPM's panels sit in a region where the inversion is symmetric. Lenia's paint surface exposed the inconsistency. Banked Phase 10 retro.
+
+### Combined-multi-sim-venv testing for shared-pattern adoption
+
+When a new sim adopts an existing Stack-N pattern (top-level module layout, pyproject configuration shape, `common-*` dependency declaration, CI workflow template), the spec must include a combined-multi-sim-venv smoke that installs the new sim alongside all prior consumers and exercises basic imports plus the new sim's pytest collection. Pattern collisions surface at consumer count 2 if you run the test; otherwise they wait for consumer count 3+ and surface as production friction.
+
+Canonical example: Phase 10's `main` namespace collision among `hello` / `mpm-multimaterial` / `lenia-fft` was latent in Phase 9 + `hello` + MPM but the combined-install test didn't exist; lenia-fft's pytest collection in a multi-sim venv was the test that finally fired. Phase 10.1 (banked in § 9) lands the structural correction. Banked Phase 10 retro.
 
 ---
 
@@ -617,6 +633,34 @@ A red badge on `main` after this commit is a real regression. The `Build (native
 ### Taichi 1.7.4 has no built-in FFT
 
 Confirmed via sandbox probe during Phase 10 architect-1 drafting (`for name in dir(ti): if 'fft' in name.lower(): ...` returns empty; same for `ti.math` and `ti.tools`). The runtime backend-selection pattern in lenia-fft is the workaround — multiple FFT-or-equivalent backends (CuPy, PyTorch, Taichi-real-space, numpy) gated behind pip extras with init-time priority probe. Future Stack D sims requiring spectral methods will need the same pattern. If a future Taichi version adds FFT, it becomes an additional backend candidate at a priority between Taichi-real-space and numpy. Banked Phase 10.
+
+### Emerging pattern (unsettled at two data points): visual-verification polish cadence
+
+Phases 9 and 10 each ran ~4-5 polish commits after CI-green to address findings from the user-runtime visual-verification gate. Phase 9 had 5 polishes; Phase 10 had 4. Whether this reflects an underlying mechanism (visual gates surface multiple defects per observation pass; complex runtime surfaces have wide latent-defect surface area) or a coincidence of recent phase shapes is unsettled at two data points.
+
+Revisit at Phase 11 + 12. If the pattern continues (3-6 polishes per high-stakes phase), bank as § 7 convention with budgeting expectation. If polish counts diverge significantly (e.g., Phase 11 = 1 polish, Phase 12 = 8), kill the emerging note as coincidence-of-recent-phases. Avoid naming a polish budget in the meantime; self-fulfilling adherence to named capacity is a known anti-pattern.
+
+Banked Phase 10 retro pending Phase 11+12 confirmation.
+
+### Emerging pattern (unsettled at two data points): verification-chain length
+
+Phases 9 and 10 each ran ~3-5 spec verification rounds (architect-1 draft → architect-2 cross-review rounds, with Claude Code empirical probes between) before Claude Code executed the spec. Phase 9 had ~3 rounds; Phase 10 had ~5 (including the kernel-formula correction at round 3 and the v2 spec revision). Whether this reflects a converging multi-architect workflow on high-stakes phases or a coincidence of recent phase complexity is unsettled.
+
+Revisit at Phase 11 + 12. If the pattern holds across three or four phases, bank as § 7 convention with budgeting expectation. Avoid declaring a process expectation prematurely; self-fulfilling adherence to named verification-round counts is the same anti-pattern as the polish-budget case above.
+
+Banked Phase 10 retro pending Phase 11+12 confirmation.
+
+### Phase 10.1 banked — Stack D sim top-level module restructure
+
+Phase 10 polish stream surfaced a `main` module-name collision among three Stack D sibling sims (`common/common-py/examples/hello`, `hybrid-particle-grid/mpm-multimaterial/python`, `continuous-ca/lenia-fft/python`) each declaring `main` as a top-level module in their `pyproject.toml`. CI doesn't hit this (single-sim install per step group); local multi-sim development does. Phase 10's three new CI tests (`test_select_backend_factory_falls_back`, `test_apply_preset_stability_2d`, `test_capture_schema_round_trip`) all import `from main import SimState` and fail locally in a unified venv because `hello`'s `main` shadows the others.
+
+Phase 10.1 (banked, spec pending) lands the structural correction: restructure each Stack D sim from flat top-level `main.py` into a sim-namespaced package layout (`<sim_name>/main.py` with `pyproject.toml` declaring `packages = ["<sim_name>"]`). Updates imports in test files and any cross-module references; updates CI workflow `working-directory:` paths if applicable; updates spec and doc references.
+
+Phase 10.1 is phase-sized despite the small per-sim LOC count (~50 LOC per sim across three sims, plus CI workflow paths plus doc references) because it touches three sims' file-tree structure and requires architect-2 cross-review of the restructure. Naming as Phase 10.1 rather than polish-6 respects the cadence distinction (polish = small tight-scoped fix-forward; phase = structural correction requiring architect-2 review).
+
+Architect-2 cross-review of polish-6 framing endorsed Option B (package restructure) over Option A (top-level rename) on compounding-cost grounds: Option A defers ~50 LOC of migration debt per future Stack D sim; Phase 14 with seven sims pays Option B at 350 LOC instead of the current 150. Option B is the structurally-right answer; Option A is the patch.
+
+Banked Phase 10 retro. Spec drafting next.
 
 ---
 

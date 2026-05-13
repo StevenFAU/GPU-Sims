@@ -102,10 +102,7 @@ The architect-2-intuited formula `K_polyring(r) = β_i * K_bell(r·n - i)` is co
 
 Items deferred from v1 to keep Phase 10 scoped:
 
-- **Save-creature UX:** RMB-snapshot a 256×256 state crop centered on cursor
-  + parameter set → `creatures/<name>.json` for later recall. Lenia's
-  research workflow is parameter-sweep + stable-creature discovery; this
-  is the natural save mechanism beyond F5-state.
+- **Save-creature UX:** RMB-snapshot a 256×256 state crop centered on cursor + parameter set → `creatures/<name>.json` for later recall. Lenia's research workflow is parameter-sweep + stable-creature discovery; this is the natural save mechanism beyond F5-state.
 
 - **Named 3D creatures from Chan's research:** v1 ships only a generic 3D
   "Random Blob" preset. Chan's published 3D Lenia animals are real but

@@ -5,11 +5,13 @@ on:
     paths:
       - 'common/common-py/**'
       - 'hybrid-particle-grid/mpm-multimaterial/python/**'
+      - 'continuous-ca/lenia-fft/python/**'
       - '.github/workflows/build-py.yml'
   pull_request:
     paths:
       - 'common/common-py/**'
       - 'hybrid-particle-grid/mpm-multimaterial/python/**'
+      - 'continuous-ca/lenia-fft/python/**'
       - '.github/workflows/build-py.yml'
   workflow_dispatch:
 
@@ -66,4 +68,21 @@ jobs:
 
       - name: Taichi CPU-backend kernel smoke (sim)
         working-directory: hybrid-particle-grid/mpm-multimaterial/python
+        run: pytest tests/ -v
+
+      - name: Install lenia-fft sim deps
+        working-directory: continuous-ca/lenia-fft/python
+        run: |
+          pip install -e .
+
+      - name: Ruff (lenia)
+        working-directory: continuous-ca/lenia-fft/python
+        run: ruff check .
+
+      - name: Mypy --strict (lenia)
+        working-directory: continuous-ca/lenia-fft/python
+        run: mypy --strict .
+
+      - name: Taichi CPU-backend kernel smoke (lenia)
+        working-directory: continuous-ca/lenia-fft/python
         run: pytest tests/ -v

@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpusims-lenia-fft-py"
+version = "0.1.0"
+description = "Lenia (FFT / real-space) — Bert Chan's continuous CA, 2D + opt-in 3D"
+requires-python = ">=3.11"
+dependencies = [
+    # gpusims-common-py is installed editable by the prior CI step
+    # (.github/workflows/build-py.yml: "Install common-py + dev deps"),
+    # and locally by `pip install -e ../../../common/common-py` before
+    # running `pip install -e .` in this directory. The plain-name dep
+    # resolves to the editable install. (PEP 508 file:// URLs with
+    # relative paths are rejected by modern pip — banked Phase 9 retro.)
+    "gpusims-common-py",
+    "taichi>=1.7.4,<1.8",
+    "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+# GPU-FFT backend extras. Pick ONE that matches your hardware.
+# CuPy (NVIDIA CUDA): pip install -e .[cuda]
+# PyTorch ROCm (AMD): pip install -e .[rocm]  — also requires the ROCm wheel
+#                     installed separately via the PyTorch-recommended index URL.
+# PyTorch CUDA (NVIDIA alternative to CuPy): pip install -e .[cuda-torch]
+# All three are optional; absent them, the sim falls back to Taichi real-space
+# convolution (universal-baseline, works on both CUDA and Vulkan via the
+# standard ti.init(arch=ti.gpu) path). See docs/load-bearing-decisions.md
+# "Runtime FFT-backend selection (priority order)".
+cuda = ["cupy-cuda12x>=13,<14"]
+cuda-torch = ["torch>=2.1,<3"]
+rocm = ["torch>=2.1,<3"]   # ROCm wheel installed separately; see README
+
+dev = [
+    "ruff>=0.6,<1.0",
+    "mypy>=1.11,<2",
+    "pytest>=8,<9",
+]
+
+[tool.setuptools]
+py-modules = ["main", "kernels", "presets", "fft_backend"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "PIE", "RUF"]
+ignore = [
+    "E501",  # long kernel lines are OK
+    "B008",  # function calls in argument defaults are idiomatic with Taichi types
+    "E741",  # `for I in ti.grouped(...)` is canonical Taichi multi-dim index naming
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+[[tool.mypy.overrides]]
+# Optional GPU-FFT deps have incomplete stubs or are absent in CI; allow Any.
+module = ["taichi.*", "pyopenvdb.*", "cupy.*", "torch.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# @ti.kernel functions diverge from Python type semantics (banked Phase 9):
+# - Taichi 1.7.4 rejects `-> None` return annotations at decoration time.
+# - `ti.template()` arg annotation is call-form (Taichi runtime requirement);
+#   mypy --strict valid-type wants subscript form.
+# - Inside @ti.kernel scope, `int(vec)` returns ti.Vector[int] (with .cast()
+#   method); mypy infers Python int (no .cast). Same gap, different mypy code.
+# Cannot satisfy both Taichi runtime and mypy --strict simultaneously; relax
+# the affected mypy rules on kernel + kernel-test modules. Non-kernel modules
+# of the sim keep full mypy --strict.
+module = ["kernels", "tests.test_kernels"]
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+disable_error_code = ["valid-type", "no-untyped-def", "attr-defined"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

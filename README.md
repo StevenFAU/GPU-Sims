@@ -18,7 +18,7 @@ A portfolio of GPU-accelerated physics and emergence simulations — every sim a
 | [Boids-3D](agent-based/boids-3d/) | Agent-based | WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/boids-3d/) (Phase 7) |
 | [Reaction-diffusion 2D](continuous-ca/reaction-diffusion-2d/) | Continuous CA | Shadertoy → WebGPU | [Live](https://stevenfau.github.io/GPU-Sims/reaction-diffusion-2d/) (Phase 5) |
 | [Reaction-diffusion 3D](continuous-ca/reaction-diffusion-3d/) | Continuous CA | Native C++ | Implemented (Phase 3) |
-| [Lenia (FFT)](continuous-ca/lenia-fft/) | Continuous CA | Python (Taichi) + WebGPU | Not started |
+| [Lenia (FFT)](continuous-ca/lenia-fft/) | Continuous CA | Python (Taichi) + WebGPU | Implemented (Phase 10) |
 | [Neural CA](continuous-ca/neural-ca/) | Continuous CA | Python (PyTorch) + WebGPU | Not started |
 | [Eulerian smoke](volumetric-grid/eulerian-smoke/) | Volumetric grid | Native C++ | Implemented (Phase 8) |
 | [Lattice Boltzmann](volumetric-grid/lattice-boltzmann/) | Volumetric grid | Native C++ | Not started |

@@ -8,6 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.11.0] - Phase 10: lenia-fft (Stack D continuous-CA, runtime FFT-backend selection)
+
+### Added
+
+- **`continuous-ca/lenia-fft/python/` — Bert Chan's Lenia on a 2D periodic grid (Phase 10).** First Stack D continuous-CA sim; second Stack D consumer of `common-py`. Three 2D tiers (512² default / 1024² mid / 2048² stretch — stretch runs at interactive FPS only with a GPU FFT backend; falls back to capture-mode under universal-baseline) plus opt-in 3D stretch tier (128³ capture-mode with iso-cross-section-slice viewer for in-sim feedback + per-frame VDB density export for hero render). **First sim with runtime FFT-backend selection** — priority order CuPy → PyTorch ROCm → Taichi real-space → numpy FFT; backends gated behind pip extras (`[cuda]` / `[rocm]`); init-time priority probe with smoke-pass requirement; universal-baseline (Taichi real-space convolution + numpy FFT) always available. Free pan/zoom 2D camera (custom in-sim, NOT `common-py.Camera` — 2D camera is a sim-local concern); `common-py.Camera` FreeFly mode for the 3D tier. LMB-drag paint / RMB-drag erase brush with radius + intensity sliders. **Quad4 polynomial kernel `K(r) = (4·r·(1-r))^4`** sourced from upstream `Chakazul/Lenia/Python/LeniaNDK.py` `kernel_core[0]` (the kn=1 entry via off-by-one indexing). **Four canonical 2D creature presets verified byte-for-byte against `Chakazul/Lenia/Python/animals.json`:** Orbium unicaudatus (`O2u`), Vagorbium undulatus (`OV2u`), Gyrorbium gyrans (`OG2g`), Discutium valvatus (`S2v`); all four single-peak (b="1"), kn=1, gn=1 (Gaussian growth). Full F5/F9 state capture-and-load via `gpusims_common.StateWriter` / `StateReader` with sim-namespaced `leniaFft` meta wrapper per `docs/tier1-capture-format-reference.md`. Cross-backend (CUDA + Vulkan first-class via `ti.init(arch=ti.gpu)`). Per-frame PNG export via `ti.tools.imwrite`; per-run ffmpeg MP4 via `ti.tools.VideoManager`; per-frame VDB density via `gpusims_common.VdbWriter` (3D tier; gated on `pyopenvdb`).
+- **`render-pipelines/blender/render_lenia_2d.py` — Blender Cycles 2D hero compositor (Phase 10).** Consumes PNG sequence from the sim's `frames_export/` directory; applies color-grade + vignette + temporal smoothing; outputs polished MP4 hero video. Headless Cycles render with GPU device fallback chain (OptiX → HIP → CUDA → fail-loud, same as Phase 8 `render_smoke.py` and Phase 9 `render_mpm.py`).
+- **`render-pipelines/blender/render_lenia_3d.py` — Blender Cycles 3D hero render (Phase 10).** Consumes per-frame VDB density sequence from the sim's `vdb_export/` directory; Cycles volume scatter with parametric camera + 3-point lighting; conceptually a Phase-8 `render_smoke.py` cousin tuned for Lenia's volumetric density character. v1 deliverable is a single still at `--frame 60`; supports `--frame-start` / `--frame-end` for v1.1 animation.
+- **`common-py` rule-of-three promotion review** (Phase 10, consumer #2; documentation-only per rule-of-three). Seven candidate patterns inventoried in `continuous-ca/lenia-fft/docs/load-bearing-decisions.md`: `_cursor_in_any_panel` GUI-occlusion test (STRONG promote at consumer #3), capture-mode confirmation modal (STRONG), tier dropdown + deferred-change-after-`window.show()` (STRONG), F5/F9 save-load buttons (MODERATE), three sim-specific keepers (`set_color_by_material` re-apply, reserve-tail emitter allocation, `cursor_to_ground` 3D unproject — KEEP sim-local). No code extracted in Phase 10; consumer #3 (likely `neural-ca` Stack D variant) is the trigger.
+- **Three new load-bearing CI tests** in `continuous-ca/lenia-fft/python/tests/test_kernels.py` (Phase 10): `test_select_backend_factory_falls_back` (factory contract under CI's no-GPU-extras environment), `test_apply_preset_stability_2d` (parametrized over all four 2D presets — BOUNDED + NaN_FREE + CHANGED + NON_DEAD assertions after 10 Lenia steps), `test_capture_schema_round_trip` (F5/F9 round-trip preserves state byte-for-byte + verifies `leniaFft` meta-wrapper schema end-to-end). Architect-2 round-3 verified all four presets pass the stability test under quad4 at 64² random-noise seed.
+
+### Changed
+
+- **`.github/workflows/build-py.yml`** (Phase 10): added `continuous-ca/lenia-fft/python/**` to `paths:` filters in both `push:` and `pull_request:` triggers; appended four-step `(lenia)` step group mirroring the synced MPM step-group format byte-for-byte (`working-directory:` per step, single-line `run:`, `mypy --strict .`, `pytest tests/ -v`).
+- **`docs/conventions.md`** (Phase 10): two new bullets at the end of the Python (Stack D) block — "Runtime backend selection (Stack D)" + "Tier-label runtime mutation post-init".
+- **`docs/sim-specs/lenia-fft.md`** (Phase 10): Phase 0 stub replaced with full sim spec.
+- **`continuous-ca/lenia-fft/README.md`** (Phase 10): Phase 0 stub replaced with full sim README citing the four verified-creature presets + kernel anchor.
+
+### Banked (deferred)
+
+- **Save-creature UX** (v1.1). Painting + saving a stable creature back to a preset is research-grade UX; Phase 10 ships only the existing-preset roster.
+- **Volumetric raymarch interactive viewer** for the 3D tier (v1.1). v1 ships the iso-cross-section-slice viewer (cheap, predictable); a real-time raymarcher is meaningful future work.
+- **Named 3D creature presets** from Chan's research (v1.1 after visual verification on user hardware identifies which Chan-published 3D animals work at the spec's grid resolution + dt).
+- **Polyring (multi-peak) kernel extension** (v1.1+). Formula documented at `Chakazul/Lenia/Python/LeniaNDK.py:329-335` (architect-2 round-2 verification); enables the broader `animals.json` library (Hydrogeminium, Gyrogeminium, Scutium serratus family, etc. — roughly 50+ additional creatures). Phase 10 ships single-peak only.
+- **Stack B WebGPU port** (later phase). Lenia is a natural Stack B sim; cross-stack capture replay via the shared meta schema is in scope.
+- **Houdini hero render path** (license-dependent). Capture formats are already Houdini-compatible (VDB native, PNG sequence trivial); integration is straightforward when license lands.
+- **Sub-stepping per frame** (v1 = 1 substep; v1.1 may add capture-mode multi-substep for slower-than-real-time creatures).
+
+
 ## [0.10.1] - Phase 9.5: docs retro (tier1 reference + conventions futures caveat + project-state lenia-fft phase-tag fix)
 
 ### Added

@@ -53,6 +53,13 @@ This document expands [`overarching-spec.md`](overarching-spec.md) § 8 with con
   `rgba16f` / `rgba16float`); Phase 9 introduces `r32i` for int32 buffers as a
   natural extension. Tier-1 / Tier-3 diagnostics tooling reads this schema; new
   Stack D sims must conform.
+- **Runtime backend selection (Stack D).** For sims with multiple-implementation backend paths (e.g., FFT in lenia-fft):
+  (1) abstract base class with numpy-in / numpy-out public interface; subclasses cache backend-specific resources at `__init__` (FFT of the kernel, GPU handles); `step()` reuses them.
+  (2) each backend's optional pip dependency declared under `[project.optional-dependencies]` in the sim's `pyproject.toml` with a descriptive extra name (`cuda`, `rocm`, etc.); universal-baseline path uses only the sim's baseline dependencies (Taichi + numpy).
+  (3) `select_backend()` factory walks the priority list; each backend tried via guarded import + smoke test (`step()` on a tiny test field); failures log at `log.info` (not `log.warn` — every-run noise on alternate-hardware platforms); the first that smoke-passes wins.
+  (4) selected backend's name logged once at sim start (`log.info`); sim-runtime UX may mutate post-init based on which backend won.
+  (5) CI exercises ONLY the universal-baseline backends; GPU-specific backends require user-hardware verification per the runtime-only-surface convention banked Phase 9 retro. Reference: `continuous-ca/lenia-fft/python/fft_backend.py` (Phase 10).
+- **Tier-label runtime mutation post-init.** For tiers whose interactivity depends on runtime conditions (FFT-backend availability, GPU device class), build the tier dropdown's labels at init time AFTER the runtime probe. The tier-list data structure must be a mutable `list[tuple[str, int, int, bool]]` (or similar), not a `Final[tuple[...]]`. The label string is the base + a runtime-determined suffix (`" (FFT)"` vs `" (real-space, capture-mode)"`). Diverges from Phase 9's compile-time-constant tier table. Reference: `continuous-ca/lenia-fft/python/main.py` `TIERS_BASE` + post-backend-select mutation block (Phase 10).
 
 ## TypeScript (Stack B)
 

@@ -591,11 +591,11 @@ Phase 11 sph-water caught five distinct fabrication shapes via pre-spec-lock, mi
 
 5. **Pre-execute-handoff line-citation verification** (final probe before Claude Code shipping). Caught four real defects: SPlisHSPlasH upstream directory is `SPlisHSPlasH/DFSPH/` not `SPlisHSPlasH/TimeStep/`; `optional_deps.cmake` Alembic block at lines 53-64 not 54-72; `build-native.yml` has no Alembic anchor yet (additions, not replacements); `project-state.md` § 3 Phase 11 slot was occupied by a placeholder row needing coordinator reclassification.
 
-Execution itself surfaced two more shapes:
+Execution itself surfaced two more shapes (continuing the count as 6-7):
 
-6. **§ 5 anchor drift across 7 of 8 subsections** (execution probe). The pre-execute-handoff probe verified 5 anchors and we extrapolated confidence; the remaining anchors were architect-1 memory and most were wrong. Lesson: partial probes give partial confidence, not full confidence by extrapolation.
+1. **§ 5 anchor drift across 7 of 8 subsections** (execution probe; shape #6). The pre-execute-handoff probe verified 5 anchors and we extrapolated confidence; the remaining anchors were architect-1 memory and most were wrong. Lesson: partial probes give partial confidence, not full confidence by extrapolation.
 
-7. **main.cpp § 4.B.8 by-reference-to-synced-API drift** (execution probe). The spec used `Context::create(cdesc)` / `Window::create({...})` / `Camera::lookAt` / `Camera::setFov` — none of which exist on the synced common-cpp surface. Same root cause as #6 but in a different region. Lesson: spec drafts should probe the common-cpp surface for every API the spec calls, not just APIs flagged as risky.
+2. **main.cpp § 4.B.8 by-reference-to-synced-API drift** (execution probe; shape #7). The spec used `Context::create(cdesc)` / `Window::create({...})` / `Camera::lookAt` / `Camera::setFov` — none of which exist on the synced common-cpp surface. Same root cause as shape #6 but in a different region. Lesson: spec drafts should probe the common-cpp surface for every API the spec calls, not just APIs flagged as risky.
 
 None of these were inferable from priors; each required actually running the probe. Iterated probing matters: each probe pass caught defects the prior pass didn't surface.
 

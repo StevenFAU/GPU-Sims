@@ -148,7 +148,7 @@ def cursor_to_field_cell(
     n_grid: int,
 ) -> tuple[int, int]:
     """Convert a normalized cursor coord (Taichi: x right, y up) to a
-    field-cell index pair (i, j) on an n_grid × n_grid 2D field.
+    field-cell index pair (i, j) on an n_grid x n_grid 2D field.
 
     Inverse of the pan-zoom composite_view kernel: window-coord → field-coord.
     Periodic-BC wrap: field indices are taken modulo n_grid so painting near
@@ -231,9 +231,9 @@ def step_2d(
     reads/writes the Taichi field directly), but the public step() interface
     is still numpy-in/numpy-out for API consistency.
     """
-    state_np: np.ndarray = state.state_2d.to_numpy()   # type: ignore[union-attr]
+    state_np: np.ndarray = state.state_2d.to_numpy()
     new_np = convolver.step(state_np, dt, mu, sigma)
-    state.state_2d.from_numpy(new_np.astype(np.float32))   # type: ignore[union-attr]
+    state.state_2d.from_numpy(new_np.astype(np.float32))
 
 
 def step_3d(
@@ -247,12 +247,12 @@ def step_3d(
     which walks a (2R+1)^3 kernel LUT in real space with periodic BCs.
     """
     kernels.lenia_step_3d(
-        state.state_3d, state.state_3d_next, state.kernel_lut_3d,  # type: ignore[arg-type]
+        state.state_3d, state.state_3d_next, state.kernel_lut_3d,
         kernel_radius=state.kernel_radius,
         n_grid=state.n_grid,
         dt=dt, mu=mu, sigma=sigma,
     )
-    kernels.swap_state_3d(state.state_3d, state.state_3d_next)   # type: ignore[arg-type]
+    kernels.swap_state_3d(state.state_3d, state.state_3d_next)
 
 
 # ----------------------------------------------------------------------
@@ -266,7 +266,7 @@ def main() -> None:
     # --------- Tier + state allocation ---------
     tiers: list[tuple[str, int, int, bool]] = list(TIERS_BASE)   # mutable copy for backend-dependent re-labeling
     tier_idx = DEFAULT_TIER_IDX
-    tier_label, dim, n_grid, is_capture_mode = tiers[tier_idx]
+    _tier_label, dim, n_grid, is_capture_mode = tiers[tier_idx]
 
     preset_list = presets.build_presets()
     # Filter presets by current dimension (2D presets for 2D tiers, 3D for 3D).
@@ -285,7 +285,7 @@ def main() -> None:
     if dim == 2:
         convolver = select_backend(
             n_grid=n_grid,
-            kernel_lut_np=state.kernel_lut.to_numpy(),   # type: ignore[union-attr]
+            kernel_lut_np=state.kernel_lut.to_numpy(),
             taichi_state=state,                           # for the Taichi-real-space path
         )
         log.info("Selected FFT backend: %s", convolver.name())
@@ -305,12 +305,11 @@ def main() -> None:
     # --------- Window / canvas / camera ---------
     window = ti.ui.Window("lenia-fft — GPU-Sims", RES, vsync=True)
     canvas = window.get_canvas()
-    # Scene is constructed only for the 3D tier (and only for an eventual
-    # volumetric raymarch viewer, banked v1.1; v1 uses canvas.set_image of
-    # the slice). It's constructed unconditionally for API consistency but
-    # not used in v1 2D or 3D-slice mode.
-    scene = window.get_scene()
-
+    # No window.get_scene() in v1 — Lenia 2D uses canvas.set_image of the
+    # state field directly, and the 3D tier uses canvas.set_image of an
+    # extracted cross-section slice (no ti.ui.Scene). Volumetric raymarch
+    # via ti.ui.Scene is banked v1.1 (see docs/load-bearing-decisions.md
+    # "3D viewer in v1").
     camera = Camera(mode=CameraMode.FreeFly)
     camera.set_position(0.5, 0.5, 1.5)
     camera.set_lookat(0.5, 0.5, 0.5)
@@ -375,15 +374,15 @@ def main() -> None:
 
         N = state.n_grid
         if dim == 2:
-            arr_2d = state.state_2d.to_numpy().astype(np.float32)   # type: ignore[union-attr]
+            arr_2d = state.state_2d.to_numpy().astype(np.float32)
             state_writer.save_buffer("state", arr_2d, shape=[N, N])
-            lut = state.kernel_lut.to_numpy().astype(np.float32)    # type: ignore[union-attr]
+            lut = state.kernel_lut.to_numpy().astype(np.float32)
             R2 = 2 * state.kernel_radius + 1
             state_writer.save_buffer("kernel_lut", lut, shape=[R2, R2])
         else:
             arr_3d = state.state_3d.to_numpy().astype(np.float32)   # type: ignore[union-attr]
             state_writer.save_buffer("state", arr_3d, shape=[N, N, N])
-            lut3 = state.kernel_lut_3d.to_numpy().astype(np.float32)  # type: ignore[union-attr]
+            lut3 = state.kernel_lut_3d.to_numpy().astype(np.float32)
             R3 = 2 * state.kernel_radius + 1
             state_writer.save_buffer("kernel_lut", lut3, shape=[R3, R3, R3])
         # POLISH-3 (visual-verification gate): capture the path BEFORE
@@ -434,15 +433,15 @@ def main() -> None:
         # Restore state buffer.
         state_np_flat = state_reader.load_buffer_reshaped(latest, "state").astype(np.float32)
         if dim == 2:
-            state.state_2d.from_numpy(state_np_flat)   # type: ignore[union-attr]
+            state.state_2d.from_numpy(state_np_flat)
         else:
             state.state_3d.from_numpy(state_np_flat)   # type: ignore[union-attr]
         # Restore kernel LUT (so we don't recompute from preset on a customized capture).
         lut_np = state_reader.load_buffer_reshaped(latest, "kernel_lut").astype(np.float32)
         if dim == 2:
-            state.kernel_lut.from_numpy(lut_np)   # type: ignore[union-attr]
+            state.kernel_lut.from_numpy(lut_np)
         else:
-            state.kernel_lut_3d.from_numpy(lut_np)  # type: ignore[union-attr]
+            state.kernel_lut_3d.from_numpy(lut_np)
         # Restore view / brush / camera.
         view = sim_meta.get("view", {})
         pan_x = float(view.get("pan_x", 0.0))
@@ -461,7 +460,7 @@ def main() -> None:
         if dim == 2:
             convolver = select_backend(
                 n_grid=n_grid,
-                kernel_lut_np=state.kernel_lut.to_numpy(),   # type: ignore[union-attr]
+                kernel_lut_np=state.kernel_lut.to_numpy(),
                 taichi_state=state,
             )
             log.info("Reselected FFT backend after load: %s", convolver.name())
@@ -507,7 +506,7 @@ def main() -> None:
                 i, j = cursor_to_field_cell(cur, pan_x, pan_y, zoom, n_grid)
                 intensity = brush_intensity if lmb_held else -abs(brush_intensity)
                 kernels.paint_splat_2d(
-                    state.state_2d,   # type: ignore[arg-type]
+                    state.state_2d,
                     cx=float(i), cy=float(j),
                     radius=brush_radius, intensity=intensity,
                     n_grid=n_grid,
@@ -532,18 +531,18 @@ def main() -> None:
         # ---------------------------- view -------------------------------
         if dim == 2:
             kernels.composite_view_2d(
-                state.state_2d, state.view_img,   # type: ignore[arg-type]
+                state.state_2d, state.view_img,
                 pan_x=pan_x, pan_y=pan_y, zoom=zoom, n_grid=n_grid,
             )
-            canvas.set_image(state.view_img)   # type: ignore[arg-type]
+            canvas.set_image(state.view_img)
         else:
             # 3D: extract a cross-section slice via the kernel, display via canvas.
             kernels.extract_slice_3d(
-                state.state_3d, state.slice_2d,   # type: ignore[arg-type]
+                state.state_3d, state.slice_2d,
                 axis=("XY", "XZ", "YZ").index(slice_axis),
                 slice_idx=slice_idx, n_grid=n_grid,
             )
-            canvas.set_image(state.slice_2d)   # type: ignore[arg-type]
+            canvas.set_image(state.slice_2d)
 
         # ---------------------------- exports ----------------------------
         if export_png_enabled and not paused and frame_idx % 4 == 0:
@@ -563,6 +562,12 @@ def main() -> None:
 
         if export_video_active and not paused and video_manager is not None:
             img_to_record = state.view_img if dim == 2 else state.slice_2d
+            # Invariant: SimState.__init__ guarantees view_img is set for
+            # dim==2 and slice_2d is set for dim==3, so img_to_record is
+            # non-None in both branches. The Union typing on SimState's
+            # fields can't carry that narrowing across the conditional —
+            # assert here so mypy follows.
+            assert img_to_record is not None
             video_manager.write_frame(img_to_record.to_numpy())
 
         # ----------------------------- gui -------------------------------
@@ -701,7 +706,7 @@ def main() -> None:
             if dim == 2:
                 convolver = select_backend(
                     n_grid=n_grid,
-                    kernel_lut_np=state.kernel_lut.to_numpy(),   # type: ignore[union-attr]
+                    kernel_lut_np=state.kernel_lut.to_numpy(),
                     taichi_state=state,
                 )
             else:

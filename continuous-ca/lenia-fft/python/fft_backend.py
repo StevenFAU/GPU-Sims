@@ -36,7 +36,6 @@ from typing import Any
 import numpy as np
 from gpusims_common import log
 
-
 # ----------------------------------------------------------------------
 # Abstract base
 # ----------------------------------------------------------------------
@@ -117,7 +116,7 @@ class CuPyFFTConvolver(LeniaConvolver):
 
     def __init__(self, n_grid: int, kernel_lut_np: np.ndarray) -> None:
         super().__init__(n_grid, kernel_lut_np)
-        import cupy as cp                       # type: ignore[import-not-found]
+        import cupy as cp
 
         padded = _pad_kernel_to_grid(kernel_lut_np, n_grid)
         self._cp = cp
@@ -131,7 +130,9 @@ class CuPyFFTConvolver(LeniaConvolver):
         u_cp = cp.real(cp.fft.ifft2(u_fft)).astype(cp.float32)
         g_cp = 2.0 * cp.exp(-((u_cp - mu) ** 2) / (2.0 * sigma * sigma)) - 1.0
         new_cp = cp.clip(state_cp + dt * g_cp, 0.0, 1.0).astype(cp.float32)
-        return cp.asnumpy(new_cp)
+        # np.asarray wrap gives mypy the explicit ndarray type (cp.asnumpy
+        # returns un-annotated Any from CuPy's stub-less .pyi).
+        return np.asarray(cp.asnumpy(new_cp), dtype=np.float32)
 
     def name(self) -> str:
         return "CuPy FFT (CUDA)"
@@ -149,7 +150,7 @@ class TorchFFTConvolver(LeniaConvolver):
 
     def __init__(self, n_grid: int, kernel_lut_np: np.ndarray) -> None:
         super().__init__(n_grid, kernel_lut_np)
-        import torch                            # type: ignore[import-not-found]
+        import torch
 
         # Pick device: CUDA (covers CUDA-native + ROCm-via-CUDA-API).
         if torch.cuda.is_available():
@@ -171,7 +172,9 @@ class TorchFFTConvolver(LeniaConvolver):
         u_t = t.real(t.fft.ifft2(u_fft)).float()
         g_t = 2.0 * t.exp(-((u_t - mu) ** 2) / (2.0 * sigma * sigma)) - 1.0
         new_t = t.clamp(state_t + dt * g_t, 0.0, 1.0).float()
-        return new_t.cpu().numpy()
+        # np.asarray wrap gives mypy the explicit ndarray type (Torch's
+        # .numpy() returns un-annotated Any from torch's stub-less .pyi).
+        return np.asarray(new_t.cpu().numpy(), dtype=np.float32)
 
     def name(self) -> str:
         t = self._torch
@@ -217,8 +220,9 @@ class TaichiRealSpaceConvolver(LeniaConvolver):
             dt=dt, mu=mu, sigma=sigma,
         )
         kernels.swap_state_2d(st.state_2d, st.state_2d_next)
-        # Pull out as numpy.
-        return st.state_2d.to_numpy().astype(np.float32)
+        # Pull out as numpy. np.asarray wrap gives mypy the explicit
+        # ndarray type (Taichi's to_numpy() returns Any per its stubs).
+        return np.asarray(st.state_2d.to_numpy(), dtype=np.float32)
 
     def name(self) -> str:
         return "Taichi real-space (universal)"
@@ -276,7 +280,7 @@ def _try_smoke(convolver: LeniaConvolver) -> bool:
         smoke_state[convolver.n_grid // 2, convolver.n_grid // 2] = 0.5
         convolver.step(smoke_state, dt=0.1, mu=0.15, sigma=0.015)
         return True
-    except Exception as e:                                                   # noqa: BLE001
+    except Exception as e:
         log.info("backend %s smoke failed: %s", convolver.name(), e)
         return False
     finally:
@@ -296,27 +300,30 @@ def select_backend(
     Each candidate is import-guarded and smoke-tested before selection.
     Failures are logged at log.info; the next priority is tried.
     """
+    # `conv` is the priority-walk's narrowest common type so mypy doesn't
+    # infer it as the first branch's concrete class.
+    conv: LeniaConvolver
     # Priority 1: CuPy
     try:
-        import cupy                              # type: ignore[import-not-found]  # noqa: F401
+        import cupy  # noqa: F401
         try:
             conv = CuPyFFTConvolver(n_grid, kernel_lut_np)
             if _try_smoke(conv):
                 return conv
-        except Exception as e:                                               # noqa: BLE001
+        except Exception as e:
             log.info("CuPy backend construction failed: %s", e)
     except ImportError:
         log.info("cupy not available — skipping CUDA FFT backend")
 
     # Priority 2: PyTorch
     try:
-        import torch                             # type: ignore[import-not-found]
+        import torch
         if torch.cuda.is_available() or (torch.version.hip is not None):
             try:
                 conv = TorchFFTConvolver(n_grid, kernel_lut_np)
                 if _try_smoke(conv):
                     return conv
-            except Exception as e:                                           # noqa: BLE001
+            except Exception as e:
                 log.info("PyTorch backend construction failed: %s", e)
         else:
             log.info("torch present but no CUDA/ROCm device — skipping Torch FFT backend")
@@ -329,7 +336,7 @@ def select_backend(
             conv = TaichiRealSpaceConvolver(n_grid, kernel_lut_np, taichi_state=taichi_state)
             if _try_smoke(conv):
                 return conv
-        except Exception as e:                                               # noqa: BLE001
+        except Exception as e:
             log.info("Taichi real-space backend failed: %s", e)
     else:
         log.info("no taichi_state passed — skipping Taichi real-space backend")
@@ -340,7 +347,7 @@ def select_backend(
         if _try_smoke(conv):
             log.warn("falling back to numpy FFT (CPU) — sim will be slow")
             return conv
-    except Exception as e:                                                   # noqa: BLE001
+    except Exception as e:
         log.error("numpy FFT backend failed: %s", e)
 
     raise RuntimeError("no FFT backend available — cannot run lenia-fft")

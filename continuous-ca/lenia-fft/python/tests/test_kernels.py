@@ -8,6 +8,8 @@ surface (banked Phase 9 runtime-only-surface convention).
 # NOTE: deliberately NO `from __future__ import annotations` — this file
 # defines or imports @ti.kernel functions with annotated arguments.
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 import taichi as ti
@@ -18,7 +20,7 @@ from fft_backend import NumpyFFTConvolver, _pad_kernel_to_grid
 
 
 @pytest.fixture(scope="module", autouse=True)
-def init_taichi():
+def init_taichi() -> object:
     """Initialize Taichi CPU backend once per test module."""
     ti.init(arch=ti.cpu, default_fp=ti.f32)
     yield
@@ -30,7 +32,7 @@ def init_taichi():
 # Kernel LUT
 # ----------------------------------------------------------------------
 
-def test_kernel_lut_quad4_shape_2d():
+def test_kernel_lut_quad4_shape_2d() -> None:
     """The radial quad4 kernel K(r) = (4·r·(1-r))^4 peaks at r=0.5 (value
     1.0) and is zero at r=0 and r=1 (the polynomial vanishes at both
     endpoints; no singularities, no defensive clamp needed).
@@ -65,7 +67,7 @@ def test_kernel_lut_quad4_shape_2d():
 # Lenia step
 # ----------------------------------------------------------------------
 
-def test_lenia_step_2d_bounded():
+def test_lenia_step_2d_bounded() -> None:
     """One Lenia step preserves bounded state in [0, 1]."""
     N = 32
     R = 8
@@ -83,7 +85,7 @@ def test_lenia_step_2d_bounded():
     assert not np.isnan(arr).any()
 
 
-def test_lenia_step_3d_bounded():
+def test_lenia_step_3d_bounded() -> None:
     """One 3D Lenia step preserves bounded state in [0, 1]."""
     N = 16
     R = 4
@@ -106,7 +108,7 @@ def test_lenia_step_3d_bounded():
 # Brush splat
 # ----------------------------------------------------------------------
 
-def test_paint_splat_2d_adds_intensity():
+def test_paint_splat_2d_adds_intensity() -> None:
     """A positive-intensity splat at (cx, cy) increases state values there."""
     N = 32
     state = ti.field(ti.f32, shape=(N, N))
@@ -121,7 +123,7 @@ def test_paint_splat_2d_adds_intensity():
     assert arr.max() <= 1.0
 
 
-def test_paint_splat_2d_erase_clamps_to_zero():
+def test_paint_splat_2d_erase_clamps_to_zero() -> None:
     """A negative-intensity splat on a partial-fill field decreases toward zero."""
     N = 32
     state = ti.field(ti.f32, shape=(N, N))
@@ -139,7 +141,7 @@ def test_paint_splat_2d_erase_clamps_to_zero():
 # Pan-zoom view + slice extraction
 # ----------------------------------------------------------------------
 
-def test_composite_view_2d_identity():
+def test_composite_view_2d_identity() -> None:
     """At pan=(0,0), zoom=1, composite_view samples the field at identity."""
     N = 32
     state = ti.field(ti.f32, shape=(N, N))
@@ -153,7 +155,7 @@ def test_composite_view_2d_identity():
     assert np.allclose(arr_out, arr_in, atol=1e-4)
 
 
-def test_extract_slice_3d_axis_xy():
+def test_extract_slice_3d_axis_xy() -> None:
     """Slicing along XY at index k returns state[:, :, k]."""
     N = 16
     state = ti.field(ti.f32, shape=(N, N, N))
@@ -169,7 +171,7 @@ def test_extract_slice_3d_axis_xy():
 # FFT backend (numpy only — CI safe)
 # ----------------------------------------------------------------------
 
-def test_numpy_fft_backend_smoke():
+def test_numpy_fft_backend_smoke() -> None:
     """The numpy FFT backend round-trips state through one Lenia step
     without NaN and bounded in [0,1]. Uses quad4 kernel (same as Phase 10
     presets — see kernels.py module header for the LeniaNDK.py anchor)."""
@@ -196,7 +198,7 @@ def test_numpy_fft_backend_smoke():
     assert new_state.max() <= 1.0
 
 
-def test_pad_kernel_to_grid_centered():
+def test_pad_kernel_to_grid_centered() -> None:
     """_pad_kernel_to_grid lands the kernel center at (0, 0) after roll."""
     N = 32
     R = 4
@@ -220,7 +222,7 @@ def test_pad_kernel_to_grid_centered():
     "Gyrorbium gyrans",
     "Discutium valvatus",
 ])
-def test_apply_preset_stability_2d(preset_name):
+def test_apply_preset_stability_2d(preset_name: str) -> None:
     """Each 2D preset applies cleanly and runs 10 Lenia steps without
     dissolving or exploding.
 
@@ -261,7 +263,7 @@ def test_apply_preset_stability_2d(preset_name):
 # Backend factory contract (new in v2 — covers the FFT backend abstraction)
 # ----------------------------------------------------------------------
 
-def test_select_backend_factory_falls_back():
+def test_select_backend_factory_falls_back() -> None:
     """`select_backend()` walks the priority list and returns the first
     backend that smoke-passes. In CI (no CuPy, no PyTorch), this should
     return either TaichiRealSpaceConvolver (if taichi_state provided) or
@@ -271,12 +273,12 @@ def test_select_backend_factory_falls_back():
     Phase 10's load-bearing new pattern; ensuring the factory works
     without GPU extras present is the CI-runnable contract surface.
     """
-    from main import SimState
     from fft_backend import (
         NumpyFFTConvolver,
         TaichiRealSpaceConvolver,
         select_backend,
     )
+    from main import SimState
     preset_list = presets.build_presets()
     orbium = next(p for (name, p) in preset_list if name == "Orbium unicaudatus")
     sim_state = SimState(dim=2, n_grid=32, kernel_radius=orbium.kernel_radius)
@@ -303,7 +305,7 @@ def test_select_backend_factory_falls_back():
 # Capture-schema round-trip (new in v2 — covers leniaFft meta wrapper)
 # ----------------------------------------------------------------------
 
-def test_capture_schema_round_trip(tmp_path):
+def test_capture_schema_round_trip(tmp_path: Path) -> None:
     """F5/F9 round-trip preserves the sim's state field byte-for-byte and
     the leniaFft meta-wrapper schema end-to-end.
 

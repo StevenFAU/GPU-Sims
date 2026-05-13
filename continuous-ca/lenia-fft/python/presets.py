@@ -13,11 +13,11 @@ docs/load-bearing-decisions.md "Polyring kernel extension banking."
 
 Verified roster (codes match upstream animals.json):
 
-  Slot 1 — basic glider      Orbium unicaudatus     (O2u)   R=13 T=10 μ=0.15  σ=0.015
-  Slot 2 — wanderer          Vagorbium undulatus    (OV2u)  R=20 T=10 μ=0.2   σ=0.031
-  Slot 3 — rotator           Gyrorbium gyrans       (OG2g)  R=13 T=10 μ=0.156 σ=0.0224
-  Slot 4 — shield            Discutium valvatus     (S2v)   R=15 T=10 μ=0.331 σ=0.057
-  Slot 5 — 3D bootstrap      3D Random Blob         (n/a)   R=8  T=10 μ=0.15  σ=0.015
+  Slot 1 — basic glider      Orbium unicaudatus     (O2u)   R=13 T=10 μ=0.15  sigma=0.015
+  Slot 2 — wanderer          Vagorbium undulatus    (OV2u)  R=20 T=10 μ=0.2   sigma=0.031
+  Slot 3 — rotator           Gyrorbium gyrans       (OG2g)  R=13 T=10 μ=0.156 sigma=0.0224
+  Slot 4 — shield            Discutium valvatus     (S2v)   R=15 T=10 μ=0.331 sigma=0.057
+  Slot 5 — 3D bootstrap      3D Random Blob         (n/a)   R=8  T=10 μ=0.15  sigma=0.015
 
 All four 2D presets verified bounded/NaN-free/changed/non-dead under quad4
 at 64² random-noise seed for 10 CPU steps (architect-2 verification round 3,

@@ -32,7 +32,7 @@ Reference:
 # causing Taichi to reject ANY annotated arg (ti.template(), float, int — all
 # of them). The constraint applies to every file that defines @ti.kernel
 # functions with annotated arguments, which this file does. See
-# docs/conventions.md "No `from __future__ import annotations` × @ti.kernel".
+# docs/conventions.md "No `from __future__ import annotations` x @ti.kernel".
 
 import taichi as ti
 

@@ -109,3 +109,67 @@ def extract_intra_repo_citations(
                 raw=m.group(0),
             ))
     return citations
+
+
+# Upstream citation grammar per spec § 6.2.
+#
+# Form: <UpstreamName> <version> <path>:<line>[-<end>]
+#
+# UpstreamName: capitalized word, alphanumerics. Distinguished from a
+# regular sentence-starting word by the version token that follows.
+# Version: `v1.2.3` / `1.2.3` / `HEAD` / a 7-40 char hex SHA.
+#
+# Known false-positive class: a capitalized sentence-starting word
+# followed by a number could match (e.g. "Section 1.2.3 of the
+# specification cited at TimeStep.cpp:42"). We mitigate by requiring
+# the version token to be tight against the path (no comma, no period,
+# no "of"/"in" between). The grammar is intentionally tight; ambiguous
+# cases produce false negatives, not false positives.
+UPSTREAM_RE = re.compile(
+    r"(?P<upstream>[A-Z][A-Za-z0-9]+)\s+"
+    r"(?P<version>v?\d+(?:\.\d+){1,3}(?:-[A-Za-z0-9]+)?|HEAD|[a-f0-9]{7,40})"
+    r"\s+"
+    r"(?P<path>[A-Za-z0-9_./-]+\.[A-Za-z0-9.]+)"
+    r":(?P<start>\d+)(?:-(?P<end>\d+))?"
+)
+
+
+@dataclass(frozen=True)
+class UpstreamCitation:
+    """A parsed `<UpstreamName> <version> <path>:<line>` citation."""
+    upstream: str       # As written, e.g. "SPlisHSPlasH"
+    version: str        # As written, e.g. "2.16.1" or "HEAD" or a hex SHA
+    path: str           # Path within the vendor tree
+    start: int
+    end: int | None
+    source_file: Path
+    source_line: int
+    raw: str            # Verbatim matched text
+
+
+def extract_upstream_citations(
+    text: str,
+    source_file: Path,
+) -> list[UpstreamCitation]:
+    """Parse `text` line by line, yielding upstream citations."""
+    citations: list[UpstreamCitation] = []
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        masked = TEMPLATE_TOKEN_RE.sub("", line)
+        for m in UPSTREAM_RE.finditer(masked):
+            path = m.group("path")
+            if not _has_recognized_extension(path):
+                continue
+            start = int(m.group("start"))
+            end_raw = m.group("end")
+            end = int(end_raw) if end_raw else None
+            citations.append(UpstreamCitation(
+                upstream=m.group("upstream"),
+                version=m.group("version"),
+                path=path,
+                start=start,
+                end=end,
+                source_file=source_file,
+                source_line=lineno,
+                raw=m.group(0),
+            ))
+    return citations

@@ -63,3 +63,12 @@ def test_ipv4_port_is_not_a_citation() -> None:
         Path("/tmp/fake.md"),
     )
     assert citations == []
+
+
+def test_references_paths_are_not_flagged_as_intra_repo(tmp_path: Path) -> None:
+    """The intra-repo check skips paths under references/; cat1.upstream-citation handles them."""
+    (tmp_path / "doc.md").write_text("cite references/SPlisHSPlasH/foo.cpp:1 here\n")
+    from integrity.cat1_citations.checks.intra_repo import run
+    findings = run(tmp_path)
+    intra = [f for f in findings if f.check_id == "cat1.intra-repo"]
+    assert intra == [], f"unexpected: {intra}"

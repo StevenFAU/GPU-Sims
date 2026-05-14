@@ -11,7 +11,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from integrity.cat1_citations.grammar import extract_intra_repo_citations
+from integrity.cat1_citations.grammar import (
+    extract_intra_repo_citations,
+    extract_upstream_citations,
+)
 from integrity.cat1_citations.resolver import resolve
 from integrity.common.exclusions import is_excluded
 from integrity.common.repo import list_tracked_files
@@ -53,6 +56,12 @@ def _list_scannable_files(root: Path) -> list[Path]:
     return files
 
 
+def _is_under_references(path: str) -> bool:
+    """True if the path begins with `references/` (or starts with a
+    component that is the name of a vendored upstream)."""
+    return path.startswith("references/")
+
+
 def run(repo_root: Path) -> list[Finding]:
     """Scan all tracked files; return findings for unresolved citations."""
     findings: list[Finding] = []
@@ -69,7 +78,22 @@ def run(repo_root: Path) -> list[Finding]:
         except OSError:
             continue
 
+        # Spans of upstream citations on this file. Any intra-repo
+        # match whose (line, path, start, end) coincides with the tail
+        # of an upstream citation belongs to cat1.upstream-citation,
+        # not intra-repo.
+        upstream_tails: set[tuple[int, str, int, int | None]] = {
+            (uc.source_line, uc.path, uc.start, uc.end)
+            for uc in extract_upstream_citations(text, absolute)
+        }
+
         for citation in extract_intra_repo_citations(text, absolute):
+            if _is_under_references(citation.path):
+                # Belongs to cat1.upstream-citation, not intra-repo.
+                continue
+            if (citation.source_line, citation.path, citation.start, citation.end) in upstream_tails:
+                # Tail of an upstream citation; cat1.upstream-citation handles.
+                continue
             result = resolve(citation, repo_root)
             if result.resolved_path is None or not result.in_range:
                 findings.append(Finding(

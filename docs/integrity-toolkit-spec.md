@@ -465,13 +465,19 @@ UPSTREAM_CITATION:
 | `cat1.audit-log-recursion` | Citations inside `_audits/integrity_failures_*.md` resolve cleanly (the audit-log itself doesn't contribute drift) | HARD_FAIL |
 | `cat1.exclusion-list` | The canonical exclusion list in `exclusions.py` has not been modified outside of an explicit `integrity-allow: cat1.exclusion-list` commit | HARD_FAIL |
 
+### 6.4.1 Bare-path citation limitation
+
+The upstream-citation grammar requires the `<UpstreamName> <version>` prefix. Bare-path citations to known-upstream basenames — e.g., `LeniaNDK.py:329-335` written as a Python comment, where the human reader understands the implicit reference to Chakazul/Lenia — do NOT match `UPSTREAM_RE`. These currently fall through to `cat1.intra-repo`, which flags them when the path doesn't resolve locally.
+
+This is a v1 limitation, not a defect. It is correct behavior given the v1 grammar. Bare-path-to-upstream-basename detection is enumerated as a v2 candidate in § 13.
+
 ## 7. Category 2: Public-API contract verification
 
 ### 7.1 What's checked
 
 For each stack's public API surface, contract assertions are mechanically verified:
 
-- **Public-field-read:** every public struct/class field has at least one read in the implementation (the `ParticleFrame::radii` defect class)
+- **Public-symbol-used:** every public struct/class field, every public free function, and every public member method has at least one consumer site outside its defining class. Covers two defect shapes: silent-data-loss fields like `ParticleFrame::radii`, and defined-but-unexercised public functions like `vdb::writeVec3Grid`.
 - **Public-symbol-def:** every declared-but-not-defined symbol in a public header has a corresponding implementation
 - **Re-export-match:** for stacks with re-export modules (`common/common-web/src/index.ts`, `common/common-py/gpusims_common/__init__.py`), the re-exported names match the documented public surface
 - **Stub-label-stale:** "stub", "placeholder", "skeleton" markers in public headers/modules are checked against the actual implementation (per the `alembic_writer.hpp` "stub" label being stale since Phase 1)
@@ -523,7 +529,7 @@ Per stack, the "public" surface is defined as:
 
 | Check ID | Description | Failure mode |
 |----------|-------------|--------------|
-| `cat2.public-field-read` | Every public struct/class field is read by at least one non-trivial implementation site | HARD_FAIL |
+| `cat2.public-symbol-used` | Every public struct/class field, free function, and member method has at least one non-trivial consumer site outside its defining class | HARD_FAIL |
 | `cat2.public-symbol-def` | Every declared public symbol has a corresponding definition | HARD_FAIL |
 | `cat2.re-export-match` | Re-export modules (`index.ts`, `__init__.py`) match the smoke-import contract recorded in CI | HARD_FAIL |
 | `cat2.stub-label-stale` | Files with "stub"/"placeholder"/"skeleton" in their docstring or header comment match their actual implementation status | HARD_FAIL |
@@ -788,10 +794,10 @@ These are the named instances of Convention #8 the toolkit must mechanically det
 
 | Case | Source | Cat | Check |
 |------|--------|-----|-------|
-| SPlisHSPlasH 1.8.10 anchor (Setup-1) | `particle-fluids/sph-water/docs/load-bearing-decisions.md:9` | 1 | `cat1.upstream-anchor` |
-| LeniaNDK.py citation without vendoring | `continuous-ca/lenia-fft/python/lenia_fft/presets.py:11` | 1 | `cat1.unregistered-upstream` |
-| ParticleFrame::radii silent data-loss | `common/common-cpp/src/alembic_writer.cpp:51-82` | 2 | `cat2.public-field-read` |
-| `vdb::writeVec3Grid` unexercised real impl | `common/common-cpp/src/vdb_writer.cpp:97-145` | 2 | `cat2.public-symbol-def` (variant) |
+| SPlisHSPlasH 1.8.10 anchor (Setup-1) | `particle-fluids/sph-water/docs/load-bearing-decisions.md:9` and 27 other citation sites | 1 | `cat1.upstream-citation` (wrong-version on every cite using `1.8.10`; `cat1.upstream-anchor` validates vendor HEAD against registry SHA, a separate concern) |
+| LeniaNDK.py citation without vendoring | `continuous-ca/lenia-fft/python/lenia_fft/presets.py:11` | 1 | `cat1.intra-repo` (path doesn't resolve locally; bare-path form falls through upstream grammar — see § 6.4 note) |
+| ParticleFrame::radii silent data-loss | `common/common-cpp/src/alembic_writer.cpp:51-82` | 2 | `cat2.public-symbol-used` |
+| `vdb::writeVec3Grid` unexercised real impl | `common/common-cpp/src/vdb_writer.cpp:97-145` | 2 | `cat2.public-symbol-used` |
 | Stale "stub" label on alembic_writer.hpp | `common/common-cpp/include/gpusims/alembic_writer.hpp` | 2 | `cat2.stub-label-stale` |
 | kernel_gradW factor-of-6 (commit 1 fix) | `particle-fluids/sph-water/src/main.cpp:1349` (pre-fix) | 3 | `cat3.cubic-kernel` |
 
@@ -806,6 +812,7 @@ Each row is a concrete v1 acceptance test. The toolkit must catch every one of t
 - **Multi-line citation grammar** — citations split across lines
 - **Per-sim numerical checks beyond common-*** — sim-local algorithms (boids flocking rules, RD parameter regimes, etc.)
 - **Spec-vs-implementation reconciliation** — verifying phase spec claims against the actual landed code
+- **Bare-path-to-upstream-basename detection** — extend Cat 1 to detect bare-path citations like `LeniaNDK.py:329-335` (no version prefix) when the basename matches a registered upstream's known files. Requires a per-upstream alias list or basename index. Surfaces fabrication-shape citations that the v1 upstream grammar misses.
 
 ### Out of scope permanently
 

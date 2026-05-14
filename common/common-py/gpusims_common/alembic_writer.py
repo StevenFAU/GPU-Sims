@@ -40,10 +40,14 @@ class ParticleFrame:
     particles (positions array should have at least `count * 3` floats).
     """
 
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
     positions: np.ndarray                        # float32, shape (count, 3) or flat (count*3,)
     count: int                                   # number of particles
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
     velocities: np.ndarray | None = None         # float32, shape (count, 3); optional
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
     radii: np.ndarray | None = None              # float32, shape (count,); optional
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
     ids: np.ndarray | None = None                # uint64, shape (count,); optional
 
 

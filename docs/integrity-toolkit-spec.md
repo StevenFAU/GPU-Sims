@@ -713,10 +713,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[dev]
 
-      - name: Install build dependencies (for Cat 3 Stack C driver)
+      - name: Install build dependencies (for cmake configure + future Cat 3 driver)
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build libimath-dev
+          sudo apt-get install -y \
+            build-essential cmake ninja-build \
+            libvulkan-dev vulkan-validationlayers \
+            libgl1-mesa-dev libxinerama-dev libxcursor-dev libxi-dev libxrandr-dev \
+            libwayland-dev libxkbcommon-dev \
+            libimath-dev \
+            spirv-tools glslang-tools
 
       - name: Configure Stack C build (for compile_commands.json + Cat 3 driver)
         run: |

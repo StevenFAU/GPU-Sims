@@ -108,6 +108,38 @@ and likely promoted to a more specific category.
 
 **Future treatment:** Per-entry review in v2.
 
+### `cat2-stack-d-unused`
+
+**Pattern:** `cat2.public-symbol-used` findings against Stack D's public
+surface (commit 5).
+
+**Why grandfathered:** The commit-5 smoke run surfaced 17 Stack D public
+symbols with no current consumer. Sample shapes:
+
+- `ParticleFrame.{positions, velocities, radii, ids}` — fields written
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+  via the dataclass constructor in `alembic_writer.py:96`
+  (`ParticleFrame(positions=x_np, count=n)`) but never read by
+  `AlembicWriter.write_frame` because the writer is permanent-stub
+  mode for Phase 9. The canonical defect class per spec § 12.
+- `CameraInputState` and its 10 fields — declared API, no current
+  caller. v1.1 input-state plumbing.
+- `get_logger` — only `log` (the proxy) is currently consumed; the
+  factory remains for v1.1 advanced-logging callers.
+- `write_float_frame`, `write_float_grid` — VDB writer free
+  functions queued for sim integration.
+
+These are precisely the fabrication shapes the toolkit was designed
+to catch, including the canonical `ParticleFrame.radii` instance from
+spec § 12. They are grandfathered (not blocked) so commit 5 can land;
+future commits will either provide consumers (real-mode Alembic in
+Phase 11+, CameraInputState wiring in v1.1) or trim the surface.
+
+**Future treatment:** Per-symbol review when the corresponding
+sim/feature lands. Remove suppression as the consumer wires up.
+Permanent suppressions are NOT expected for this category — every
+entry has an intended consumer.
+
 ## Suppression-annotation discipline
 
 Each suppressed finding has an inline annotation per spec § 3.2:

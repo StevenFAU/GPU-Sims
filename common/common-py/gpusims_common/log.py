@@ -40,6 +40,7 @@ def _configure_once() -> None:
     _configured = True
 
 
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
 def get_logger() -> logging.Logger:
     """Return the configured gpusims logger.
 

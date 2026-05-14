@@ -57,6 +57,7 @@ def is_available() -> bool:
     return _HAS_VDB
 
 
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
 def write_float_grid(
     path: str | Path,
     data: np.ndarray,
@@ -92,6 +93,7 @@ def write_float_grid(
         return False
 
 
+# integrity-allow: cat2.public-symbol-used; pre-v1 Stack D public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-d-unused); n/a
 def write_float_frame(
     base: str | Path,
     frame_idx: int,

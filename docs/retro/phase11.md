@@ -191,7 +191,7 @@ Commits 4-6 are independent of each other and of the Phase 11 follow-up; they ca
 
 ## Retro discussion items
 
-Banked through Phase 11's full execution cycle (substantive scaffold at `09c0d9f` → Turn 3 at `9e0ca2f` → Turn 4 at `1f02fc1` → Turn 2 at `0243278` → SHA-backfill follow-up). The first five items are the original mid-phase retro framing; items 6–11 are end-of-phase additions surfaced during execution.
+Banked through Phase 11's full execution cycle (substantive scaffold at `09c0d9f` → Turn 3 at `9e0ca2f` → Turn 4 at `1f02fc1` → Turn 2 at `0243278` → SHA-backfill follow-up). The first five items are the original mid-phase retro framing; items 6–10 are end-of-phase additions surfaced during execution. (The fabrication-shape category taxonomy, originally item 6 in this list, has been promoted to its own top-level section below.)
 
 ### 1. Probe-before-draft-lock convention promotion
 
@@ -230,7 +230,65 @@ The synced-API drift in main.cpp's by-reference-to-ES sections (`Context::create
 
 ---
 
-### 6. Fabrication-shape category taxonomy (7 categories)
+### 6. Convention 4 (rule-of-three runs in reverse) banking for off-screen rendering
+
+**Banked at Turn 4 execution:** Phase 11 is consumer #1 of off-screen multi-pass rendering in Stack C. `Renderer::beginRendering` was NOT extended to support off-screen / multi-attachment / depth-attached passes. Phase 11 calls `vkCmdBeginRendering` directly in `particle-fluids/sph-water/src/main.cpp`.
+
+**Re-evaluation trigger:** consumer #2 of off-screen multi-pass rendering in Stack C. At that point, the two usage patterns provide enough data to extract a shared abstraction into common-cpp's Renderer surface.
+
+**Candidate consumer-#2 sims:** PIC/FLIP (particle-grid hybrid; needs depth-pass for particle splatting + grid-write pass), Lattice-Boltzmann if 3D visualization adds a screen-space-fluid-style render. Neither is concrete in the roadmap.
+
+**Banked in:** `particle-fluids/sph-water/docs/load-bearing-decisions.md` per Phase 11 spec § 4.J convention. Wording per architect-2's framing 2026-05-13: *"Direct vkCmdBeginRendering usage in main.cpp's screen-space-fluid render is intentional. Renderer::beginRendering not extended for off-screen multi-pass rendering at this consumer; second Stack C consumer of the pattern triggers the abstraction-promotion review per Convention 4."*
+
+### 7. Consumer-#3 re-evaluation trigger for `ContextCreateInfo` named-toggle pattern
+
+**Banked at Turn 3 design:** the named-toggle pattern (`enable_subgroup_size_control = false`) was adopted at consumer #1 per rule-of-three discipline. The forward-thinking element isn't "named toggle vs pNext extensibility"; it's banking the consumer-#3 evaluation explicitly so future architect-1 doesn't repeat the exercise.
+
+**Trigger condition:** consumer #3 of any Stack C Vulkan feature toggle.
+
+**Plausible features that may motivate consumer-#2 / consumer-#3 toggles within 2-3 phases:** `shaderInt64`, `bufferDeviceAddress`, `cooperativeMatrix`, `hostQueryReset`, `shaderSubgroupExtendedTypes` (per architect-2 analysis 2026-05-13).
+
+**Question to answer at trigger:** "Does the named-bool list still scale cleanly, or has the cognitive cost of `ContextCreateInfo` field count exceeded the convenience of named access? At what number of feature toggles does pNext-extensibility (consumer builds the feature chain, common-cpp splices) become the cleaner pattern?"
+
+**Architect-2's load-bearing framing (2026-05-13):** *"bank the question, not just the answer."* Without explicit banking, consumer #3 arrives later, nobody remembers the consumer-#1 decision was deliberate, and the named-toggle pattern accidentally ossifies into convention.
+
+### 8. Consumer-#1-of-new-common-cpp-surface pattern (two-commit shape)
+
+**Banked at Turn 3 design:** every consumer-#1 of a new common-cpp surface ships in two commits:
+
+1. **Surface-addition commit** — common-cpp adds the new API, includes a `hello/main.cpp` smoke test exercising the surface in isolation. Ships green independently.
+2. **Consumer commit** — the sim that motivated the addition consumes it. Ships against a known-good surface baseline.
+
+**Why this matters:** without the smoke test in commit #1, the first execution of the new API happens at commit #2's consumer code, conflating "is the surface right?" with "is the consumer code right?" into one debugging surface. With the smoke test, those failure modes are isolated.
+
+**Phase 11 demonstrated this pattern:** Turn 3 (`9e0ca2f`) added the subgroup-size-control surface with a `hello` smoke test (`--test-subgroup-size`). Turn 4 (`1f02fc1`) consumed it. Both commits shipped green independently. The pattern paid off: when Turn 4 surfaced spec adaptations during execution, none of them were "the common-cpp surface doesn't work" — they were all consumer-code-level issues.
+
+### 9. Common-cpp surface-extension idiom (sentinel-default backward-compat)
+
+**Pattern surfaced across Turn 3 + Turn 4:** new fields on existing common-cpp structs use sentinel defaults that preserve existing behavior; conditional construction fires only when non-default values are requested.
+
+**Examples:**
+
+- `ComputePipelineDesc::required_subgroup_size = 0` (0 = unconstrained; existing default-null pNext path preserved). Conditional `pNext`-chain construction only fires when `required_subgroup_size != 0 || require_full_subgroups == true`. **Invariant documented in `compute_pipeline.hpp`** with "future maintainers must preserve this invariant" wording per architect-2's sharpening 2026-05-13.
+- `GraphicsPipelineDesc::{src,dst}_{color,alpha}_blend_factor` + `{color,alpha}_blend_op` (defaults preserve historical alpha-blend; thickness pass opts into ONE/ONE additive via non-default values).
+
+**Why this matters:** backward-compatibility by construction. Every existing consumer continues to work without code changes; only consumers that actively opt into the new behavior get the new code path. Eliminates the class of "we added a feature and accidentally broke six existing sims" defects.
+
+**Bank as common-cpp surface-extension convention:** any new field on an existing common-cpp struct that controls behavior-changing construction must use a sentinel default that preserves existing behavior. The conditional that gates the new construction must be documented as a load-bearing invariant.
+
+### 10. Closing-commit anchor-validity re-check pattern
+
+**Banked at Turn 2 anchor-recheck probe (2026-05-13):** the closing commit of a multi-commit phase gets an anchor-validity re-check, not just trust-from-implied-isolation.
+
+**Why this matters:** Turn 2's § 5 anchors were verified at HEAD `09c0d9f` (the substantive scaffold landing). By Turn 2 ship-time, HEAD was `1f02fc1` (two follow-up commits later). The plausible assumption was "Turn 3 + Turn 4 only touched common-cpp + sph-water; § 5 anchor files weren't touched, so anchors still valid." The re-check probe confirmed this — but also surfaced one anchor (line 191 prose) that had been approximate even at the original probe.
+
+**Cost:** ~5 min of probe time. **Benefit:** closes the loop on probe-before-execute discipline at the highest-stakes moment of the phase (the closing commit).
+
+**Operational rule:** when a multi-commit phase has anchors that span files OUTSIDE the active commit chain, re-check anchor validity before the closing commit ships. The re-check is a thin probe — just dump current anchor content at each location and compare against the spec.
+
+---
+
+## Fabrication-shape category taxonomy
 
 End-of-Phase-11 retro framing per the discussion 2026-05-13 (architect-1) and architect-2 confirmation. Distinguishing the categories helps future architects route defects to the right discipline rather than treating all fabrication as one bucket.
 
@@ -286,63 +344,20 @@ End-of-Phase-11 retro framing per the discussion 2026-05-13 (architect-1) and ar
 
 **Discipline:** verification grep counts must be derived from the spec's prescribed replacement text, not from architect-memory of "what the new state should look like." Practical rule: write the replacement text first, then derive the expected count by inspection.
 
----
+**Category 8 — Shared-resource consumer-layout drift.** Multiple consumer shaders (or other clients) read the same buffer with disagreeing field-offset assumptions. Each consumer's UBO/SSBO block looks internally well-formed and validates clean; the bug lives entirely in the cross-consumer disagreement.
 
-### 7. Convention 4 (rule-of-three runs in reverse) banking for off-screen rendering
+- Phase 11 example: five DFSPH compute kernels shared `tier.uniform_dfsph` but each declared an independent std140 `uniform U { ... }` block. Four of the five expected `domainMin_cellSize` at byte 48; the host wrote it at byte 80. Only `integrate_forces` matched the host. The other four read garbage past offset 24, producing velocity corrections that happened to cancel gravity. Fixed by commit 83a01d6.
+- Spatial sibling of Category 9 (temporal mid-frame-varying-field drift). Same shared-buffer architecture; different failure axis.
 
-**Banked at Turn 4 execution:** Phase 11 is consumer #1 of off-screen multi-pass rendering in Stack C. `Renderer::beginRendering` was NOT extended to support off-screen / multi-attachment / depth-attached passes. Phase 11 calls `vkCmdBeginRendering` directly in `particle-fluids/sph-water/src/main.cpp`.
+**Discipline:** when multiple shaders read a shared buffer, the field layout is part of the buffer's contract and must be reconciled explicitly. Spec for any shared resource between N consumers needs a field-layout reconciliation step: union the referenced fields, pick a canonical order, mirror that order on the host packing side, and gate with a `static_assert(sizeof(Layout) == EXPECTED_BYTES)`. A grep-based check that all consumers' UBO blocks are character-identical (modulo binding number) is a cheap structural gate. Validation alone does not catch this — each consumer's block is locally valid.
 
-**Re-evaluation trigger:** consumer #2 of off-screen multi-pass rendering in Stack C. At that point, the two usage patterns provide enough data to extract a shared abstraction into common-cpp's Renderer surface.
+**Category 9 — Shared host-mapped UBO with mid-frame-varying field.** A uniform buffer holds a field that needs to take different values at two different GPU execution points within the same frame, written by host memcpy into a persistently-mapped UBO. The host writes both values; both GPU reads happen after queue submission, so both reads see whichever value the host wrote last. Validation passes — no field is out of range, no descriptor is malformed, no synchronization primitive is misused (because none was present in the first place).
 
-**Candidate consumer-#2 sims:** PIC/FLIP (particle-grid hybrid; needs depth-pass for particle splatting + grid-write pass), Lattice-Boltzmann if 3D visualization adds a screen-space-fluid-style render. Neither is concrete in the roadmap.
+- Phase 11 example: the substep loop called `pack_dfsph_uniform(_, 0.0f)` before the loop and `pack_dfsph_uniform(_, 1.0f)` mid-loop to toggle `integrate_forces` between FORCES and POSITION_ONLY modes. Both GPU dispatches read mode=1; POSITION_ONLY ran twice per substep; gravity never applied; particles never moved. Fixed by commit 7294ee4 (move mode out of UBO into a push constant).
+- Temporal sibling of Category 8 (spatial consumer-layout drift). Categories 8 and 9 can stack: in Phase 11, category 8 hid category 9 because the UBO was unreadable until layouts agreed, so the mode-toggle bug couldn't be observed until the canonical layout landed.
+- Anti-pattern smell: `pack_*_uniform()` called twice within a substep loop body with different arguments, reusing the same descriptor set between two `dispatch()` calls. Each occurrence should be reviewed.
 
-**Banked in:** `particle-fluids/sph-water/docs/load-bearing-decisions.md` per Phase 11 spec § 4.J convention. Wording per architect-2's framing 2026-05-13: *"Direct vkCmdBeginRendering usage in main.cpp's screen-space-fluid render is intentional. Renderer::beginRendering not extended for off-screen multi-pass rendering at this consumer; second Stack C consumer of the pattern triggers the abstraction-promotion review per Convention 4."*
-
-### 8. Consumer-#3 re-evaluation trigger for `ContextCreateInfo` named-toggle pattern
-
-**Banked at Turn 3 design:** the named-toggle pattern (`enable_subgroup_size_control = false`) was adopted at consumer #1 per rule-of-three discipline. The forward-thinking element isn't "named toggle vs pNext extensibility"; it's banking the consumer-#3 evaluation explicitly so future architect-1 doesn't repeat the exercise.
-
-**Trigger condition:** consumer #3 of any Stack C Vulkan feature toggle.
-
-**Plausible features that may motivate consumer-#2 / consumer-#3 toggles within 2-3 phases:** `shaderInt64`, `bufferDeviceAddress`, `cooperativeMatrix`, `hostQueryReset`, `shaderSubgroupExtendedTypes` (per architect-2 analysis 2026-05-13).
-
-**Question to answer at trigger:** "Does the named-bool list still scale cleanly, or has the cognitive cost of `ContextCreateInfo` field count exceeded the convenience of named access? At what number of feature toggles does pNext-extensibility (consumer builds the feature chain, common-cpp splices) become the cleaner pattern?"
-
-**Architect-2's load-bearing framing (2026-05-13):** *"bank the question, not just the answer."* Without explicit banking, consumer #3 arrives later, nobody remembers the consumer-#1 decision was deliberate, and the named-toggle pattern accidentally ossifies into convention.
-
-### 9. Consumer-#1-of-new-common-cpp-surface pattern (two-commit shape)
-
-**Banked at Turn 3 design:** every consumer-#1 of a new common-cpp surface ships in two commits:
-
-1. **Surface-addition commit** — common-cpp adds the new API, includes a `hello/main.cpp` smoke test exercising the surface in isolation. Ships green independently.
-2. **Consumer commit** — the sim that motivated the addition consumes it. Ships against a known-good surface baseline.
-
-**Why this matters:** without the smoke test in commit #1, the first execution of the new API happens at commit #2's consumer code, conflating "is the surface right?" with "is the consumer code right?" into one debugging surface. With the smoke test, those failure modes are isolated.
-
-**Phase 11 demonstrated this pattern:** Turn 3 (`9e0ca2f`) added the subgroup-size-control surface with a `hello` smoke test (`--test-subgroup-size`). Turn 4 (`1f02fc1`) consumed it. Both commits shipped green independently. The pattern paid off: when Turn 4 surfaced spec adaptations during execution, none of them were "the common-cpp surface doesn't work" — they were all consumer-code-level issues.
-
-### 10. Common-cpp surface-extension idiom (sentinel-default backward-compat)
-
-**Pattern surfaced across Turn 3 + Turn 4:** new fields on existing common-cpp structs use sentinel defaults that preserve existing behavior; conditional construction fires only when non-default values are requested.
-
-**Examples:**
-
-- `ComputePipelineDesc::required_subgroup_size = 0` (0 = unconstrained; existing default-null pNext path preserved). Conditional `pNext`-chain construction only fires when `required_subgroup_size != 0 || require_full_subgroups == true`. **Invariant documented in `compute_pipeline.hpp`** with "future maintainers must preserve this invariant" wording per architect-2's sharpening 2026-05-13.
-- `GraphicsPipelineDesc::{src,dst}_{color,alpha}_blend_factor` + `{color,alpha}_blend_op` (defaults preserve historical alpha-blend; thickness pass opts into ONE/ONE additive via non-default values).
-
-**Why this matters:** backward-compatibility by construction. Every existing consumer continues to work without code changes; only consumers that actively opt into the new behavior get the new code path. Eliminates the class of "we added a feature and accidentally broke six existing sims" defects.
-
-**Bank as common-cpp surface-extension convention:** any new field on an existing common-cpp struct that controls behavior-changing construction must use a sentinel default that preserves existing behavior. The conditional that gates the new construction must be documented as a load-bearing invariant.
-
-### 11. Closing-commit anchor-validity re-check pattern
-
-**Banked at Turn 2 anchor-recheck probe (2026-05-13):** the closing commit of a multi-commit phase gets an anchor-validity re-check, not just trust-from-implied-isolation.
-
-**Why this matters:** Turn 2's § 5 anchors were verified at HEAD `09c0d9f` (the substantive scaffold landing). By Turn 2 ship-time, HEAD was `1f02fc1` (two follow-up commits later). The plausible assumption was "Turn 3 + Turn 4 only touched common-cpp + sph-water; § 5 anchor files weren't touched, so anchors still valid." The re-check probe confirmed this — but also surfaced one anchor (line 191 prose) that had been approximate even at the original probe.
-
-**Cost:** ~5 min of probe time. **Benefit:** closes the loop on probe-before-execute discipline at the highest-stakes moment of the phase (the closing commit).
-
-**Operational rule:** when a multi-commit phase has anchors that span files OUTSIDE the active commit chain, re-check anchor validity before the closing commit ships. The re-check is a thin probe — just dump current anchor content at each location and compare against the spec.
+**Discipline:** for any field that varies per-dispatch, prefer push constants — recorded into the command buffer, so each dispatch carries its own value regardless of host write timing. Precedent in this codebase: `pipe_prefix_sum_block`. For larger varying payloads, use `UNIFORM_BUFFER_DYNAMIC` with per-dispatch offsets. Detection cannot be purely static; the Tier-2 particle-system diagnostic spec should include a capture mode that records UBO contents per-dispatch (not per-frame).
 
 ---
 
@@ -377,7 +392,7 @@ scaffold +    common-cpp  main.cpp     § 5 cross-   placeholder
 - Turn 2 anchor re-check probe
 - (Smoke tests on RX 6800 XT — `min=32, max=64, stages=0xe0` verification at multiple stages)
 
-**Fabrication-shape category instances surfaced:** at least one instance of each of the 7 categories above. The 7-category taxonomy is now considered stable; future phases can route defects to the right discipline rather than treating fabrication as one bucket.
+**Fabrication-shape category instances surfaced:** at least one instance of each of the first 7 categories above during the substantive commit chain; categories 8 and 9 were surfaced during Phase 11 fix-forward (commits 83a01d6 and 7294ee4) and banked into the taxonomy after the fact. The 9-category taxonomy is now considered stable; future phases can route defects to the right discipline rather than treating fabrication as one bucket.
 
 **Conventions banked during Phase 11 (now in `project-state.md` § 7):**
 

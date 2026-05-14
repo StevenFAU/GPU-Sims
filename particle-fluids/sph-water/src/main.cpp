@@ -1099,7 +1099,8 @@ int main(int argc, char** argv) {
     auto pipe_density_solve    = make_compute("density_solve.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS}});
     auto pipe_integrate_forces = make_compute("integrate_forces.comp.glsl",
-                                              {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+                                              {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}},
+                                              sizeof(std::uint32_t));  // mode push-const
     auto pipe_pressure_apply   = make_compute("pressure_apply.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,U,1,CS}});
 
@@ -1376,7 +1377,7 @@ int main(int argc, char** argv) {
         tier.uniform_sort.uploadDirect(&u, sizeof(u));
     };
 
-    auto pack_dfsph_uniform = [&](float dt, float mode) {
+    auto pack_dfsph_uniform = [&](float dt) {
         glm::uvec3 axes; std::uint32_t maxAxis;
         compute_cells_per_axis(axes, maxAxis);
         struct alignas(16) Layout {
@@ -1418,7 +1419,7 @@ int main(int argc, char** argv) {
         u.gravity_pad[0]  = 0.0f;
         u.gravity_pad[1]  = -9.81f;
         u.gravity_pad[2]  = 0.0f;
-        u.gravity_pad[3]  = mode;
+        u.gravity_pad[3]  = 0.0f;  // mode now lives in push constant
         u.domainMin_cellSize[0] = rt.domainMin.x;
         u.domainMin_cellSize[1] = rt.domainMin.y;
         u.domainMin_cellSize[2] = rt.domainMin.z;
@@ -1887,7 +1888,7 @@ int main(int argc, char** argv) {
         const float substep_dt = std::clamp(frame_dt / float(std::max(rt.substeps, 1)), DT_MIN, DT_MAX);
         rt.dt = substep_dt;
         pack_sort_uniform();
-        pack_dfsph_uniform(substep_dt, 0.0f);  // FORCES mode for forces calls
+        pack_dfsph_uniform(substep_dt);
         pack_render_view_uniform();
         pack_composite_uniform();
         pack_apply_emitter_uniform(substep_dt);
@@ -1998,7 +1999,9 @@ int main(int argc, char** argv) {
             // Integrate non-pressure forces (gravity + viscosity).
             {
                 auto _ = profiler.scope(cmd, "integrate_forces");
-                pipe_integrate_forces.dispatch(cmd, ds_integrate_forces, wg_particle, 1, 1);
+                std::uint32_t mode = 0u;
+                pipe_integrate_forces.dispatch(cmd, ds_integrate_forces, wg_particle, 1, 1,
+                                               &mode, sizeof(mode));   // FORCES
             }
             cs_barrier();
 
@@ -2022,12 +2025,13 @@ int main(int argc, char** argv) {
             }
             cs_barrier();
 
-            // Re-pack uniform with mode=1 (POSITION_ONLY) and dispatch again.
             // Position-update advances x += dt*v with AABB clamp.
-            pack_dfsph_uniform(substep_dt, 1.0f);
+            // mode is pushed per-dispatch via push constant.
             {
                 auto _ = profiler.scope(cmd, "integrate_position");
-                pipe_integrate_forces.dispatch(cmd, ds_integrate_forces, wg_particle, 1, 1);
+                std::uint32_t mode = 1u;
+                pipe_integrate_forces.dispatch(cmd, ds_integrate_forces, wg_particle, 1, 1,
+                                               &mode, sizeof(mode));   // POSITION
             }
             cs_barrier();
 

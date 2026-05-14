@@ -42,6 +42,10 @@ layout(set=0, binding=4, std140) uniform U {
 };
 // Total: 112 bytes
 
+layout(push_constant) uniform PC {
+    uint mode;
+} pc;
+
 uint expand_bits_10(uint v) {
     v = (v * 0x00010001u) & 0xFF0000FFu;
     v = (v * 0x00000101u) & 0x0F00F00Fu;
@@ -64,7 +68,7 @@ void main() {
 
     vec3 pos_i = p[gid * 8u + 0u].xyz;
     vec3 vel_i = p[gid * 8u + 1u].xyz;
-    int  mode  = int(gravity_pad.w);
+    int  mode  = int(pc.mode);
 
     if (mode == 1) {
         // POSITION_ONLY mode.

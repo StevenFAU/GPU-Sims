@@ -22,21 +22,34 @@ layout(set=0, binding=3, std430) restrict readonly buffer SortedIndex { uint sor
 layout(set=0, binding=4, std430) restrict readonly buffer PressureRead { float p_read[]; };
 layout(set=0, binding=5, std430) restrict writeonly buffer PressureWrite { float p_write[]; };
 layout(set=0, binding=6, std140) uniform U {
-    uint  particleCount;
-    uint  cellsPerAxisX;
-    uint  cellsPerAxisY;
-    uint  cellsPerAxisZ;
-    float supportRadius;
-    float supportRadius2;
-    float particleMass;
-    float density0;
-    float dt;
-    float kernelNorm3D;
-    float gradKernelNorm3D;
-    float jacobiRelax;
-    vec4  domainMin_cellSize;
-    vec4  domainMax_pad;
+    // Integer counts                            offset
+    uint  particleCount;                       //   0
+    uint  cellsPerAxisX;                       //   4
+    uint  cellsPerAxisY;                       //   8
+    uint  cellsPerAxisZ;                       //  12
+    // SPH kernel constants
+    float supportRadius;                       //  16
+    float particleMass;                        //  20
+    float density0;                            //  24
+    float kernelNorm3D;                        //  28
+    float gradKernelNorm3D;                    //  32
+    // Time integration
+    float dt;                                  //  36
+    // Force coefficients
+    float viscosity;                           //  40
+    float cohesion;                            //  44
+    float vorticityStrength;                   //  48
+    // Solver tuning
+    float jacobiRelax;                         //  52
+    // Padding to align next vec4 to 16 B
+    float _pad0;                               //  56
+    float _pad1;                               //  60
+    // Vec4 block
+    vec4  gravity_pad;                         //  64  (.xyz=gravity, .w=mode)
+    vec4  domainMin_cellSize;                  //  80  (.xyz=domainMin, .w=cellSize)
+    vec4  domainMax_pad;                       //  96  (.xyz=domainMax)
 };
+// Total: 112 bytes
 
 uint expand_bits_10(uint v) {
     v = (v * 0x00010001u) & 0xFF0000FFu;

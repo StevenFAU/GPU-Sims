@@ -1380,32 +1380,32 @@ int main(int argc, char** argv) {
         glm::uvec3 axes; std::uint32_t maxAxis;
         compute_cells_per_axis(axes, maxAxis);
         struct alignas(16) Layout {
-            std::uint32_t particleCount;
-            std::uint32_t cellsPerAxisX;
-            std::uint32_t cellsPerAxisY;
-            std::uint32_t cellsPerAxisZ;
-            float supportRadius;
-            float supportRadius2;
-            float particleMass;
-            float density0;
-            float dt;
-            float viscosity;
-            float cohesion;
-            float vorticityStrength;
-            float kernelNorm3D;
-            float gradKernelNorm3D;
-            float _pad0;
-            float _pad1;
-            float gravity_pad[4];
-            float domainMin_cellSize[4];
-            float domainMax_pad[4];
+            std::uint32_t particleCount;          //  0
+            std::uint32_t cellsPerAxisX;          //  4
+            std::uint32_t cellsPerAxisY;          //  8
+            std::uint32_t cellsPerAxisZ;          // 12
+            float supportRadius;                  // 16
+            float particleMass;                   // 20
+            float density0;                       // 24
+            float kernelNorm3D;                   // 28
+            float gradKernelNorm3D;               // 32
+            float dt;                             // 36
+            float viscosity;                      // 40
+            float cohesion;                       // 44
+            float vorticityStrength;              // 48
+            float jacobiRelax;                    // 52
+            float _pad0;                          // 56
+            float _pad1;                          // 60
+            float gravity_pad[4];                 // 64
+            float domainMin_cellSize[4];          // 80
+            float domainMax_pad[4];               // 96
         } u{};
+        static_assert(sizeof(Layout) == 112, "DFSPH canonical UBO size drift");
         u.particleCount   = rt.particleCount;
         u.cellsPerAxisX   = axes.x;
         u.cellsPerAxisY   = axes.y;
         u.cellsPerAxisZ   = axes.z;
         u.supportRadius   = rt.supportRadius;
-        u.supportRadius2  = rt.supportRadius * rt.supportRadius;
         u.particleMass    = particle_mass();
         u.density0        = DENSITY_0;
         u.dt              = dt;
@@ -1414,6 +1414,7 @@ int main(int argc, char** argv) {
         u.vorticityStrength = rt.vorticityStrength;
         u.kernelNorm3D    = kernel_norm_3d_value();
         u.gradKernelNorm3D= grad_kernel_norm_3d_value();
+        u.jacobiRelax     = DFSPH_JACOBI_RELAX;
         u.gravity_pad[0]  = 0.0f;
         u.gravity_pad[1]  = -9.81f;
         u.gravity_pad[2]  = 0.0f;

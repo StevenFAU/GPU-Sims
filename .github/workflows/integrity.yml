@@ -1,0 +1,70 @@
+name: Integrity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    name: Cross-stack integrity checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+
+      - name: Clone vendored references (anchor-pinned)
+        run: |
+          mkdir -p references
+          git clone --no-checkout https://github.com/InteractiveComputerGraphics/SPlisHSPlasH.git references/SPlisHSPlasH
+          git -C references/SPlisHSPlasH checkout 6bff55a6eaf14083d34650f22a268ce156b62b54
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install integrity toolkit
+        working-directory: tools/integrity
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Install build dependencies (for compile_commands.json)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build libimath-dev
+
+      - name: Configure Stack C build (for compile_commands.json)
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run integrity toolkit's own tests (dogfood)
+        working-directory: tools/integrity
+        run: pytest tests/ -v --cov=integrity
+
+      - name: Run integrity toolkit against repo
+        run: python -m integrity --output github
+
+      - name: Upload audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrity-audit-log
+          path: docs/diagnostics/_audits/integrity_failures_*.md
+          if-no-files-found: ignore

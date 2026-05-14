@@ -26,6 +26,7 @@ export interface DropdownSpec {
 }
 
 export interface ParamFolder {
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     add<T extends object>(target: T, prop: keyof T & string, ...args: unknown[]): LabeledController;
     addFolder(name: string): ParamFolder;
     addBoolean<T extends object>(target: T, prop: keyof T & string): LabeledController;
@@ -40,9 +41,11 @@ export interface ParamFolder {
      * load) so lil-gui sliders / dropdowns don't show stale values. Recurses
      * into sub-folders.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     refreshDisplays(): void;
     /** Destroy all controllers and sub-folders. */
     clear(): void;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     open(): void;
     close(): void;
 }
@@ -208,22 +211,27 @@ export class ParamPanel implements ParamFolder {
         this.folder = new FolderImpl(this.gui, options.persistKey ?? null);
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     add<T extends object>(target: T, prop: keyof T & string, ...args: unknown[]): LabeledController {
         return this.folder.add(target, prop, ...args);
     }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     addNumber<T extends object>(target: T, prop: keyof T & string,
                                 min?: number, max?: number, step?: number): LabeledController {
         return this.folder.addNumber(target, prop, min, max, step);
     }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     addBoolean<T extends object>(target: T, prop: keyof T & string): LabeledController {
         return this.folder.addBoolean(target, prop);
     }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     addColor<T extends object>(target: T, prop: keyof T & string): LabeledController {
         return this.folder.addColor(target, prop);
     }
     addDropdown(spec: DropdownSpec): LabeledController {
         return this.folder.addDropdown(spec);
     }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     addButton(name: string, fn: () => void): LabeledController {
         return this.folder.addButton(name, fn);
     }
@@ -234,11 +242,15 @@ export class ParamPanel implements ParamFolder {
         this.folder.refreshDisplays();
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     clear(): void {
         this.folder.clear();
     }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     open(): void { this.gui.open(); }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     close(): void { this.gui.close(); }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     destroy(): void { this.gui.destroy(); }
 }

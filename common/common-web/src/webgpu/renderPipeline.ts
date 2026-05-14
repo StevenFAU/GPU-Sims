@@ -17,6 +17,7 @@ export interface RenderPipelineDesc {
     /** Color attachment target formats. Typically [ctx.preferredFormat]. */
     colorFormats: GPUTextureFormat[];
     /** Depth attachment format, omitted if no depth. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     depthFormat?: GPUTextureFormat;
 
     primitive?: GPUPrimitiveState;
@@ -75,6 +76,7 @@ export class RenderPipeline {
         return new RenderPipeline(ctx, desc, bgl, layout, pipeline);
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     async reload(which: 'vertex' | 'fragment', newSource: string): Promise<string | null> {
         const label = `${this.desc.label ?? 'render'}#${++this.generation}-${which}`;
         const compiled = await compileWgsl(this.ctx, newSource, which, label);
@@ -119,9 +121,13 @@ export class RenderPipeline {
     }
 
     get handle(): GPURenderPipeline { return this.pipeline; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get layout(): GPUPipelineLayout { return this.pipelineLayout; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get bindLayout(): GPUBindGroupLayout { return this.bindGroupLayout; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get vertexPath(): string { return this.desc.vertexPath; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get fragmentPath(): string { return this.desc.fragmentPath; }
 }
 

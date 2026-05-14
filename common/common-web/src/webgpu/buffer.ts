@@ -30,7 +30,9 @@ export interface BufferCreateOptions {
 
 export class Buffer {
     readonly handle: GPUBuffer;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     readonly size: number;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     readonly memory: MemoryUsage;
     private ctx: Context;
 
@@ -64,6 +66,7 @@ export class Buffer {
      * with COPY_DST in its usage flags (which DeviceLocal and HostVisibleSequential
      * both have here). Bytes are copied into the queue immediately.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     uploadDirect(src: ArrayBufferView | ArrayBuffer, dstOffset = 0): void {
         if (src instanceof ArrayBuffer) {
             this.ctx.device.queue.writeBuffer(this.handle, dstOffset, src);

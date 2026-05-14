@@ -61,6 +61,7 @@ export class Renderer {
      * Use `clear` to set the background color (RGBA, 0..1). Pass null to load
      * existing contents instead of clearing.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     beginRendering(frame: Frame,
                    clear: [number, number, number, number] | null = [0.05, 0.05, 0.07, 1.0],
                    timestampWrites?: GPURenderPassTimestampWrites): GPURenderPassEncoder {
@@ -91,6 +92,7 @@ export class Renderer {
     }
 
     /** Wait until all submitted GPU work has completed. Use sparingly (shutdown). */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     async waitIdle(): Promise<void> {
         await this.ctx.device.queue.onSubmittedWorkDone();
     }

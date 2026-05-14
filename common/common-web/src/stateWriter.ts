@@ -63,6 +63,7 @@ export class StateWriter {
      * Record a binary blob. `data` is consumed (a copy is taken); pass any
      * Uint8Array/ArrayBuffer derived from a mapped GPU buffer or CPU array.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     saveBuffer(name: string, data: ArrayBufferView | ArrayBuffer, meta: JsonObject = {}): void {
         if (!this.state) {
             log.warn(`StateWriter: saveBuffer('${name}') called outside a frame`);
@@ -107,6 +108,7 @@ export class StateWriter {
         return zipped.byteLength;
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get rootName(): string { return this.root; }
 }
 

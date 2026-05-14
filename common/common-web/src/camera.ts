@@ -15,7 +15,9 @@ export class Camera {
 
     // Free-fly state
     private _position: vec3 = vec3.fromValues(0, 0, 5);
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     yawDeg = -90.0;       // looking down -Z
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     pitchDeg = 0.0;
 
     /**
@@ -31,10 +33,15 @@ export class Camera {
     }
 
     // Arcball / Orbit state
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     target: vec3 = vec3.fromValues(0, 0, 0);
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     orbitDistance = 5.0;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     orbitYaw = 0.0;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     orbitPitch = 20.0;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     orbitSpeedDegPerSec = 30.0;
 
     // Lens
@@ -46,6 +53,7 @@ export class Camera {
     // Tuning
     moveSpeed = 5.0;     // units/s
     lookSpeed = 0.2;     // deg/pixel
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     boostMultiplier = 5.0;
 
     update(dt: number, input: CameraInputState): void {
@@ -141,6 +149,7 @@ export class Camera {
     }
 
     /** Column-major view matrix. Mirrors gpusims::Camera::view(). */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     view(): mat4 {
         const out = mat4.create();
         if (this.mode === 'free-fly') {
@@ -165,6 +174,7 @@ export class Camera {
      * their rendered shapes have no canonical orientation). Removed
      * Phase 7 after architect-2 review. See project-state.md § 9.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     projection(): mat4 {
         const out = mat4.create();
         mat4.perspectiveZO(out, degToRad(this.fovDeg), this.aspect, this.near, this.far);
@@ -177,6 +187,7 @@ export class Camera {
         return out;
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     setOrientation(yawDeg: number, pitchDeg: number): void {
         this.yawDeg = yawDeg;
         this.pitchDeg = clamp(pitchDeg, -PITCH_LIMIT_DEG, PITCH_LIMIT_DEG);
@@ -201,6 +212,7 @@ export class Camera {
         this.pitchDeg = clamp(this.pitchDeg, -PITCH_LIMIT_DEG, PITCH_LIMIT_DEG);
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     resetArcball(): void {
         this.orbitYaw = 0.0;
         this.orbitPitch = 20.0;

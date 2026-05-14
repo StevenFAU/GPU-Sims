@@ -17,6 +17,7 @@ export interface ComputePipelineDesc {
     /** Bind group layout entries. */
     bindings: GPUBindGroupLayoutEntry[];
     /** Workgroup size. Used only for documentation; WGSL declares its own. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     workgroupSize?: [number, number, number];
     /** Optional debug label. */
     label?: string;
@@ -79,6 +80,7 @@ export class ComputePipeline {
      * Recompile from new WGSL source. Returns null on success or the compiler
      * error string on failure (in which case the existing pipeline is unchanged).
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     async reload(newSource: string): Promise<string | null> {
         const label = `${this.desc.label ?? 'compute'}#${++this.generation}`;
         const compiled = await compileWgsl(this.ctx, newSource, 'compute', label);
@@ -124,8 +126,12 @@ export class ComputePipeline {
         pass.end();
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get handle(): GPUComputePipeline { return this.pipeline; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get layout(): GPUPipelineLayout { return this.pipelineLayout; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get bindLayout(): GPUBindGroupLayout { return this.bindGroupLayout; }
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get path(): string { return this.desc.shaderPath; }
 }

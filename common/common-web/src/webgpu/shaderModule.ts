@@ -11,6 +11,7 @@ export interface CompileResult {
      * Files included transitively. Empty in WebGPU because WGSL doesn't have
      * #include — we keep the field for API parity with common-cpp.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     includes: string[];
 }
 

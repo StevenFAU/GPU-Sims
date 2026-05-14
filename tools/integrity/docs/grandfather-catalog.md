@@ -174,6 +174,35 @@ Suppressions should dissolve naturally; the canonical
 `writeVec3Grid` and `radii` instances are the migration markers
 flagged in spec § 12.
 
+### `cat2-stack-b-unused`
+
+**Pattern:** `cat2.public-symbol-used-ts` findings against Stack B's
+public surface (commit 7).
+
+**Why grandfathered:** The commit-7 smoke run surfaced 73 Stack B
+public symbols (types, class properties, methods) exported from
+`common/common-web/src/index.ts` with no current consumer in any
+Stack B sim, example, or test. Breakdown:
+
+- 33 methods on `Camera`, `Buffer`, `Texture`, `ComputePipeline`,
+  `RenderPipeline`, `Renderer` — abstraction-layer surface exposed
+  for the seven landed Stack B sims (strange-attractors,
+  mandelbulb-explorer, reaction-diffusion-2d, physarum, boids-3d,
+  lenia-fft, neural-ca) but not all touched.
+- 25 properties on `Camera`, `GpuProfiler`, `ParamPanel`, etc. —
+  same pattern.
+- 4 type aliases (`Vec2`, `Vec3`, `Vec4`, `Mat4`) — exported as
+  convenience types; sims use their own local Vec types or rely on
+  the WebGPU API's `Float32Array` directly. v1.1 candidate for
+  trimming the surface or wiring as the canonical name.
+
+Stack B uses the TypeScript compiler API (type-aware), so the
+name-collision false-positive class that Stack D and Stack C have
+does not apply. Detection is precise.
+
+**Future treatment:** Per-symbol review as sims consume the API.
+Suppressions should dissolve as sim code wires the abstraction.
+
 ## Suppression-annotation discipline
 
 Each suppressed finding has an inline annotation per spec § 3.2:

@@ -77,6 +77,7 @@ export class GpuProfiler {
         }
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     destroy(): void {
         for (const qs of this.querySets) qs?.destroy();
         for (const f of this.frames) {
@@ -119,6 +120,7 @@ export class GpuProfiler {
      * `using _ = profiler.scope(encoder, 'name')` (TypeScript 5.2+).
      * For older callers, do `const s = profiler.scope(...); ...; s.end();`.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     scope(passEncoder: GPUComputePassEncoder | GPURenderPassEncoder | null,
           name: string): { end(): void } {
         void passEncoder;
@@ -133,6 +135,7 @@ export class GpuProfiler {
      * encoder.beginComputePass / beginRenderPass instead of using scope().
      * Returns null if timestamp-query is unavailable.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     timestampWritesFor(name: string): GPURenderPassTimestampWrites | null {
         if (!this.hasTimestamp) return null;
         const slot = this.beginPass(name);
@@ -156,8 +159,10 @@ export class GpuProfiler {
         encoder.copyBufferToBuffer(f.resultBuffer, 0, f.readbackBuffer, 0, 2 * f.passCount * 8);
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get latest(): PassResult[] { return this.latestResults; }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     appendCsv(): void {
         if (this.latestResults.length === 0) return;
         if (!this.csvHeaderWritten) {
@@ -170,6 +175,7 @@ export class GpuProfiler {
     }
 
     /** Trigger a download of accumulated CSV rows. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     downloadCsv(filename = 'profile.csv'): void {
         if (this.csvLines.length === 0) return;
         const blob = new Blob([this.csvLines.join('\n') + '\n'], { type: 'text/csv' });

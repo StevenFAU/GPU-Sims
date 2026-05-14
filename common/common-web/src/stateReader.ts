@@ -65,12 +65,14 @@ export class StateReader {
     }
 
     /** Top-level metadata. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     meta(key: string): JsonValue | null {
         const v = this.state.meta[key];
         return v === undefined ? null : v;
     }
 
     /** Per-buffer descriptor. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     bufferMeta(name: string): JsonObject | null {
         for (const b of this.state.buffers) {
             if (b['name'] === name) return b;
@@ -79,10 +81,12 @@ export class StateReader {
     }
 
     /** Raw bytes for a saved buffer. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     buffer(name: string): Uint8Array | null {
         return this.buffers.get(name) ?? null;
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     get frameIndex(): number { return this.state.frame; }
     get directoryName(): string { return this.dirName; }
 }

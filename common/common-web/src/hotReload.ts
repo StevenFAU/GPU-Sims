@@ -3,8 +3,11 @@ import { log } from './log.js';
 export type ReloadCallback = (path: string, newSource: string) => void | Promise<void>;
 
 export interface ReloadEvent {
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     path: string;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     ok: boolean;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     message: string;
     /** ms since page load when the event happened. */
     t: number;
@@ -44,11 +47,13 @@ export class HotReloader {
         log.debug(`HotReloader: watching ${normalized}`);
     }
 
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     unwatch(path: string): void {
         this.callbacks.delete(normalizePath(path));
     }
 
     /** Recently-fired events (up to ~3 seconds old). For UI overlays. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     recentEvents(now = performance.now()): ReloadEvent[] {
         return this.events.filter((e) => now - e.t < 3000);
     }

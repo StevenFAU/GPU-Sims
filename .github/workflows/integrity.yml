@@ -38,6 +38,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install + build TS helper for Stack B integrity check
+        working-directory: tools/integrity/integrity/cat2_contracts/ts_helper
+        run: |
+          npm install --silent
+          npx tsc --project tsconfig.json
+
       - name: Install integrity toolkit
         working-directory: tools/integrity
         run: |

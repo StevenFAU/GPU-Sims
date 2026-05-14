@@ -21,12 +21,15 @@ export interface ContextOptions {
  *     const renderer = new Renderer(ctx);
  */
 export class Context {
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     readonly canvas: HTMLCanvasElement;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     readonly adapter: GPUAdapter;
     readonly device: GPUDevice;
     readonly canvasContext: GPUCanvasContext;
     readonly preferredFormat: GPUTextureFormat;
     /** Active features — what was actually granted by the device. */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     readonly features: ReadonlySet<string>;
 
     private constructor(canvas: HTMLCanvasElement, adapter: GPUAdapter, device: GPUDevice,
@@ -124,6 +127,7 @@ export class Context {
      * Submits and awaits a queue.onSubmittedWorkDone() so the call returns
      * once the GPU has finished.
      */
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     async runOneShot(fn: (encoder: GPUCommandEncoder) => void): Promise<void> {
         const encoder = this.device.createCommandEncoder({ label: 'one-shot' });
         fn(encoder);

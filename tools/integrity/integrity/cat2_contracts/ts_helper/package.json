@@ -1,0 +1,14 @@
+{
+  "name": "@gpusims/integrity-ts-helper",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TS compiler API helper for the integrity toolkit's cat2.public-symbol-used-ts check.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "run": "node dist/extract_and_find.js"
+  },
+  "dependencies": {
+    "typescript": "~5.5.0"
+  }
+}

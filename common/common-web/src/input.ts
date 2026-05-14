@@ -13,6 +13,7 @@ export interface InputSnapshot {
 
     mouseLeft: boolean;
     mouseRight: boolean;
+// integrity-allow: cat2.public-symbol-used-ts; pre-v1 Stack B public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-b-unused); n/a
     mouseMiddle: boolean;
 
     /** Mouse delta in pixels since the previous snapshot. */

@@ -27,6 +27,7 @@ Run:
 
 # NOTE: deliberately NO `from __future__ import annotations`. Taichi 1.7.4's
 # @ti.kernel decorator rejects string-form argument annotations at decoration
+# integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 # time (TaichiSyntaxError from kernel_impl.py:631 extract_arguments). The
 # `step` kernel below has `dt: float, gravity_y: float` args; under PEP 563
 # those annotations become strings and Taichi can't introspect them. The

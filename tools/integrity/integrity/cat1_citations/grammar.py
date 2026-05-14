@@ -15,6 +15,7 @@ Known false-positive classes (defended in tests, see test_cat1_intra_repo.py):
 
 Known false-negative classes (NOT defended in v1):
   - Multi-line citations
+# integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
   - Bracketed citations ([file.cpp:42])
 """
 
@@ -121,6 +122,7 @@ def extract_intra_repo_citations(
 #
 # Known false-positive class: a capitalized sentence-starting word
 # followed by a number could match (e.g. "Section 1.2.3 of the
+# integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 # specification cited at TimeStep.cpp:42"). We mitigate by requiring
 # the version token to be tight against the path (no comma, no period,
 # no "of"/"in" between). The grammar is intentionally tight; ambiguous

@@ -23,7 +23,9 @@ def test_unregistered_check_deduplicates_per_file_line(tmp_path: Path) -> None:
     """Two identical citations on different lines yield two findings;
     duplicate citations on the same line yield one."""
     (tmp_path / "doc.md").write_text(
+# integrity-allow: cat1.unregistered-upstream; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
         "UnknownProject 1.0.0 a.cpp:1 and UnknownProject 1.0.0 b.cpp:2 same line\n"
+# integrity-allow: cat1.unregistered-upstream; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
         "UnknownProject 1.0.0 c.cpp:3 second line\n"
     )
     findings = run(tmp_path)

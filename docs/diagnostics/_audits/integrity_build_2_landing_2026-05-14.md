@@ -22,6 +22,7 @@ citations via a single-class regex (chosen to avoid catastrophic
 backtracking), filters by recognized file extension, and reports
 HARD_FAIL for any citation that does not resolve (missing path) or
 falls outside the cited file's line range. `cat1.annotation-form`
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 finds every `integrity-allow:` invocation and validates the grammar
 per spec § 3.2 — check_id form, reason length ≥ 8, issue-ref form,
 blanket-`*` rejection. The runner's `discover_checks()` and
@@ -155,6 +156,7 @@ Annotation-form sources:
 
 The spec-doc hits are illustrative grammar examples (intentional). The
 two `common/annotations.py` hits are the docstring and the parser
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 regex itself containing the literal `integrity-allow:` token. The
 `common/exclusions.py` hit is the docstring naming the
 `cat1.exclusion-list` check. These will be grandfathered or
@@ -250,10 +252,12 @@ findings as suppressed with reason+issue) and the CI workflow.
 
 3. **Annotation-form false-positives in toolkit's own source.** The
    `LOOSE_RE` pattern in `annotation.py` finds any literal
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
    `integrity-allow:` token in any scanned file, including docstrings
    and the regex pattern in `common/annotations.py`. This is the
    intended behavior (the check needs to be able to flag malformed
    annotations), but it does mean the toolkit's own source contributes
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
    noise. Commit 4's grandfather sweep should add `integrity-allow:
    cat1.annotation-form; documentation-only literal of the grammar
    token; n/a` annotations at the docstring sites, or — if the spec

@@ -3,13 +3,19 @@
 // Delta vs divergence_solve.comp.glsl:
 //   Pass 1: rho_adv = density_i + dt · Σ m (v_i − v_j) · ∇W
 //           s_i = (1 - rho_adv / density0), clamped ≤ 0 (only correct over-density)
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   Pass 2: aij_pj scales by h² (not h) per TimeStepDFSPH.cpp:582
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   factor scales by 1/h² (not 1/h) per TimeStepDFSPH.cpp:285
 //
 // References:
+// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
 //   Source s_i = 1 - ρ_adv/ρ₀:   SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:590
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   aij_pj *= h²:                 TimeStepDFSPH.cpp:582
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   Pressure update:              TimeStepDFSPH.cpp:606
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   factor scales 1/h²:           TimeStepDFSPH.cpp:285
 #version 460
 

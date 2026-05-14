@@ -232,6 +232,7 @@ sim-local copies of all patterns identified here.
    that wraps the panel-rect tracking internally so consumers don't
    manually maintain GUI_PANEL_RECTS lists.
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 2. **Capture-mode confirmation modal** (MPM `main.py:608–618`)
    **— STRONG PROMOTE at #3.** Tier-dependent capture-mode appears in
    Phase 8 smoke (384³), Phase 9 MPM (500k tier), Phase 10 Lenia (2048²
@@ -243,6 +244,7 @@ sim-local copies of all patterns identified here.
    `ParamPanel.modal(...)` if other modal flows surface.
 
 3. **Tier dropdown + deferred-change-after-`window.show()`** (MPM
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
    `main.py:560–567 + 624–642`)
    **— STRONG PROMOTE at #3.** The deferred-after-show idiom is a
    non-obvious UX subtlety: re-allocate Taichi fields BEFORE the next
@@ -252,6 +254,7 @@ sim-local copies of all patterns identified here.
    `TierDropdown` widget that takes a list of `(label, on_select)`
    tuples and defers the `on_select` callback to after `window.show()`.
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 4. **F5/F9 save-load buttons UX pattern** (MPM `main.py:599–605`)
    **— MODERATE candidate.** The buttons live in each sim's GUI block
    (sim-specific labels, sim-specific side-effects) so the call sites
@@ -267,13 +270,16 @@ sim-local copies of all patterns identified here.
    **— KEEP SIM-LOCAL.** MPM-specific (Lenia has no discrete materials).
    The abstraction doesn't generalize to a continuous-CA sim.
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 6. **Reserve-tail emitter allocation** (MPM `main.py:466–472` +
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
    `EMITTER_RESERVE_SIZE` `main.py:96–100`)
    **— KEEP SIM-LOCAL.** MPM-specific physics-faithfulness move (preserve
    preset particles while LMB-place claims from a reserved tail region).
    Lenia's brush paints into the state field directly — no allocation
    needed. The abstraction doesn't generalize.
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 7. **`cursor_to_ground` 3D ray-plane unproject** (MPM `main.py:187+`)
    **— KEEP SIM-LOCAL.** Lenia 2D uses `cursor_to_field_cell` (2D pan-zoom
    inverse). Lenia 3D-slice uses an implicit `cursor_to_slice_cell` (2D-

@@ -2,9 +2,11 @@
 
 Mode: HARD_FAIL.
 
+# integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 Catches citations like `LeniaNDK.py:329-335` against the unvendored
 Chakazul/Lenia upstream. The fix is either (a) vendor and register the
 upstream, or (b) rewrite the citation to remove the upstream-version
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 form. Either way, an inline `integrity-allow: cat1.unregistered-upstream`
 annotation can be used as an intentional opt-out.
 """

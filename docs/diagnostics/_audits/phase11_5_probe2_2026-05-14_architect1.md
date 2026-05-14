@@ -15,6 +15,7 @@ scope: read-only
 
 Tokens grepped: `SPlisHSPlasH`, `splishsplash`, `Bender`, `Koschier`, `DFSPH`, `divergence-free SPH`. Search restricted to `--include` `*.md`, `*.cpp`, `*.hpp`, `*.h`, `*.glsl`, `*.txt`. Every hit reported.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Citations are textual references inside source files. **No vendored SPlisHSPlasH source tree exists in this repo.** The shaders cite specific SPlisHSPlasH 1.8.10 line numbers (`TimeStepDFSPH.cpp:285`, `:442`, `:514-515`, `:582`, `:590`, `:606`, `:656`, `:662`, `:692`, `:758-760`, `:813-822`, `:1175-1188`, `SPHKernels.h:43-78`, `TimeStepDFSPH.h:28`), but those files are not present on disk.
 
 DFSPH-method shader citations:
@@ -25,13 +26,19 @@ DFSPH-method shader citations:
 // Delta vs divergence_solve.comp.glsl:
 //   Pass 1: rho_adv = density_i + dt · Σ m (v_i − v_j) · ∇W
 //           s_i = (1 - rho_adv / density0), clamped ≤ 0 (only correct over-density)
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 //   Pass 2: aij_pj scales by h² (not h) per TimeStepDFSPH.cpp:582
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 //   factor scales by 1/h² (not 1/h) per TimeStepDFSPH.cpp:285
 //
 // References:
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 //   Source s_i = 1 - ρ_adv/ρ₀:   SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:590
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 //   aij_pj *= h²:                 TimeStepDFSPH.cpp:582
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 //   Pressure update:              TimeStepDFSPH.cpp:606
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 //   factor scales 1/h²:           TimeStepDFSPH.cpp:285
 ```
 
@@ -39,9 +46,13 @@ DFSPH-method shader citations:
 // divergence_solve.comp.glsl — DFSPH divergence-free pressure inner-loop.
 //
 // References:
+// integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
 //   Source s_i = -ρ̇_i:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:662
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 //   aij_pj scales by h:           TimeStepDFSPH.cpp:656
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 //   Pressure update (Jacobi 0.5): TimeStepDFSPH.cpp:692
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 //   factor scales by 1/h:         TimeStepDFSPH.cpp:442
 //
 // NOTE: the precise a_ij pair-coupling formula left as a skeleton; the canonical
@@ -56,6 +67,7 @@ DFSPH-method shader citations:
 // pressure buffer bound per call.
 //
 // References:
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 //   Velocity correction: SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:514-515 (divergence)
 //                                                              :359-360 (density)
 //   The "h" multiplier in upstream code is dt (time step), NOT support radius.
@@ -63,11 +75,15 @@ DFSPH-method shader citations:
 
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:1-7
 // density_alpha.comp.glsl — DFSPH per-particle density ρ_i and α-factor (stored
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 // as α/ρ² in the multiphase-compatible form per SPlisHSPlasH TimeStepDFSPH.cpp:758-760).
 //
 // References:
+// integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
 //   Cubic spline kernel: SPlisHSPlasH 1.8.10 SPHKernels.h:43-78
+// integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
 //   α-factor:            SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:813-822 / :1175-1188
+// integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
 //   α floor ε:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.h:28 = 1.0e-5
 ```
 
@@ -80,6 +96,7 @@ CMake hit:
 Main-cpp DFSPH references (constants + slider + log):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:114-122
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 // DFSPH defaults — SPlisHSPlasH 1.8.10 at TimeStepDFSPH.cpp:35-41.
 constexpr int   DFSPH_MIN_ITER_DENSITY   = 2;
 constexpr int   DFSPH_MAX_ITER_DENSITY   = 100;
@@ -88,6 +105,7 @@ constexpr int   DFSPH_MAX_ITER_DIV       = 100;
 constexpr float DFSPH_MAX_ERROR_DIV      = 0.1f;       // PERCENT - 0.1 = 0.1% of rho_0
 constexpr bool  DFSPH_DIV_SOLVER_DEFAULT = true;
 constexpr float DFSPH_ALPHA_EPS          = 1.0e-5f;
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 constexpr float DFSPH_JACOBI_RELAX       = 0.5f;       // SPlisHSPlasH TimeStepDFSPH.cpp:606,:692
 ```
 
@@ -166,6 +184,7 @@ find /home/otacon -maxdepth 6 -type f -iname '*.pdf' 2>/dev/null | grep -i -E 's
 
 `particle-fluids/sph-water/docs/load-bearing-decisions.md`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```md:particle-fluids/sph-water/docs/load-bearing-decisions.md:1-81
 # sph-water — Load-bearing decisions
 
@@ -251,6 +270,7 @@ the main pipeline).
 
 `particle-fluids/sph-water/docs/notes.md` (the only other file in that directory):
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```md:particle-fluids/sph-water/docs/notes.md:1-82
 # sph-water — v1.1 stretch items
 
@@ -270,6 +290,7 @@ banked at v1 for v1.1 follow-on.
 - [ ] **Upstream-exact `a_ij` pair-coupling** in `divergence_solve.comp.glsl`
       and `density_solve.comp.glsl`. v1 ships a placeholder skeleton per the
       spec's deliberate-not-fabricated stance; canonical formulation from
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
       SPlisHSPlasH 1.8.10 `TimeStepDFSPH.cpp:442-692` to be translated in the
       Phase 11 follow-up polish per the architect-2 Callout 1 verification
       item.
@@ -350,11 +371,15 @@ Full file (127 lines), verbatim.
 
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:1-127
 // density_alpha.comp.glsl — DFSPH per-particle density ρ_i and α-factor (stored
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 // as α/ρ² in the multiphase-compatible form per SPlisHSPlasH TimeStepDFSPH.cpp:758-760).
 //
 // References:
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 //   Cubic spline kernel: SPlisHSPlasH 1.8.10 SPHKernels.h:43-78
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 //   α-factor:            SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:813-822 / :1175-1188
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 //   α floor ε:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.h:28 = 1.0e-5
 #version 460
 
@@ -711,6 +736,7 @@ notes.md
 
 Quoted in full (109 lines).
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```text:particle-fluids/sph-water/shaders/_struct_layouts.txt:1-109
 ================================================================================
 sph-water - SSBO struct layouts (single source of truth)
@@ -842,6 +868,7 @@ END
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,U,1,CS}});
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Type aliases used above (`main.cpp:1079-1087`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1079-1087
@@ -856,6 +883,7 @@ Type aliases used above (`main.cpp:1079-1087`):
     constexpr VkShaderStageFlags FS = VK_SHADER_STAGE_FRAGMENT_BIT;
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `make_compute` lambda (`main.cpp:1058-1066`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1058-1066
@@ -879,6 +907,7 @@ Push-constant size matrix:
 
 ### E.2 Descriptor-set-write functions (full bodies)
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **`writeDensityAlphaDescriptor`** (`main.cpp:528-553`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:528-553
@@ -910,6 +939,7 @@ static void writeDensityAlphaDescriptor(VkDevice device,
 }
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **`writeDfsphSolveDescriptor`** (shared by `divergence_solve` and `density_solve`, `main.cpp:555-590`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:555-590
@@ -951,6 +981,7 @@ static void writeDfsphSolveDescriptor(VkDevice device,
 }
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **`writeIntegrateForcesDescriptor`** (`main.cpp:592-617`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:592-617
@@ -982,6 +1013,7 @@ static void writeIntegrateForcesDescriptor(VkDevice device,
 }
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **`writePressureApplyDescriptor`** (`main.cpp:619-648`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:619-648
@@ -1037,6 +1069,7 @@ VkDescriptorSet ComputePipeline::allocateDescriptorSet() {
 }
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The pool itself is built in `ComputePipeline::create` via `buildDescriptorPool(...)` at `compute_pipeline.cpp:37-59` with `max_sets = 16` (passed at `:130`):
 
 ```cpp:common/common-cpp/src/vk/compute_pipeline.cpp:130
@@ -1118,6 +1151,7 @@ void Buffer::readback(Context& ctx, void* dst, std::size_t bytes, std::size_t of
 }
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The dual host→device path is `Buffer::stage` (`buffer.cpp:119-133`):
 
 ```cpp:common/common-cpp/src/vk/buffer.cpp:119-133
@@ -1151,6 +1185,7 @@ Header declaration (`common/common-cpp/include/gpusims/vk/buffer.hpp:54-59`):
 
 ### F.4 Consumers of `Buffer::readback` in sph-water
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Two call sites in `main.cpp`. F5-capture-save batch (`main.cpp:1684-1689`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1684-1689
@@ -1162,6 +1197,7 @@ Two call sites in `main.cpp`. F5-capture-save batch (`main.cpp:1684-1689`):
         tier.cell_starts.readback(ctx,   cell_starts_bytes.data(),  cell_starts_bytes.size());
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Alembic export (`main.cpp:2045-2053`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:2045-2053
@@ -1180,6 +1216,7 @@ Grep returns **zero direct uses** of the `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` e
 
 ### F.7 Direct answer to caller's question
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **`tier.uniform_dfsph.uploadDirect` is host→device only** (mapping is `VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT`; the destination is the host-mapped UBO, GPU reads it). `Buffer::stage` is also host→device. **The only device→host path is `Buffer::readback`** (`buffer.cpp:135`) and **`Image::readback`** (`image.cpp:202`); both are **synchronous, submit-and-wait** via `ctx.runOneShot`. There is **no asynchronous device→host helper**, no persistent-mirror pattern, and no `gv::downloadBuffer` / equivalent free function. The class-level helper `Buffer::readback(Context&, void*, std::size_t, std::size_t)` is the only thing available.
 
 ## Section G: Atomic operations in existing shaders
@@ -1267,26 +1304,42 @@ All 16 compute shaders' headers (verbatim):
 
 | Shader | `#version` line | `#extension` line(s) |
 |---|---|---|
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `apply_emitter.comp.glsl:3` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `bilateral_smooth.comp.glsl:5` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `cell_count.comp.glsl:3` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `density_alpha.comp.glsl:8` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `density_solve.comp.glsl:14` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `divergence_solve.comp.glsl:12` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `initial_fill.comp.glsl:3` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `integrate_forces.comp.glsl:7` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `morton_code.comp.glsl:3-4` | `#version 460` | `#extension GL_GOOGLE_include_directive : enable` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `prefix_sum_addback.comp.glsl:4` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `prefix_sum_block.comp.glsl:10` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `prefix_sum_block_l2.comp.glsl:4` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `prefix_sum_local.comp.glsl:3` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `pressure_apply.comp.glsl:10` | `#version 460` | (none) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `scatter.comp.glsl:4` | `#version 460` | (none) |
 
 **No `GL_KHR_shader_subgroup_arithmetic` or `_basic` extension declared in any shader.** No subgroup intrinsics in any DFSPH shader. (The subgroup-size *pin* applies to the 7 sort kernels + bilateral kernel via the pipeline-creation pNext chain, but the GLSL itself does not use subgroup ops.)
 
 ## Section H: Full `pack_dfsph_uniform` body and call site
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ### H.1 Function body (`main.cpp:1380-1431`)
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1380-1431
@@ -1346,6 +1399,7 @@ All 16 compute shaders' headers (verbatim):
 
 ### H.2 Call site
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Probe-1 referenced `main.cpp:1891`. **Verified.** The call is at line 1891. Five lines before and after:
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1886-1896
@@ -1363,6 +1417,7 @@ Probe-1 referenced `main.cpp:1891`. **Verified.** The call is at line 1891. Five
         // DFSPH dispatch chain (§ 4.G), once per substep.
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `pack_dfsph_uniform` is called **once per frame, outside the substep loop**. Probe-1 Section A confirms this position (frame-scope uniform write, before the substep loop opens at `main.cpp:1908`).
 
 ## Section I: Usage of `da[].z`, `da[].w`, `predicted_density`, `density_advect`
@@ -1373,17 +1428,26 @@ Probe-1 referenced `main.cpp:1891`. **Verified.** The call is at line 1891. Five
 
 | Shader | Buffer qualifier | Access site | Component | Read/Write |
 |---|---|---|---|---|
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `density_alpha.comp.glsl:21-24` | `restrict writeonly buffer DensityAlpha { vec4 da[]; }` | `:126` `da[gid] = vec4(density, alpha_stored, 0.0, 0.0);` | full `.xyzw` | **WRITE** (only writer of `da`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `divergence_solve.comp.glsl:17` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:75` `da[gid].x` | `.x` | READ |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `divergence_solve.comp.glsl:17` | (same) | `:76` `da[gid].y` | `.y` | READ |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `density_solve.comp.glsl:19` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:77` `da[gid].x` | `.x` | READ |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `density_solve.comp.glsl:19` | (same) | `:78` `da[gid].y` | `.y` | READ |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `integrate_forces.comp.glsl:12` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:111` `max(da[j].x, 1e-3)` | `.x` (neighbor) | READ |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `pressure_apply.comp.glsl:15` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:72` `da[gid].x` | `.x` | READ |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `pressure_apply.comp.glsl:15` | (same) | `:95` `da[j].x` | `.x` (neighbor) | READ |
 
 ### I.2 Direct answer to caller's question
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **No kernel writes `da[gid].z` or `da[gid].w`.** The only writer of `da` is `density_alpha.comp.glsl:126`, which writes `vec4(density, alpha_stored, 0.0, 0.0)` — the `.z` and `.w` slots are unconditionally zeroed every dispatch. No kernel reads `da[].z` or `da[].w` either.
 
 The struct-layout doc reserves these slots:
@@ -1393,8 +1457,10 @@ The struct-layout doc reserves these slots:
 .w    12      4     density_advect        rho_dot_i (divergence_solve Pass 1)
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 …but the corresponding `predicted_density` / `density_advect` fields are **never written and never read by any shader.** Likewise, `_struct_layouts.txt:28-29` documents per-particle slots `predicted_density` / `density_advect` at offsets 56/60 inside `particles_buf`, but those are explicitly marked `UNUSED; in da[i].z` / `UNUSED; in da[i].w` — so neither location holds the value either. **Both predicted-density and density-advect are documentation-only fields in the current code.**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Grep confirms: across all `*.comp.glsl` in `particle-fluids/sph-water/shaders/`, no shader source contains the tokens `predicted_density`, `density_advect`, `rho_adv`, or `rho_dot` as variable/field names — the term `rho_adv` does appear locally in `density_solve.comp.glsl:85, :110, :111` as a stack-local scalar (not stored back to the SSBO):
 
 ```glsl:particle-fluids/sph-water/shaders/density_solve.comp.glsl:85-111
@@ -1608,6 +1674,7 @@ bool ComputePipeline::reload(Context&        ctx,
 
 ### J.5 Push-constant range wiring
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 A single `VkPushConstantRange` is built at `compute_pipeline.cpp:87-94`:
 
 ```cpp:common/common-cpp/src/vk/compute_pipeline.cpp:87-94
@@ -1632,10 +1699,12 @@ A single `VkPushConstantRange` is built at `compute_pipeline.cpp:87-94`:
 
 ### J.7 Hot-reload integration
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The reload mechanism is rooted in `common/common-cpp/src/hot_reload.cpp` (via `gpusims::HotReloader`); the sph-water side registers watchers at `main.cpp:1637-1661` (quoted in Section M). On a file-modified event, the worker thread sets a per-shader `bool reload_*` flag; the main loop calls `pipe.reload(ctx, compiler, *frame, &err)` (`main.cpp:1854`). Old `VkPipeline` and `VkShaderModule` handles are pushed onto `frame->deletion_queue` so they are destroyed only after in-flight execution has consumed them (`compute_pipeline.cpp:223-230`).
 
 ### J.8 Pipeline-layout sharing across pipelines
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Each `ComputePipeline` owns its own `VkPipelineLayout`, `VkDescriptorSetLayout`, and `VkDescriptorPool`. The wrapper does **not** expose a way for two pipelines to share a layout — `create()` always calls `buildDescriptorSetLayout` and `vkCreatePipelineLayout` (`compute_pipeline.cpp:81-97`). `divergence_solve` and `density_solve` share the *write-helper function* (`writeDfsphSolveDescriptor`) and an identical binding shape, but they are separate `ComputePipeline` instances with separate VK layouts (see `main.cpp:1097-1100`).
 
 ### J.9 "Pipeline writes a host-visible buffer" flag
@@ -1646,6 +1715,7 @@ Each `ComputePipeline` owns its own `VkPipelineLayout`, `VkDescriptorSetLayout`,
 
 Full file (110 lines), verbatim.
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```glsl:particle-fluids/sph-water/shaders/pressure_apply.comp.glsl:1-110
 // pressure_apply.comp.glsl — Apply pressure-derived velocity correction.
 //
@@ -1653,6 +1723,7 @@ Full file (110 lines), verbatim.
 // pressure buffer bound per call.
 //
 // References:
+// integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
 //   Velocity correction: SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:514-515 (divergence)
 //                                                              :359-360 (density)
 //   The "h" multiplier in upstream code is dt (time step), NOT support radius.
@@ -1885,6 +1956,7 @@ The five named-but-missing DFSPH helpers (`density_predict`, `density_advance`, 
 
 ## Section M: Hot-reload and shader compilation surface
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ### M.1 Watch-list (`main.cpp:1623-1661`)
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1623-1661
@@ -1929,6 +2001,7 @@ The five named-but-missing DFSPH helpers (`density_predict`, `density_advance`, 
     W_watch("composite.frag.glsl",           &reload_composite);
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ### M.2 Per-frame `try_reload` driver (`main.cpp:1848-1880`)
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1848-1880
@@ -1971,6 +2044,7 @@ The five named-but-missing DFSPH helpers (`density_predict`, `density_advance`, 
 
 The actual recompile happens inside `ComputePipeline::reload(...)` (`common/common-cpp/src/vk/compute_pipeline.cpp:174-236`, quoted in **Section J.4**). It calls `compiler.compileFile(desc_.shader_path, ShaderStage::Compute)`, builds a new `VkShaderModule`, builds a new `VkComputePipeline`, and defers the old pipeline + module destruction onto the current frame's `deletion_queue`.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The actual SPIR-V compilation lives at `common/common-cpp/src/vk/shader_compiler.cpp:117` — `ShaderCompiler::compileFile(...)`. Not quoted in full here; signature reference at `compute_pipeline.cpp:70` and `:178`.
 
 ## Section N: Existing convergence-check or error-measurement code
@@ -2030,6 +2104,7 @@ Panel exposes the `maxIter*` sliders too but they're not consulted in v1
 the main pipeline).
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 > Probe-2 note: the load-bearing doc claims "Panel exposes the `maxIter*` sliders too" — but the actual ImGui exposure at `main.cpp:2252-2253` covers only the `minIter*` sliders. The `maxIter*` sliders are not shown in the panel. (Banked to Section P.)
 
 ### N.5 No kernel-side measurement
@@ -2065,6 +2140,7 @@ The struct-layout doc at `particle-fluids/sph-water/shaders/_struct_layouts.txt:
 .w    12      4     density_advect        rho_dot_i (divergence_solve Pass 1)
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 …claims `density_solve Pass 1` writes `rho_adv_i` to `.z`, and `divergence_solve Pass 1` writes `rho_dot_i` to `.w`. **Neither write happens in the actual shader source.** The doc describes an intended-but-unimplemented design. `density_alpha.comp.glsl:126` is the only writer of `da[]` and unconditionally writes `vec4(density, alpha_stored, 0.0, 0.0)`.
 
 ### P.3 `load-bearing-decisions.md` claims a panel feature that doesn't exist
@@ -2075,10 +2151,12 @@ Panel exposes the `maxIter*` sliders too but they're not consulted in v1
 (banked v1.1 with sparse residual readback every K frames that doesn't stall the main pipeline).
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ImGui code at `main.cpp:2252-2253` exposes only `minIter*` sliders. The `maxIter*` sliders are **not** present in the panel. The doc's "Panel exposes the `maxIter*` sliders too but they're not consulted" is incorrect.
 
 ### P.4 `prefix_sum_addback` descriptor write passes `cell_block_prefixes` twice
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 `main.cpp:1242-1244`:
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1242-1244
@@ -2087,24 +2165,29 @@ ImGui code at `main.cpp:2252-2253` exposes only `minIter*` sliders. The `maxIter
             tier.cell_starts.handle(), tier.uniform_sort.handle());
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `tier.cell_block_prefixes.handle()` is passed for both the first and second buffer slot. May be intentional (per-block scan results being read as both `PerBlock` and `BlockPrefixes`, given the shader bindings at `prefix_sum_addback.comp.glsl:8-14`) but the two arguments having the same buffer is a smell worth a second look. Out of scope for the SPH solver but flagging.
 
 ### P.5 Bilateral pass uses `r32f writeonly image2D` rather than separate read/write paths
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `bilateral_smooth.comp.glsl:9-12` (from grep at L.2). The bilateral pass uses `texture2D inputDepth` + separate `r32f writeonly image2D outputDepth` rather than image-ping-pong with read+write image bindings. Standard for bilateral-style filters; recording only for completeness, no concern.
 
 ### P.6 No `gravity_pad.w` writer (still — mode field is dead)
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The DFSPH UBO `gravity_pad.w` is set to `0.0f` in `pack_dfsph_uniform` (`main.cpp:1422`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1422
         u.gravity_pad[3]  = 0.0f;  // mode now lives in push constant
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 …with the comment "mode now lives in push constant" reflecting the post-fabrication-shape-9 fix (commit `7294ee4` per the retro). The four DFSPH shaders that have not been re-checked since their UBO docstrings were copied still document `gravity_pad` as `(.xyz=gravity, .w=mode)` in the UBO comment block (e.g. `density_alpha.comp.glsl:49`, `divergence_solve.comp.glsl:46`, etc.). The `.w` slot is no longer a mode; it is unused padding. Stale comment; not a bug.
 
 ### P.7 `integrate_forces` push-constant size encoded twice
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 `main.cpp:1101-1103` (already quoted in Section E.1) sets `push_const_bytes = sizeof(std::uint32_t)` for `pipe_integrate_forces`. The shader-side declaration is `layout(push_constant) uniform PC { uint mode; } pc;` at `integrate_forces.comp.glsl:45-47`. Size in C++ (4 bytes) matches the GLSL declaration (1 uint = 4 bytes). Consistent; recording so a future reviewer doesn't flag drift.
 
 ### P.8 No specialization-constant or pipeline-cache wiring
@@ -2117,6 +2200,7 @@ Tied to Section N but elevating: there is no `density_error.comp.glsl`, no `dive
 
 ### P.10 Two `predicted_velocity` documentation sites
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 `_struct_layouts.txt:24` documents `particles_buf` slot 2 `.xyz` as `predicted_velocity` (reserved v1). The token `predicted_velocity` does not appear in any shader. Same documentation-only situation as P.2 (predicted_density / density_advect): the SoA layout reserves space for DFSPH intermediate quantities that the current solver never computes or persists.
 
 ---

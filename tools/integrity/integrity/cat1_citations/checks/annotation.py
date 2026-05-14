@@ -1,3 +1,4 @@
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 """Check: cat1.annotation-form — every integrity-allow: annotation is grammar-valid.
 
 Mode: HARD_FAIL.
@@ -34,8 +35,10 @@ SCAN_EXTENSIONS: frozenset[str] = frozenset({
 })
 
 
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 # Loose pattern that finds *any* `integrity-allow:` invocation (valid or
 # not) so we can report grammar failures rather than silently skipping.
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 LOOSE_RE = re.compile(r"integrity-allow:\s*(.*?)(?:-->|$)", re.IGNORECASE)
 
 
@@ -68,6 +71,7 @@ def _list_scannable_files(root: Path) -> list[Path]:
 
 
 def _validate(body: str) -> str | None:
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     """Return None if `body` (the text after `integrity-allow:`) is valid,
     else a diagnostic string."""
     body = body.strip().rstrip("-->").strip()

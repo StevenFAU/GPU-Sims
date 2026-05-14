@@ -752,6 +752,7 @@ def cursor_in_any_panel(cur: tuple[float, float], rects: list[tuple[float, float
     but panel.folder() positions panels with y=0 at TOP (screen-space
     convention). We convert cursor y to top-origin before testing.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
     Inherited verbatim from MPM main.py:306-318. Documented in
     docs/load-bearing-decisions.md as a STRONG promotion candidate for
     consumer #3 (see § "Promotion-review for common-py").
@@ -832,6 +833,7 @@ mediating quirk. A few possibilities the in-source notes leave open:
 Verdict: **load-bearing coincidence, not structural soundness.** The
 two functions cannot both be using a correct GGUI convention; one of
 them is right by accident. The in-source comments at
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 `main.py:160-168` and the `notes.md` Polish-4 section both
 explicitly flag this as undisproven and bank it for the "consumer #3
 promotion review when a third sim arrives with panels in DIFFERENT
@@ -934,24 +936,43 @@ The load handler is the symmetric path; pulling buffers via
 `grep -rnE "banked|v1\.1|stub|TODO|FIXME|XXX"
 continuous-ca/lenia-fft/python/`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/pyproject.toml:16` — `# relative paths are rejected by modern pip — banked Phase 9 retro.`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/pyproject.toml:62` — `# Optional GPU-FFT deps have incomplete stubs or are absent in CI; allow Any.`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/pyproject.toml:67` — `# @ti.kernel functions diverge from Python type semantics (banked Phase 9):`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/tests/test_kernels.py:5` — `surface (banked Phase 9 runtime-only-surface convention).`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/presets.py:10` — `…all four 2D presets…Polyring (multi-peak via b-string) creatures are banked`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/presets.py:11` — `v1.1 with the formula documented at LeniaNDK.py:329-335; see`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/presets.py:279` — `# v1.1 will land Chan's 3D creatures after visual verification on user`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/fft_backend.py:21` — `(the kernel FFT) and per-step (the state FFT + inverse FFT). v1.1 may`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/fft_backend.py:134` — `# returns un-annotated Any from CuPy's stub-less .pyi).`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/fft_backend.py:176` — `# .numpy() returns un-annotated Any from torch's stub-less .pyi).`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/fft_backend.py:198` — `(the round-trip…); v1.1 may add step_inplace_taichi() to skip…`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/fft_backend.py:224` — `# ndarray type (Taichi's to_numpy() returns Any per its stubs).`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/kernels.py:13` — `CUDA-vs-Vulkan portability (banked Phase 9):`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/kernels.py:49` — `…and v1.1+ extensions, NOT by Phase 10's preset roster).`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/main.py:38` — `# NOTE: deliberately NO from __future__ import annotations. Phase 9 banked`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/main.py:245` — `additional scope; v1.1 banked). The 3D step uses kernels.lenia_step_3d`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/main.py:310` — `# via ti.ui.Scene is banked v1.1 (see docs/load-bearing-decisions.md`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/main.py:412` — `# (~1-3 s) on the next step call — accepted, banked Phase 9.`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/main.py:637` — `f"VDB density ({'real' if VdbWriter.is_available() else 'stub'})",`
 
 No `TODO`, `FIXME`, `XXX` markers were found anywhere in the package
@@ -988,9 +1009,11 @@ spec instruction, the polyring banking quoted in full **comes from
 
 **Why this banking is worth the disk space:** Architect-2 round-2 verification surfaced that the polyring path is what unlocks ~50+ additional named creatures upstream — Hydrogeminium, Gyrogeminium, the Scutium serratus family, etc. Phase 10's preset roster is intentionally limited to four creatures specifically because polyring is banked; if a future sim phase wants the broader Lenia menagerie, polyring is the load-bearing precondition.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **Formula anchor (architect-2 round-2 verified):** Upstream `Chakazul/Lenia/Python/LeniaNDK.py:329-335` defines the polyring kernel assembly. The exact construction (architect-2's intuited formula matches Chan's modulo two defensive guards):
 
 ```python
+# integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 # Per upstream LeniaNDK.py:329-335 (verified at architect-2 round-2):
 def kernel_shell(r, b, kn):
     """Build polyring kernel from b-string + base kernel-core function.
@@ -1082,6 +1105,7 @@ sim-local copies of all patterns identified here.
    that wraps the panel-rect tracking internally so consumers don't
    manually maintain GUI_PANEL_RECTS lists.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 2. **Capture-mode confirmation modal** (MPM `main.py:608–618`)
    **— STRONG PROMOTE at #3.** Tier-dependent capture-mode appears in
    Phase 8 smoke (384³), Phase 9 MPM (500k tier), Phase 10 Lenia (2048²
@@ -1093,6 +1117,7 @@ sim-local copies of all patterns identified here.
    `ParamPanel.modal(...)` if other modal flows surface.
 
 3. **Tier dropdown + deferred-change-after-`window.show()`** (MPM
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
    `main.py:560–567 + 624–642`)
    **— STRONG PROMOTE at #3.** The deferred-after-show idiom is a
    non-obvious UX subtlety: re-allocate Taichi fields BEFORE the next
@@ -1102,6 +1127,7 @@ sim-local copies of all patterns identified here.
    `TierDropdown` widget that takes a list of `(label, on_select)`
    tuples and defers the `on_select` callback to after `window.show()`.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 4. **F5/F9 save-load buttons UX pattern** (MPM `main.py:599–605`)
    **— MODERATE candidate.** The buttons live in each sim's GUI block
    (sim-specific labels, sim-specific side-effects) so the call sites
@@ -1117,13 +1143,16 @@ sim-local copies of all patterns identified here.
    **— KEEP SIM-LOCAL.** MPM-specific (Lenia has no discrete materials).
    The abstraction doesn't generalize to a continuous-CA sim.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 6. **Reserve-tail emitter allocation** (MPM `main.py:466–472` +
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
    `EMITTER_RESERVE_SIZE` `main.py:96–100`)
    **— KEEP SIM-LOCAL.** MPM-specific physics-faithfulness move (preserve
    preset particles while LMB-place claims from a reserved tail region).
    Lenia's brush paints into the state field directly — no allocation
    needed. The abstraction doesn't generalize.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 7. **`cursor_to_ground` 3D ray-plane unproject** (MPM `main.py:187+`)
    **— KEEP SIM-LOCAL.** Lenia 2D uses `cursor_to_field_cell` (2D pan-zoom
    inverse). Lenia 3D-slice uses an implicit `cursor_to_slice_cell` (2D-
@@ -1297,6 +1326,7 @@ Confirming the three load-bearing CI tests named in the spec:
 
 3. **`test_capture_schema_round_trip`** — present at lines 307–378 (>30
    lines so summarized + key bytes quoted; full body lives in
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
    `tests/test_kernels.py:307`):
 
    ```python:continuous-ca/lenia-fft/python/tests/test_kernels.py:307
@@ -1337,33 +1367,59 @@ continuous-ca/lenia-fft/`:
 | `README.md:14` | `Chakazul/Lenia/Python/LeniaNDK.py` `kernel_core[0]` | line-cite (kernel-core registry index) |
 | `README.md:17` | `animals.json: Orbium unicaudatus (O2u), Vagorbium undulatus (OV2u),` | line-cite (preset-set anchor) |
 | `README.md:82` | `Chan's reference impl: github.com/Chakazul/Lenia (MIT).` | repo-link-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `docs/notes.md:62` | `Upstream Chakazul/Lenia/Python/LeniaNDK.py:329-335 defines the polyring kernel assembly.` | formula (polyring construction) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `docs/notes.md:65` | `# Per upstream LeniaNDK.py:329-335 (verified at architect-2 round-2):` | formula (polyring inline def) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `docs/notes.md:94` | `Preset library expansion: enumerate 30-50 polyring creatures from upstream animals.json…` | preset-byte (banked count) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/tests/test_kernels.py:176` | `presets — see kernels.py module header for the LeniaNDK.py anchor)` | line-cite (kernel-core anchor) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:21` | `Chakazul/Lenia on GitHub (MIT license). Kernel: upstream LeniaNDK.py kernel_core[0]` | line-cite (kernel-core registry) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:22` | `kernel_core[0] "polynomial (quad4)": K(r) = (4·r·(1-r))^4 for r in [0,1], zero outside.` | formula (quad4) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:23` | `Growth map: G(u) = 2*exp(-(u-mu)^2/(2*sigma^2)) - 1 (Gaussian, gn=1).` | formula (growth) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:25` | `All Phase 10 presets are single-peak (b="1"), kn=1 (quad4 kernel)…` | behavior (preset roster constraint) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:44` | `# This is upstream LeniaNDK.py's kernel_core[0] — the "polynomial (quad4)"…` | line-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:46` | `every creature with kn=1 in animals.json (all 122 single-peak creatures enumerated upstream)…` | preset-byte (count: 122 single-peak) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/kernels.py:64` | `Anchor: Chakazul/Lenia/Python/LeniaNDK.py kernel_core[0] (quad4).` | line-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/main.py:12` | `(upstream LeniaNDK.py kernel_core[0]; JSON kn=1 via off-by-one indexing)` | line-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:2` | `byte-for-byte from Bert Chan's canonical reference at github.com/Chakazul/Lenia (MIT license).` | preset-byte (whole roster) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:3` | `Per-creature params: Python/animals.json` | line-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:4` | `Kernel-core registry: Python/LeniaNDK.py kernel_core dict, key 0 (quad4) matched against JSON params.kn=1 via off-by-one indexing.` | line-cite + behavior (off-by-one) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:11` | `formula documented at LeniaNDK.py:329-335` | formula (polyring) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:14` | `Verified roster (codes match upstream animals.json):` | preset-byte (codes) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:39` | `LeniaNDK.py dict keys` | line-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:43` | `Spec authority is upstream animals.json + the verification chain at /tmp/p10presets/ and /tmp/.` | preset-byte (authority claim) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:76` | `https://github.com/Chakazul/Lenia/blob/master/Python/animals.json` | URL-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:79` | `Decoded via 2D port of LeniaNDK.Board.rle2arr (LeniaNDK.py:184-206).` | line-cite (decoder) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:203` | `Canonical creatures from Chakazul/Lenia/Python/animals.json.` | preset-byte |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:209` | `header for the LeniaNDK.py anchor), gn=1 (Gaussian growth map).` | line-cite |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:214` | `looks wrong, the source of truth is upstream animals.json…` | preset-byte (authority) |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | `python/lenia_fft/presets.py:317` | `cells from animals.json, centered at the field's middle, over a` | preset-byte (RLE-decoded cells) |
 
 (Also relevant but not matching the grep: the in-source seed-cell
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 arrays at `presets.py:84–201` are themselves the byte-extracted RLE
 decode of `animals.json` for the four shipped 2D presets. They are
 data, not citations.)
@@ -1373,10 +1429,13 @@ data, not citations.)
 Acknowledged banking (deferred, not skeletal):
 
 - 3D FFT path is explicitly not shipped; 3D uses Taichi real-space
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   (`main.py:242-254` docstring).
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - Volumetric raymarch viewer (banked v1.1 — `main.py:308-311`).
 - Sub-stepping (banked v1.1 — `notes.md`).
 - Polyring kernels (banked — `notes.md` "Polyring extension banking").
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - Named 3D creatures (banked — `presets.py:278-280` and `notes.md`).
 - Save-creature UX (banked — `notes.md`).
 
@@ -1384,22 +1443,27 @@ Shipped-but-skeletal (hidden incompleteness): only one candidate
 identified.
 
 - **`paint_splat_2d`'s `n_grid` argument is unused.** Documented as
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   intentional (`kernels.py:274-275`: "n_grid is unused in the kernel
   body — kept for API symmetry with future variants that need it.").
   Not skeleton — declared API parking. Worth noting only as
   "scaffolding for future polyring/3D-paint variant".
 
 - **`init_state_random_blob_2d`'s `n_grid` argument is similarly
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   unused** with the same justification (`kernels.py:125-127`). Same
   comment.
 
 - **`extract_slice_3d`'s `n_grid` argument is similarly unused**
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   (`kernels.py:351`). Same comment.
 
 - **VDB writer "stub" branch** in the GUI label: `f"VDB density
   ({'real' if VdbWriter.is_available() else 'stub'})"`
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   (`main.py:637`). The label flips to "stub" when `VdbWriter` reports
   unavailable; the `VdbWriter.write_frame()` call is still issued
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   unconditionally on the next line (`main.py:554-560`), so it is on
   `gpusims_common.VdbWriter` to no-op or warn when in stub mode. Not
   inspected here per the no-deep-audit-of-common-py constraint;
@@ -1428,7 +1492,9 @@ backend / panel logic. The implementation is uniformly shipped.
 `grep -rn "from gpusims_common\|import gpusims_common"
 continuous-ca/lenia-fft/python/`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/tests/test_kernels.py:320` — `from gpusims_common import StateReader, StateWriter`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/main.py:50` —
 
   ```python:continuous-ca/lenia-fft/python/lenia_fft/main.py:50
@@ -1443,7 +1509,9 @@ continuous-ca/lenia-fft/python/`:
   )
   ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `python/lenia_fft/fft_backend.py:37` — `from gpusims_common import log`
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `python/lenia_fft/presets.py:52` — `from gpusims_common import log`
 
 Load-bearing common-py symbols (flagged for the common-py audit layer,
@@ -1451,20 +1519,26 @@ not deep-audited here):
 
 - **`StateWriter` / `StateReader`** — capture path. Per-buffer
   `{count, stride, format, shape}` field shape is asserted by sim-side
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   code (`main.py:374-386`) but populated inside common-py. The CI
   test `test_capture_schema_round_trip` exercises the round-trip but
   does NOT introspect those four fields directly; it asserts
   byte-identity of state/lut and presence of the `leniaFft` meta key.
   Schema drift inside common-py would not be caught at the
   `count/stride/format` level by this sim's tests.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`ParamPanel`** — drives the entire GUI block (`main.py:573` and
   every `with panel.folder(...)` site). `ParamPanel.bind(window.get_gui())`
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   at `main.py:573` is called every frame. The y-coord-flip
   asymmetry (§ G) is an open question about
   `ParamPanel.folder()`'s coord convention.
 - **`Camera` / `CameraMode`** — instantiated for the 3D tier
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   (`main.py:312-316`) and serialized via `camera.to_json()` in F5
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   saves (`main.py:368`). Used by 3D tier only.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`VdbWriter`** — 3D-tier export (`main.py:553-560`); `is_available()`
   drives the GUI label between "real" and "stub". Stub-mode behavior
   is opaque from this sim; flag for common-py audit.
@@ -1476,6 +1550,7 @@ not deep-audited here):
 - `kernel_radius=20` for OV2u (Vagorbium undulatus) is a 41×41 kernel
   LUT applied at every cell every step. In the Taichi real-space
   backend that's a 1681-element inner ndrange per cell × n_grid² cells
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   per step (`kernels.py:175-180`). This is the largest-radius preset
   in the roster; if any FFT-vs-real-space perf ratio testing surfaces,
   it's the preset where the real-space cost is most painful.
@@ -1488,28 +1563,36 @@ not deep-audited here):
   periodic-BC wrap is mathematically correct. Worth noting because in
   C/C++ `-3 % 512 == -3` and a port would need to add `+ n_grid`
   defensive arithmetic. The Taichi `composite_view_2d` kernel already
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   uses `fx - n_grid * floor(fx / n_grid)` (`kernels.py:306-307`)
   rather than `%` precisely for this reason.
 
 - `step_2d` always rounds the new state through numpy
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   (`main.py:233-235`) **even when** the Taichi real-space backend is
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   in use — the docstring at `main.py:226-231` acknowledges this
   ("Taichi-real-space backend skips the numpy round-trip internally"
   — but the wrapper still does `to_numpy()` then `from_numpy()`
   around it). The "skips the numpy round-trip internally" claim
   refers to the in-backend internals (one `from_numpy` + one
   `to_numpy` inside `TaichiRealSpaceConvolver.step` at
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   `fft_backend.py:214` and `:225`), so the actual full-round-trip
   count for the real-space backend per frame is **two**:
   `state→numpy→Taichi field→step→numpy→Taichi field`. Not a bug, but
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   the in-source comment at `fft_backend.py:18-23` slightly understates
   the cost (it cites "2 numpy↔Taichi round-trips per step", which is
   what actually happens; the disconnect is between that comment and
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   `main.py:226-231`'s "skips the numpy round-trip" phrasing).
 
 - The CuPy and PyTorch backends do NOT call the shared
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   `_growth_map_apply` helper in `fft_backend.py:99-107` — they each
   re-implement the growth+clip math on their respective array types
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   (`fft_backend.py:131-132` for CuPy, `:173-174` for Torch). Only the
   numpy backend uses `_growth_map_apply`. So the helper is, in
   practice, a one-call utility used by one backend, despite its
@@ -1526,6 +1609,7 @@ not deep-audited here):
 
 - `do_load_state` calls `state_reader.find_latest()` then immediately
   proceeds; if `find_latest()` returns `None` (no captures yet), the
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   early-return at `main.py:399-401` logs at `log.warn` and exits.
   Sound.
 

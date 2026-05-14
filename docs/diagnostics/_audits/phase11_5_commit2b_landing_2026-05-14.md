@@ -26,6 +26,7 @@ pressure acceleration onto particle velocity.
 | `shaders/jacobi_update_divergence.comp.glsl` | 60 | identical to jacobi_update_density |
 
 Both shaders use `#version 460`, `layout(local_size_x = 256) in;`, and the
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 112-byte DFSPH UBO transcribed verbatim from `density_alpha.comp.glsl:25-53`.
 They do not include the kernel-helper functions (no neighbour traversal —
 purely per-particle Jacobi update reading `da[]`, `aij_pj_scratch[]`,
@@ -39,6 +40,7 @@ Source-term difference:
   `solver_mode==1` output (scaled by dt).
 
 Both apply the upstream Jacobi update with relaxation `jacobiRelax`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 (uniform; default 0.5 per `TimeStepDFSPH.cpp:606`):
 `p_new = max(p_i - jacobiRelax * (s_i - aij_pj) * alpha_over_rho2, 0)`.
 

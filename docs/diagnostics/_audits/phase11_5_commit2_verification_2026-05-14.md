@@ -89,6 +89,7 @@ subsequently reads.
 
 ### (b) `computePressureAccel` write target
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `TimeStepDFSPH.cpp:1306-1307`:
 
 ```cpp
@@ -102,6 +103,7 @@ Followed by `ai += pSum * grad_p_j;` (line 1326) and three boundary-mode
 
 ### (c) `compute_aij_pj` read source
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `TimeStepDFSPH.cpp:1383-1391`:
 
 ```cpp

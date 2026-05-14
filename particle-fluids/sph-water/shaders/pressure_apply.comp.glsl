@@ -4,6 +4,7 @@
 // pressure buffer bound per call.
 //
 // References:
+// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
 //   Velocity correction: SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:514-515 (divergence)
 //                                                              :359-360 (density)
 //   The "h" multiplier in upstream code is dt (time step), NOT support radius.

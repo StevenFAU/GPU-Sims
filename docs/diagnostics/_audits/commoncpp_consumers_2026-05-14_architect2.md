@@ -201,6 +201,7 @@ Per phase 6d, **zero consumers** include `gpusims/vk/debug.hpp`. Per the invento
 | `destroyDebugMessenger(VkInstance, ...)` | 32 |
 | `setObjectName(VkDevice, VkObjectType, uint64_t, const char*)` | 36 |
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 These functions are presumably used **internally by `context.cpp`** (validation layer setup is part of Context construction; the inventory § C.4 confirms `GPU_SIMS_VALIDATION_LAYERS` is a public define). The header is exported PUBLIC via `target_include_directories(... PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)` at `CMakeLists.txt:213-215`, but no sim has reached for it.
 
 **Three interpretations**, each plausible:
@@ -226,7 +227,9 @@ Both exporters are optional features (gated behind `GPU_SIMS_HAVE_ALEMBIC` / `GP
 
 **Specific risk surfaces:**
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `vdb_writer.hpp:33` — `writeVec3Grid`: does eulerian-smoke call it? (It's a velocity-export helper. eulerian-smoke is a smoke sim — they export density, not velocity, in typical render pipelines.) If eulerian-smoke only calls `writeFloatGrid` and `writeFloatFrame`, then `writeVec3Grid` is in the unexercised-real-impl bucket.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `vdb_writer.hpp:41` — `writeFloatFrame` (sequence helper): probable consumer call site if frame-by-frame export is wired in eulerian-smoke. The base function `writeFloatGrid` is the one most likely to be exercised.
 
 These are questions for the unexercised-real-impl sweep probe (deferred to next round; see § P.4). Layer 2 flags the shape; the next probe enumerates the specific unexercised paths.

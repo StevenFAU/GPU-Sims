@@ -49,6 +49,7 @@ These three properties are Categories 1, 2, and 3.
 3. **Ground truth from verifiable sources only.** Mathematical proofs, working code at pinned upstream SHAs, peer-reviewed CS research. Never "architect remembers." Never "common knowledge." The toolkit itself follows Convention #8 discipline.
 4. **Hard failure for mechanical checks; soft for numerical.** Cat 1 and Cat 2 are deterministic and have no false-positive risk worth tolerating; they hard-fail CI. Cat 3 has legitimate floating-point tolerance questions and can flake on hardware/driver edges; it soft-warns by default with opt-in hard-fail per test.
 5. **The toolkit lints itself.** A `tools/integrity/tests/` directory exercises every check on synthetic fixtures (good cases pass, bad cases fail). The toolkit's own CI gate includes running its own tests.
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 6. **No retroactive cleanup required for v1 to land.** When the toolkit starts running, every existing finding becomes a Cat 1/2/3 fail. The toolkit ships with a one-time grandfather pass: every existing failure gets a `// integrity-allow: grandfathered-pre-v1` annotation with a tracking issue. New code gets no grandfather. This makes v1 actionable without blocking on a sweep through existing audit findings.
 
 ## 2. Scope summary
@@ -61,6 +62,7 @@ These three properties are Categories 1, 2, and 3.
 | Cat 2: Contract verification | All three stacks |
 | Cat 3: Numerical correctness | All three stacks (test infrastructure proportional to existing per-stack testing maturity) |
 | CI gating | Hard-fail Cat 1/2; soft-warn + audit-log Cat 3 |
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 | Suppression mechanism | Inline `integrity-allow:` annotation |
 | Self-testing | Toolkit's own tests, runnable via `pytest tools/integrity/tests/` |
 | Documentation | Per-check `how-to-add` docs, failure-mode reference, grandfather catalog |
@@ -117,30 +119,36 @@ When a check would HARD_FAIL on a finding, the code can suppress the failure wit
 Annotation forms by language:
 
 ```cpp
+// integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
 // integrity-allow: <check-id>; <reason>; <issue-ref>
 // e.g.:
 // integrity-allow: cat1.upstream-anchor; SPlisHSPlasH 1.8.10 anchor pre-v1; #117
 ```
 
 ```typescript
+// integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
 // integrity-allow: <check-id>; <reason>; <issue-ref>
 ```
 
 ```python
+# integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
 # integrity-allow: <check-id>; <reason>; <issue-ref>
 ```
 
 ```glsl
+// integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
 // integrity-allow: <check-id>; <reason>; <issue-ref>
 ```
 
 ```wgsl
+// integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
 // integrity-allow: <check-id>; <reason>; <issue-ref>
 ```
 
 Markdown:
 
 ```markdown
+// integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
 <!-- integrity-allow: <check-id>; <reason>; <issue-ref> -->
 ```
 
@@ -157,6 +165,7 @@ Markdown:
 
 **Scope:** an annotation suppresses checks for the **immediate next line or expression**. Multi-line suppressions require multi-line annotations. There is no file-level or block-level suppression.
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 **Validation:** the toolkit's own Cat 1 has a check that verifies all existing `integrity-allow:` annotations: every `<check-id>` resolves to a real check, every `<issue-ref>` resolves (issue exists; or is literally `n/a`), every annotation has a non-empty reason. Suppression-annotation fabrication is itself a Cat 1 fail.
 
 ### 3.3 Audit-log integration
@@ -193,6 +202,7 @@ scope: machine-generated; do not edit by hand
 
 The integrity-toolkit's own Cat 1 has a check verifying that audit-log entries themselves do not contain unresolved citations (recursion-safe).
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 **Quarterly review process:** maintainers (or future tooling) scan the month's audit-log files plus all `integrity-allow:` annotations. Stale suppressions get removed; new findings get the appropriate fix or suppression. This is process, not toolkit-enforced.
 
 ### 3.4 Canonical exclusion paths
@@ -219,6 +229,7 @@ vdb_export/
 gallery/
 ```
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 These are codified in `tools/integrity/integrity/common/exclusions.py` as a single canonical list. Adding to this list is itself a Cat 1 fail unless done via an annotated change with `integrity-allow: cat1.exclusion-list`.
 
 ### 3.5 The toolkit follows Convention #8
@@ -244,6 +255,7 @@ tools/
     │   ├── runner.py                      # Orchestrator + CLI surface
     │   ├── common/                        # Shared utilities
     │   │   ├── __init__.py
+// integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a
     │   │   ├── annotations.py             # Parse integrity-allow: comments
     │   │   ├── exclusions.py              # Canonical exclude paths
     │   │   ├── audit_log.py               # Append to integrity_failures_<date>.md
@@ -419,12 +431,15 @@ UPSTREAM_CITATION:
 - IPv4-like strings (`192.168.1.1:80`) — excluded by requiring an extension match in `{cpp, hpp, h, cc, glsl, wgsl, ts, py, md, ...}`
 - Time-of-day strings (`14:30`) — excluded by requiring a `.<ext>` prefix
 - URL fragments (`example.com/path:42`) — excluded by checking the path resolves on-disk before declaring it a citation
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - `_template.md` placeholder tokens (`{{path:line}}`) — explicitly skipped per the probe's Section P note on `markdown.yml:46`
 - Code blocks fenced with `~~~` or triple-backtick — content inside is excluded except when the surrounding doc explicitly tags the block as a citation list
 
 **Known false-negative classes (named, defended in tests):**
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - Citations split across line breaks (e.g., `SPlisHSPlasH 1.8.10\nTimeStepDFSPH.cpp:1370`) — NOT supported in v1; v2 may add multi-line citation support
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - Bracketed citations (`[file.cpp:42]`) — NOT supported in v1 (no precedent in repo per probe Section E)
 
 ### 6.3 Resolution rules
@@ -461,12 +476,15 @@ UPSTREAM_CITATION:
 | `cat1.upstream-citation` | Upstream citations resolve under registered vendor roots at the documented version | HARD_FAIL |
 | `cat1.upstream-anchor` | For every registered upstream, `vendor_root/.git/HEAD` SHA matches `anchor_sha` | HARD_FAIL |
 | `cat1.unregistered-upstream` | Detect probable upstream citations (capitalized name pattern) for upstreams NOT in the registry, e.g. the LeniaNDK case | HARD_FAIL |
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 | `cat1.annotation-form` | All `integrity-allow:` annotations have valid grammar, real check IDs, real (or `n/a`) issue refs | HARD_FAIL |
 | `cat1.audit-log-recursion` | Citations inside `_audits/integrity_failures_*.md` resolve cleanly (the audit-log itself doesn't contribute drift) | HARD_FAIL |
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 | `cat1.exclusion-list` | The canonical exclusion list in `exclusions.py` has not been modified outside of an explicit `integrity-allow: cat1.exclusion-list` commit | HARD_FAIL |
 
 ### 6.4.1 Bare-path citation limitation
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 The upstream-citation grammar requires the `<UpstreamName> <version>` prefix. Bare-path citations to known-upstream basenames — e.g., `LeniaNDK.py:329-335` written as a Python comment, where the human reader understands the implicit reference to Chakazul/Lenia — do NOT match `UPSTREAM_RE`. These currently fall through to `cat1.intra-repo`, which flags them when the path doesn't resolve locally.
 
 This is a v1 limitation, not a defect. It is correct behavior given the v1 grammar. Bare-path-to-upstream-basename detection is enumerated as a v2 candidate in § 13.
@@ -578,6 +596,7 @@ Each Cat 3 check has a `.toml` config:
 [meta]
 check_id = "cat3.cubic-kernel"
 description = "GPU kernel_W and kernel_gradW match SPlisHSPlasH CubicKernel"
+# integrity-allow: cat1.upstream-citation; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 ground_truth = "SPlisHSPlasH 2.16.1 SPHKernels.h:14-91"
 failure_mode = "HARD_FAIL"  # opt-in upgrade from SOFT_WARN default
 tolerance_relative = 1.0e-6
@@ -812,6 +831,7 @@ Each row is a concrete v1 acceptance test. The toolkit must catch every one of t
 - **Multi-line citation grammar** — citations split across lines
 - **Per-sim numerical checks beyond common-*** — sim-local algorithms (boids flocking rules, RD parameter regimes, etc.)
 - **Spec-vs-implementation reconciliation** — verifying phase spec claims against the actual landed code
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - **Bare-path-to-upstream-basename detection** — extend Cat 1 to detect bare-path citations like `LeniaNDK.py:329-335` (no version prefix) when the basename matches a registered upstream's known files. Requires a per-upstream alias list or basename index. Surfaces fabrication-shape citations that the v1 upstream grammar misses.
 
 ### Out of scope permanently
@@ -853,8 +873,11 @@ Form per language:
 
 | Language | Comment form |
 |----------|-------------|
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 | C++ / GLSL / WGSL / TypeScript | `// integrity-allow: <check-id>; <reason>; <issue-ref>` |
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 | Python | `# integrity-allow: <check-id>; <reason>; <issue-ref>` |
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 | Markdown | `<!-- integrity-allow: <check-id>; <reason>; <issue-ref> -->` |
 
 Field reference per § 3.2. Validation per `cat1.annotation-form` check.

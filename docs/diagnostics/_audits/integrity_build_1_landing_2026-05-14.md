@@ -173,6 +173,7 @@ Commit 2 will implement **Category 1, intra-repo citations**:
 - `cat1.dangling-citation` — every cited path must resolve and every
   cited line range must lie within the cited file's line count at the
   current commit.
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 - `cat1.annotation-form` — every `integrity-allow:` annotation must
   parse against the grammar in `integrity/common/annotations.py`; the
   check_id, reason length (≥ 8 chars), and issue_ref form are all

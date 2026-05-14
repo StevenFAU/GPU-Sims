@@ -46,6 +46,7 @@ identical until commit 2b rewires the loop.
 | `apply_velocity.comp.glsl`            |  51   | 0:particles(RW) 1:pressure_accel 2:UBO                                              |
 
 Each shader inlines the canonical 112-byte DFSPH UBO verbatim (same as
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `density_alpha.comp.glsl:25-53`) and the four kernel helpers
 (`expand_bits_10`, `morton_encode_3d`, `kernel_W`, `kernel_gradW`). The
 kernel/helper duplication across DFSPH shaders is a known maintenance issue
@@ -327,6 +328,7 @@ masks an upstream-spec divergence later, this is the spot to revisit.
 `writeComputeDensityAdvDescriptor` because their binding shapes are
 byte-identical today. The wrapper exists so future divergence stays in one
 place. This mirrors the `writeThicknessDescriptor → writeParticleSpriteDescriptor`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 pattern already in `main.cpp:666-674`.
 
 ### F.6 `pressure_accel` `.w` slot is currently always 0

@@ -1,3 +1,4 @@
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 """`integrity-allow:` annotation parser per spec § 3.2.
 
 Commit 1 ships the data model and a stub parser. Commit 2 (cat1) wires
@@ -27,6 +28,7 @@ class Annotation:
 # Comment-prefix stripping (//, #, <!-- -->) is done by the caller before
 # applying this regex.
 ANNOTATION_RE = re.compile(
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     r"integrity-allow:\s*(?P<check_id>cat\d+\.[a-z*][a-z0-9.\-*]*)\s*;\s*"
     r"(?P<reason>[^;]{8,}?)\s*;\s*"
     r"(?P<issue_ref>#\d+|n/a)\s*(?:-->)?\s*$"

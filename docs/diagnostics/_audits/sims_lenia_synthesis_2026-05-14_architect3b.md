@@ -47,6 +47,7 @@ cross_workstream:
 
 | Triage flag | Source | Status |
 |---|---|---|
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | Polyring formula anchor at `Chakazul/Lenia/Python/LeniaNDK.py:329-335` (analog of SPlisHSPlasH 1.8.10) | `sims_prioritization_2026-05-14_triage.md` § C.2 | **REFUTED** — citation verified clean at master HEAD; see Chakazul probe Section D |
 | GGUI Y-convention asymmetry (`cursor_to_field_cell` vs `cursor_in_any_panel`) | triage § B "Banked items" | **CONFIRMED** as load-bearing coincidence; see § B.3 below |
 
@@ -110,7 +111,9 @@ is still numpy-in/numpy-out for API consistency.
 # revisit if the FFT backends ship and real-space becomes legacy.
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The `main.py:226` docstring says the real-space backend "skips the
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 numpy round-trip internally." The `fft_backend.py:18` comment correctly
 states that real-space "additionally does its own from_numpy + to_numpy
 inside step()." These describe the same code differently and the second
@@ -173,6 +176,7 @@ between spec and ship. The lighter touch is the latter. See commit 2.
 
 **Evidence:** Probe-1 Section G analyzes `cursor_to_field_cell` and
 `cursor_in_any_panel` (both in `main.py`) called from the same brush
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 call site at `main.py:498`. Both consume `cur = window.get_cursor_pos()`.
 The first treats cy=0 as TOP; the second treats cy=0 as BOTTOM (and
 flips via `cy_top = 1.0 - cy_bottom`).
@@ -217,6 +221,7 @@ common-py flag.
 **Evidence:** Phase 10 v2 spec frames the polyring banking as "Phase 10
 ships single-peak only (b="1" via the quad4 path)" — implying b is a
 value in the data model that happens to be constrained to "1". The
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 actual `LeniaPreset` dataclass at `presets.py:57` has no `b` field, no
 `kn` field. The four shipped presets are hard-coded to single-shell
 quad4 via direct kernel-radius-only parameterization.
@@ -276,6 +281,7 @@ the commit prompt should.
 
 **Source:** Chakazul probe Section G.2.
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **Evidence:** The Phase 10 spec banks `LeniaNDK.py:329-335` with no SHA
 or tag pin. Verification at architect-2 round-3 worked because the
 master-HEAD-at-that-time happened to have the function at those lines;
@@ -308,6 +314,7 @@ and did not find:
 - **Test coverage matches spec intent** despite test name drift. All
   three load-bearing CI tests exist and exercise their named contracts.
 - **Quad4 kernel is implemented bit-for-bit per upstream**: code form
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   at `kernels.py:73` (and `:88` for 3D) is `(4.0 * r * (1.0 - r)) ** 4`
   with the `if r < 1.0` unit-disc support, matching upstream
   `kernel_core[0]`. The v1→v2 spec correction (bump4 → quad4) is
@@ -339,10 +346,12 @@ the shared state.state_2d field via from_numpy, runs the Taichi
 kernel, reads back via to_numpy). The pattern is acceptable for
 backend-agnostic dispatch but is the obvious perf-tuning opportunity
 when the real-space path is the bottleneck — see
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 fft_backend.py:18-23 for the cross-reference.
 ```
 
 **Rationale:** Aligns the `main.py` docstring with the
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 `fft_backend.py:18-23` comment that already correctly describes the
 behavior. No behavior change.
 
@@ -399,6 +408,7 @@ names:
 citation:
 
 ```
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Upstream reference: Chakazul/Lenia/Python/LeniaNDK.py:329-335
                    at master HEAD adfc542939266de7f4bb7ebb552e8499701ee107
                    (verified by Layer 3 Batch B audit, 2026-05-14;
@@ -409,6 +419,7 @@ Upstream reference: Chakazul/Lenia/Python/LeniaNDK.py:329-335
 polyring banking note:
 
 ```
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The current LeniaPreset dataclass (presets.py:57) carries no b or kn
 field; v1 ships single-peak via a hard-wired single-shell quad4 kernel,
 not via a constrained b="1" parameter. The v1.1 polyring extension

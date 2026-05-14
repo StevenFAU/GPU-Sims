@@ -67,6 +67,7 @@ Stack C particle-fluids flagship. DFSPH-formulated Smoothed Particle Hydrodynami
 - **Save-creature UX** (v1.1). Painting + saving a stable creature back to a preset is research-grade UX; Phase 10 ships only the existing-preset roster.
 - **Volumetric raymarch interactive viewer** for the 3D tier (v1.1). v1 ships the iso-cross-section-slice viewer (cheap, predictable); a real-time raymarcher is meaningful future work.
 - **Named 3D creature presets** from Chan's research (v1.1 after visual verification on user hardware identifies which Chan-published 3D animals work at the spec's grid resolution + dt).
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - **Polyring (multi-peak) kernel extension** (v1.1+). Formula documented at `Chakazul/Lenia/Python/LeniaNDK.py:329-335` (architect-2 round-2 verification); enables the broader `animals.json` library (Hydrogeminium, Gyrogeminium, Scutium serratus family, etc. — roughly 50+ additional creatures). Phase 10 ships single-peak only.
 - **Stack B WebGPU port** (later phase). Lenia is a natural Stack B sim; cross-stack capture replay via the shared meta schema is in scope.
 - **Houdini hero render path** (license-dependent). Capture formats are already Houdini-compatible (VDB native, PNG sequence trivial); integration is straightforward when license lands.
@@ -128,6 +129,7 @@ Stack C particle-fluids flagship. DFSPH-formulated Smoothed Particle Hydrodynami
 
 ### Fixed
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - **`common/common-cpp/src/vk/context.cpp:207` name-collision** (latent since Phase 1, surfaced by Phase 8.5's CI fix-forward). Renamed the private member `Context::createDebugMessenger()` to `Context::initDebugMessenger()` so the line-207 unqualified call resolves to the namespace-scope free function `gpusims::vk::createDebugMessenger(...)` instead of shadowing on the class member. Three sites touched: `context.hpp:78` (declaration), `context.cpp:116` (ctor call), `context.cpp:202` (definition). Build (native) Debug-job now compiles cleanly for the first time since Phase 1.
 - **`.github/workflows/markdown.yml` lychee args** (latent since Phase 3.5). The repo's `lychee.toml` had `exclude_path = ["docs/sim-specs/_template.md"]` but `lychee-action`'s explicit-`args:` mode bypassed the config-file read. Added `--exclude-path docs/sim-specs/_template.md` to the workflow args. Markdown `Check internal links` job now passes.
 

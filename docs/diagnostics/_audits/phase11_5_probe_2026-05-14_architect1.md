@@ -15,35 +15,59 @@ The substep loop is at `particle-fluids/sph-water/src/main.cpp:1908`.
 
 Frame-scope work that runs **once per frame, outside the substep loop**:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `pack_sort_uniform`, `pack_dfsph_uniform(substep_dt)`, `pack_render_view_uniform`, `pack_composite_uniform`, `pack_apply_emitter_uniform(substep_dt)` (`main.cpp:1888-1894`). These are host-mapped UBO writes (no GPU dispatch).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - After the substep loop closes: depth pass (graphics, `vkCmdDraw`), N bilateral_smooth compute dispatches (`main.cpp:2144-2167`), thickness graphics pass, composite graphics pass to swapchain. Discussed in Sections M/N/O.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **In-substep-loop dispatch order** (from `main.cpp:1908` through `main.cpp:2038`), with site, pipeline name, push constants, and barrier following each dispatch:
 
 | # | Site | Pipeline | Push constants | Barrier following |
 |---|------|----------|----------------|-------------------|
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 1 (cond) | `main.cpp:1913` | `pipe_apply_emitter` | none | `cs_barrier()` (`:1914`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | pre-2 | `main.cpp:1918-1919` | `vkCmdFillBuffer` zeroing `tier.cell_counts` + `tier.cell_counts_atomic` | — | TRANSFER->COMPUTE barrier (`:1920-1922`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 2 | `main.cpp:1926` | `pipe_morton_code` | none | `cs_barrier()` (`:1928`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 3 | `main.cpp:1931` | `pipe_cell_count` | none | `cs_barrier()` (`:1933`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 4 | `main.cpp:1936` | `pipe_prefix_sum_local` | none | `cs_barrier()` (`:1938`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 5 | `main.cpp:1943` | `pipe_prefix_sum_block` (mode=0 SCAN_ONLY) | `uint32_t mode = 0u` | `cs_barrier()` (`:1946`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 6 | `main.cpp:1949` | `pipe_prefix_sum_block_l2` | none | `cs_barrier()` (`:1951`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 7 | `main.cpp:1956` | `pipe_prefix_sum_block` (mode=1 ADDBACK_L2) | `uint32_t mode = 1u` | `cs_barrier()` (`:1959`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 8 | `main.cpp:1962` | `pipe_prefix_sum_addback` | none | `cs_barrier()` (`:1964`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 9 | `main.cpp:1967` | `pipe_scatter` | none | `cs_barrier()` (`:1969`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 10 | `main.cpp:1974` | `pipe_density_alpha` | none | `cs_barrier()` (`:1976`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | pre-11 (cond) | `main.cpp:1981-1982` | `vkCmdFillBuffer` zero `pressure_a` and `pressure_b` | — | TRANSFER->COMPUTE barrier (`:1983-1985`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 11.k (cond loop) | `main.cpp:1989` | `pipe_divergence_solve` × `max(rt.minIterDivergence, 1)` | none | `cs_barrier()` between each iter (`:1990`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 12 (cond) | `main.cpp:1994` | `pipe_pressure_apply` (after divergence) | none | `cs_barrier()` (`:1996`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 13 | `main.cpp:2003` | `pipe_integrate_forces` (mode=0 FORCES) | `uint32_t mode = 0u` | `cs_barrier()` (`:2006`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | pre-14 | `main.cpp:2009-2010` | `vkCmdFillBuffer` zero `pressure_a` and `pressure_b` | — | TRANSFER->COMPUTE barrier (`:2011-2013`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 14.k (loop) | `main.cpp:2018` | `pipe_density_solve` × `max(rt.minIterDensity, 1)` | none | `cs_barrier()` between each iter (`:2019`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 15 | `main.cpp:2024` | `pipe_pressure_apply` (after density) | none | `cs_barrier()` (`:2026`) |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 16 | `main.cpp:2033` | `pipe_integrate_forces` (mode=1 POSITION) | `uint32_t mode = 1u` | `cs_barrier()` (`:2036`) |
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `cs_barrier()` is defined at `main.cpp:1902-1906`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```glsl:main.cpp:1902-1906
         auto cs_barrier = [&]() {
             gv::memoryBarrier(cmd,
@@ -52,20 +76,25 @@ Frame-scope work that runs **once per frame, outside the substep loop**:
         };
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 This is a **single global VkMemoryBarrier2** (not per-buffer); see `common-cpp/include/gpusims/vk/frame.hpp:54-58`.
 
 **Substep / neighbor-search nesting:**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:1908
         for (int sub = 0; !rt.paused && sub < rt.substeps && rt.particleCount > 0; ++sub) {
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The loop runs from `main.cpp:1908` to the closing `}` at `main.cpp:2039`. **The entire spatial-hash pipeline (`vkCmdFillBuffer` → morton_code → cell_count → prefix-sum chain → scatter) is nested inside this loop.** So neighbor search and Morton sort are dispatched **per substep**, not per frame. Per-frame UBO packing at `main.cpp:1888-1894` runs once with `substep_dt = clamp(frame_dt / max(substeps, 1), DT_MIN, DT_MAX)` — `pack_dfsph_uniform` is called once and `dt` does not change between substeps.
 
 ## Section B: `density_solve` iteration loop
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Quoted verbatim from `main.cpp:2008-2026`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:2008-2026
             // Density-constancy Jacobi inner loop.
             vkCmdFillBuffer(cmd, tier.pressure_a.handle(), 0, VK_WHOLE_SIZE, 0u);
@@ -88,17 +117,24 @@ Quoted verbatim from `main.cpp:2008-2026`:
             cs_barrier();
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Iteration cap variable:** `iters = std::max(rt.minIterDensity, 1)` (`main.cpp:2015`). Declared as `int rt.minIterDensity = DFSPH_MIN_ITER_DENSITY` at `main.cpp:242`, with constant `DFSPH_MIN_ITER_DENSITY = 2` declared at `main.cpp:115`.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **There is NO `maxIterDensity` actually used.** `Runtime::maxIterDensity = DFSPH_MAX_ITER_DENSITY` is declared at `main.cpp:240` but is never referenced by the solve loop. The constant `DFSPH_MAX_ITER_DENSITY = 100` is at `main.cpp:116`. The ImGui slider at `main.cpp:2252` exposes only `rt.minIterDensity` (range 1..16).
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Tolerance / convergence threshold variable:** `rt.maxErrorDensityPercent` is declared at `main.cpp:244` (`= DFSPH_MAX_ERROR_DENSITY = 0.01f`, see `main.cpp:117`). **It is never referenced in any dispatch path; no convergence check exists.**
 - **Break condition:** there is none — the loop runs exactly `max(rt.minIterDensity, 1)` iterations unconditionally. With the default `DFSPH_MIN_ITER_DENSITY = 2`, the loop runs 2 iterations every substep.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Density-error measurement:** **none.** No host readback of density-error, no GPU atomic accumulating error, no kernel-side error write. The shader (`density_solve.comp.glsl:111`) computes `s_i = min(1.0 - rho_adv / max(density0, 1e-7), 0.0)` per-particle, but this is consumed only inside that thread; nothing reduces it to a scalar.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Synchronization between iterations:** `cs_barrier()` at `main.cpp:2019` — a global VkMemoryBarrier2 with `srcStage=VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT`, `srcAccess=VK_ACCESS_2_SHADER_WRITE_BIT`, `dstStage=VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT`, `dstAccess=VK_ACCESS_2_SHADER_READ_BIT | VK_ACCESS_2_SHADER_WRITE_BIT`. Covers all buffers (global barrier).
 
 ## Section C: `divergence_solve` iteration loop
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Quoted verbatim from `main.cpp:1978-1997`:
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:1978-1997
             // Divergence-free Jacobi inner loop. Zero both pressure buffers
             // at the start; alternate ds_divergence_solve[i%2].
@@ -122,12 +158,17 @@ Quoted verbatim from `main.cpp:1978-1997`:
             }
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Iteration cap variable:** `iters = std::max(rt.minIterDivergence, 1)` (`main.cpp:1986`). Declared as `int rt.minIterDivergence = 1` at `main.cpp:243`. ImGui slider at `main.cpp:2253` exposes range 1..16.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **`Runtime::maxIterDivergence`** declared at `main.cpp:241` (= `DFSPH_MAX_ITER_DIV = 100`, `main.cpp:118`). **Never referenced anywhere.**
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Tolerance variable:** `rt.maxErrorDivPercent = DFSPH_MAX_ERROR_DIV = 0.1f` at `main.cpp:245` (constant at `main.cpp:119`). **Never referenced anywhere.**
 - **Break condition:** none — fixed iteration count `max(rt.minIterDivergence, 1)` = 1 by default.
 - **Divergence error measurement:** **none** (same posture as Section B).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Synchronization between iterations:** `cs_barrier()` at `main.cpp:1990`, same global barrier as Section B.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - The loop is gated by `if (rt.divSolverEnabled)` (`main.cpp:1980`), default `true` per `DFSPH_DIV_SOLVER_DEFAULT` at `main.cpp:120`.
 
 ## Section D: `kMaxPasses`
@@ -140,21 +181,32 @@ Grep results from the entire repo (Phase-11-relevant only; nothing in `particle-
 
 References (all in `common/common-cpp/`):
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `common-cpp/include/gpusims/gpu_profiler.hpp:47` — declaration, value `256`.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `common-cpp/include/gpusims/gpu_profiler.hpp:106-108` — sizes `std::array<...> pass_names / cpu_begin / cpu_end`.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `common-cpp/src/gpu_profiler.cpp:14` — `kQueriesPerFrame = 2 * GpuProfiler::kMaxPasses` (= 512 timestamp queries per frame).
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `common-cpp/src/gpu_profiler.cpp:57` — overflow guard `if (f.pass_count >= kMaxPasses)` with `logWarn(...)` and ignored pass.
 
 **What it gates:** the per-frame GPU profiler's named-scope pass count (timestamps). It does **not** gate any DFSPH solver loop. It is unrelated to `rt.minIterDensity` / `rt.minIterDivergence`.
 
 **Other iteration caps in scope:**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `DFSPH_MIN_ITER_DENSITY = 2` (`main.cpp:115`)
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `DFSPH_MAX_ITER_DENSITY = 100` (`main.cpp:116`, dead)
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `DFSPH_MAX_ITER_DIV = 100` (`main.cpp:118`, dead)
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `DFSPH_MAX_ERROR_DENSITY = 0.01f` (`main.cpp:117`, dead)
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `DFSPH_MAX_ERROR_DIV = 0.1f` (`main.cpp:119`, dead)
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - Runtime fields `rt.maxIterDensity`, `rt.maxIterDivergence`, `rt.maxErrorDensityPercent`, `rt.maxErrorDivPercent` (`main.cpp:240-245`, all dead)
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - `rt.bilateralIterations` default `BILATERAL_ITERATIONS_DEFAULT = 4` (`main.cpp:137`), used at `main.cpp:2148`.
 - Hardcoded `0..1023` glPointSize clamp in vert shader.
 
@@ -751,6 +803,7 @@ Writes: `p[gid*8 + 1].xyz` (velocity).
 
 The kernel is **inlined per-shader, not in a shared include**. Three shaders contain `kernel_W`: `density_alpha.comp.glsl`, `integrate_forces.comp.glsl`. Four shaders contain `kernel_gradW`: `density_alpha`, `density_solve`, `divergence_solve`, `pressure_apply`.
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Verbatim copy from `density_alpha.comp.glsl:68-78`:
 
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:68-78
@@ -768,8 +821,10 @@ vec3 kernel_gradW(vec3 r_ij, float r_mag, float q, float grad_kernel_norm) {
 ```
 
 - This is the **SPlisHSPlasH "CubicKernel" form** — the M4 cubic spline B-spline expressed in `q = r/h`.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Normalization constants come from host code** at `main.cpp:1343-1350`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:1343-1350
     auto kernel_norm_3d_value = [&]() {
         float h = rt.supportRadius;
@@ -783,6 +838,7 @@ vec3 kernel_gradW(vec3 r_ij, float r_mag, float q, float grad_kernel_norm) {
 
 - **`8/(π h³)`** is the **3D normalization** of the SPlisHSPlasH M4 cubic-spline kernel (whose support is `r ≤ h`, parameterized by `q = r/h`). The 2D constant would be `40/(7π h²)`. So **3D, correct for 3D usage**.
 - **Support-radius convention:** `h` IS the **support radius itself** (not `2h`). The kernel zeros at `q ≥ 1.0`, i.e., `r ≥ h`. This matches the SPlisHSPlasH/Bender-Koschier convention; both the shader's `if (q >= 1.0) continue;` neighbor reject and `kernel_W`'s `return 0.0` for `q ≥ 1.0` confirm it.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`h = 4 × particleRadius`** per `main.cpp:130, 252` and `load-bearing-decisions.md`.
 - **Self-contribution W(0, h)** = `kernel_norm * (6·0 − 6·0 + 1.0)` = `kernel_norm` = `8/(π h³)`. At `h = 0.04`, `W(0) ≈ 8/(π·6.4e-5) ≈ 39788`.
 
@@ -797,6 +853,7 @@ vec3 kernel_gradW(vec3 r_ij, float r_mag, float q, float grad_kernel_norm) {
 }
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 (verified in `density_alpha.comp.glsl:73-78`, `density_solve.comp.glsl:64-69`, `divergence_solve.comp.glsl:62-67`, `pressure_apply.comp.glsl:59-64`).
 
 The duplication is a maintenance risk but currently not a behavioural risk.
@@ -805,12 +862,14 @@ The duplication is a maintenance risk but currently not a behavioural risk.
 
 ### G.1 Cell size
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:129-131
 constexpr float PARTICLE_RADIUS_DEFAULT     = 0.01f;
 constexpr float SUPPORT_RADIUS_RATIO         = 4.0f;
 constexpr float CELL_SIZE_RATIO_TO_SUPPORT   = 2.0f;
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:251-253
     float     particleRadius     = PARTICLE_RADIUS_DEFAULT;
     float     supportRadius      = PARTICLE_RADIUS_DEFAULT * SUPPORT_RADIUS_RATIO;
@@ -821,6 +880,7 @@ constexpr float CELL_SIZE_RATIO_TO_SUPPORT   = 2.0f;
 
 Per-axis cell count is rounded to next power of two and capped at `MAX_CELLS_PER_AXIS = 1 << MORTON_BITS_PER_AXIS = 1024`:
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:1325-1336
     auto compute_cells_per_axis = [&](glm::uvec3& outAxes, std::uint32_t& outMax) {
         glm::vec3 ext = rt.domainMax - rt.domainMin;
@@ -838,6 +898,7 @@ Per-axis cell count is rounded to next power of two and capped at `MAX_CELLS_PER
 
 ### G.2 Hash function
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Morton/Z-order (3D bit interleave, 10 bits per axis, 30 bits total). Verbatim from `morton_code.comp.glsl:24-36`:
 
 ```glsl:particle-fluids/sph-water/shaders/morton_code.comp.glsl:24-36
@@ -856,6 +917,7 @@ uint morton_encode_3d(uvec3 c) {
 }
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The full `morton_code.comp.glsl:38-51`:
 
 ```glsl:particle-fluids/sph-water/shaders/morton_code.comp.glsl:38-51
@@ -879,10 +941,12 @@ void main() {
 
 **Counting sort** (not bitonic, not radix-byte, not VkRadixSort). Pipeline: `cell_count` (`scatter.comp.glsl`-pattern atomic count) → two-level Blelloch exclusive prefix scan → `scatter` claims output slot via atomicAdd on a separate counter.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Dispatch sites at `main.cpp:1924-1968` (Section A table rows 3-9). Counting-sort kernel quoted at Section E (cell_count, scatter, prefix_sum_*).
 
 ### G.4 Cell start / end array
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `cell_starts[m]` = exclusive prefix sum of `cell_counts[]`. Constructed by `prefix_sum_local` → `prefix_sum_block` (mode 0) → `prefix_sum_block_l2` (only if `num_blocks > WG_SIZE`) → `prefix_sum_block` (mode 1, addback L2) → `prefix_sum_addback`. Final `cell_starts` write at `prefix_sum_addback.comp.glsl:23-28`:
 
 ```glsl:particle-fluids/sph-water/shaders/prefix_sum_addback.comp.glsl:23-28
@@ -896,6 +960,7 @@ void main() {
 
 ### G.5 Neighbor traversal pattern
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **Every solver kernel visits 27 cells** (3×3×3). Identical loop body in all five DFSPH shaders; quoted from `density_alpha.comp.glsl:93-99`:
 
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:93-99
@@ -908,12 +973,15 @@ void main() {
             continue;
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Inner neighbor walk uses `cell_starts[nmorton]` and `cell_starts[nmorton + 1u]` (`density_alpha.comp.glsl:101-102`). Note that `nmorton + 1u` lookup requires `cell_starts` be sized `totalCells + 1`, which is what `_struct_layouts.txt` claims at line 88 — but `main.cpp:881-882` allocates `r.cell_starts = max_cells * 4`, i.e., **NOT** sized for the +1 sentinel. This is a finding (Section P).
 
 ### G.6 Self-exclusion
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 All solver shaders except `density_alpha` explicitly skip self with `if (j == gid) continue;` near the top of the inner neighbor loop (e.g., `density_solve.comp.glsl:99`, `divergence_solve.comp.glsl:97`, `integrate_forces.comp.glsl:108`, `pressure_apply.comp.glsl:93`).
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `density_alpha.comp.glsl:104` does NOT skip self for the density sum (this is correct — `density_i` must include `W(0)`), but it does skip self for the alpha-gradient terms inside the conditional at `density_alpha.comp.glsl:113`:
 
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:113
@@ -924,6 +992,7 @@ All solver shaders except `density_alpha` explicitly skip self with `if (j == gi
 
 Host-side constants (`main.cpp`):
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:127-131
 constexpr float DENSITY_0     = 1000.0f;
 constexpr float GRAVITY_Y     = -9.81f;
@@ -934,14 +1003,17 @@ constexpr float CELL_SIZE_RATIO_TO_SUPPORT   = 2.0f;
 
 Host-side derived:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:251-253
     float     particleRadius     = PARTICLE_RADIUS_DEFAULT;
     float     supportRadius      = PARTICLE_RADIUS_DEFAULT * SUPPORT_RADIUS_RATIO;
     float     cellSize           = PARTICLE_RADIUS_DEFAULT * SUPPORT_RADIUS_RATIO * CELL_SIZE_RATIO_TO_SUPPORT;
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Host mass formula (`main.cpp:1339-1342`):
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:1339-1342
     auto particle_mass = [&]() {
         float spacing = 2.0f * rt.particleRadius;
@@ -962,8 +1034,10 @@ Sources:
 | `particleRadius` | hardcoded `PARTICLE_RADIUS_DEFAULT` (no slider) | 0.01 |
 | `supportRadius` | derived `radius · 4` | 0.04 |
 | `cellSize` | derived `radius · 4 · 2` | 0.08 |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `gravity` | hardcoded literal `-9.81f` at `pack_dfsph_uniform` `main.cpp:1419-1422`; `GRAVITY_Y` constant is **unused** | -9.81 |
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **Host vs device consistency:** all device-side values flow through `pack_dfsph_uniform` (`main.cpp:1380-1431`), which writes them into `tier.uniform_dfsph`. The shaders read them as UBO fields (`supportRadius`, `particleMass`, `density0`). **No GLSL-side hardcoded copies exist** for these quantities — every solver shader treats them as UBO inputs. So host/device cannot disagree.
 
 **However** the SPlisHSPlasH convention for the DFSPH rest-density particle (the "consistent" mass when initial spacing is `2r`) actually uses the **rest-density volume estimate** with the cubic-spline self-density sum, not a naive `ρ₀ · (2r)³`. This is a **minor finding** — discussed in Section P.
@@ -981,8 +1055,10 @@ Sources:
 
 `dmin = domainMin_cellSize.xyz`, `dmax = domainMax_pad.xyz`. The clamp also zero-clips the normal velocity component (no restitution).
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **Dam-break preset:** `SPH_PRESETS[0]` at `main.cpp:181-188`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:181-188
     {
         "Dam-Break",
@@ -995,18 +1071,22 @@ Sources:
 ```
 
 - **Brick volume:** `(0.5, -1.0, -1.0) → (2.0, 0.5, 1.0)` → extent `(1.5, 1.5, 2.0)`. With `spacing = 2r = 0.02`:
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   - `dx = 75, dy = 75, dz = 100` → 562,500 particles. **Exceeds 256k-tier capacity** (262,144) and is clamped to `rt.particleCapacity` at `main.cpp:1599`.
   - At the 1M tier (default), 562,500 particles fit fine.
 - **Container bounds:** `(-2, -1, -1) → (+2, +2, +1)` (domain).
 - **Initial velocity:** zero (no droplet).
 - **No droplet (`add_droplet = false`).**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The initial-fill kernel (`initial_fill.comp.glsl`, see Section E shaders list) places particles in an evenly spaced 3D grid filling the brick AABB. `initial_fill.comp.glsl:41` uses cell centers offset by `+vec3(0.5)*spacing`.
 
 ## Section J: Time stepping and CFL
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Per-frame substep dt derivation (`main.cpp:1888-1889`):
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:1888-1889
         const float substep_dt = std::clamp(frame_dt / float(std::max(rt.substeps, 1)), DT_MIN, DT_MAX);
         rt.dt = substep_dt;
@@ -1014,22 +1094,28 @@ Per-frame substep dt derivation (`main.cpp:1888-1889`):
 
 Constants:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:124-126
 constexpr float CFL_FACTOR    = 0.5f;
 constexpr float DT_MIN        = 1.0e-4f;
 constexpr float DT_MAX        = 5.0e-3f;
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **dt is wall-clock-derived, not CFL-derived.** `frame_dt` is the host-side `std::chrono` delta between frames (clamped to `[1/240, 1/15]` at `main.cpp:1809`).
 - **No max-velocity scan or sound-speed estimate.** `CFL_FACTOR = 0.5f` is **declared but never referenced** anywhere in the source tree.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Substep model:** `dt_substep = clamp(frame_dt / n_substeps, 1e-4, 5e-3)`. The same `dt_substep` is used by every substep in the same frame; `pack_dfsph_uniform(substep_dt)` is called once outside the loop (`main.cpp:1891`) and `dt` does not change between substeps within a frame.
 - **Clamps:** `DT_MIN = 1e-4`, `DT_MAX = 5e-3`. Note that `frame_dt` is also pre-clamped to `[1/240, 1/15] ≈ [4.17e-3, 6.67e-2]`. So at `substeps=1`, `dt = clamp(frame_dt, 1e-4, 5e-3)` ≈ `5e-3` (DT_MAX) most of the time.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Substep count source:** UI slider `rt.substeps` (range 1..8), `main.cpp:2248`. Default `SUBSTEPS_DEFAULT = 1` (`main.cpp:143`).
 
 ## Section K: Post-fix verification — canonical DFSPH UBO (Layout)
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Host-side `Layout` struct, verbatim from `main.cpp:1383-1404`:
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:1383-1404
         struct alignas(16) Layout {
             std::uint32_t particleCount;          //  0
@@ -1055,6 +1141,7 @@ Host-side `Layout` struct, verbatim from `main.cpp:1383-1404`:
         static_assert(sizeof(Layout) == 112, "DFSPH canonical UBO size drift");
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `static_assert(sizeof(Layout) == 112)` **is present** at `main.cpp:1404`. **Confirmed.**
 
 **Comparison across all five DFSPH shaders.** Each shader's `layout(std140) uniform U {...}` block (binding numbers vary per shader, but field order/types/offsets are identical):
@@ -1084,12 +1171,15 @@ Host-side `Layout` struct, verbatim from `main.cpp:1383-1404`:
 
 **All five shaders match the host layout byte-for-byte and field-for-field.** Phase 11 fix-forward #1 is intact.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 (Cross-check anchors: `density_alpha.comp.glsl:25-53`, `divergence_solve.comp.glsl:22-50`, `density_solve.comp.glsl:24-52`, `integrate_forces.comp.glsl:15-43`, `pressure_apply.comp.glsl:19-47`.)
 
 ## Section L: Post-fix verification — `integrate_forces` push constant
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **`pack_dfsph_uniform` signature and body** — `main.cpp:1380-1431`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:1380-1431
     auto pack_dfsph_uniform = [&](float dt) {
         glm::uvec3 axes; std::uint32_t maxAxis;
@@ -1147,6 +1237,7 @@ Host-side `Layout` struct, verbatim from `main.cpp:1383-1404`:
 
 **Signature: `(float dt)`. Confirmed — only `dt` is passed.**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **Push constant struct** at `integrate_forces.comp.glsl:45-47`:
 
 ```glsl:particle-fluids/sph-water/shaders/integrate_forces.comp.glsl:45-47
@@ -1155,16 +1246,20 @@ layout(push_constant) uniform PC {
 } pc;
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Pipeline creation reserves `sizeof(std::uint32_t)` for the push constant at `main.cpp:1101-1103`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```cpp:main.cpp:1101-1103
     auto pipe_integrate_forces = make_compute("integrate_forces.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}},
                                               sizeof(std::uint32_t));  // mode push-const
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **The two dispatch calls** — verbatim from `main.cpp:2000-2036`:
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```cpp:main.cpp:2000-2036
             {
                 auto _ = profiler.scope(cmd, "integrate_forces");
@@ -1205,21 +1300,27 @@ Pipeline creation reserves `sizeof(std::uint32_t)` for the push constant at `mai
             cs_barrier();
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **Mode passed via push constant on both calls.** First call `mode = 0u` (FORCES, `main.cpp:2002-2004`); second call `mode = 1u` (POSITION, `main.cpp:2032-2034`).
 
 **`pack_dfsph_uniform` call sites** — grep of `main.cpp`:
 
 ```
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 main.cpp:1380   auto pack_dfsph_uniform = [&](float dt) {
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 main.cpp:1891       pack_dfsph_uniform(substep_dt);
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Only **one call** to `pack_dfsph_uniform`, at `main.cpp:1891`, **outside the substep loop**. **No mid-substep UBO write between the two `pipe_integrate_forces` dispatches.** Phase 11 fix-forward #2 is intact.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 (Side note: the shader's UBO still declares `gravity_pad.w` and a code comment at `integrate_forces.comp.glsl:3-4` still describes the field as encoding the mode — see Section P. Behaviourally correct, the comment is stale.)
 
 ## Section M: Resource barriers within the substep loop
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Full barrier inventory of the substep loop body (`main.cpp:1908-2039`). Every barrier is either `gv::memoryBarrier(...)` (calls `vkCmdPipelineBarrier2`) or expanded inside `cs_barrier()` at `main.cpp:1902-1906`. All are **global** (single VkMemoryBarrier2, no buffer range).
 
 | # | Site | srcStage / srcAccess | dstStage / dstAccess | Between |
@@ -1244,29 +1345,38 @@ Full barrier inventory of the substep loop body (`main.cpp:1908-2039`). Every ba
 | 18 | `cs_barrier` `:2026` | as #3 | as #3 | after `pressure_apply_density` |
 | 19 | `cs_barrier` `:2036` | as #3 | as #3 | after `integrate_forces` (POSITION) |
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **Solver-loop barrier coverage:** every iteration of `density_solve` and `divergence_solve` has a `cs_barrier()` immediately after it (`main.cpp:1990` and `main.cpp:2019`). This is correct — no missing inter-iteration barrier.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **`VK_WHOLE_SIZE` concern:** the descriptor writes (see `writeDfsphSolveDescriptor` at `main.cpp:557-590`) all use `range = VK_WHOLE_SIZE`. The same `pressure_a` / `pressure_b` buffers are bound to **both** `ds_divergence_solve` and `ds_density_solve` descriptor sets, but they ping-pong (`p_read = pressure_a`, `p_write = pressure_b` on even iters; swapped on odd). Two-back-to-back dispatches of the **same** pipeline on the same iteration index would be a hazard, but the loop alternates the descriptor set, so the read-buffer / write-buffer pair flips every iteration. The cs_barrier between iters resolves the hazard.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 **Hot finding:** `cs_barrier()`'s `srcAccess` is **only** `SHADER_WRITE_BIT` and `dstAccess` is `SHADER_READ_BIT | SHADER_WRITE_BIT` (`main.cpp:1903-1905`). It does **not** include `SHADER_SAMPLED_READ_BIT` or `UNIFORM_READ_BIT`. None of the DFSPH-substep dispatches do sampled reads on storage images, so this is fine. The bilateral pass (outside the substep loop) uses a separate barrier (`main.cpp:2161-2163`) with `SHADER_WRITE_BIT → SHADER_READ_BIT` — also fine.
 
 ## Section N: Per-substep resource scaling (substep>=4 crash recon)
 
 Search for `n_substeps`-scaling allocations across `main.cpp`:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **All `gv::Buffer::create` calls happen in `createTierResources(...)` at `main.cpp:847-940`. None of the sizes mention `rt.substeps` or any substep count. Resource scaling is per-particle and per-cell only.**
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Command buffer count:** `renderer.framesInFlight() == kMaxFramesInFlight == 2` (`common-cpp/include/gpusims/gpu_profiler.hpp:16`). Independent of substeps.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Profiler query pool count:** `kQueriesPerFrame = 2 * kMaxPasses = 512` per frame slot (`common-cpp/src/gpu_profiler.cpp:14`). Each substep emits roughly:
   - 1 `apply_emitter` (conditional) + 8 sort stages + 1 `density_alpha` + `minIterDivergence` `divergence_solve` + 1 `pressure_apply_div` + 1 `integrate_forces` FORCES + `minIterDensity` `density_solve` + 1 `pressure_apply_density` + 1 `integrate_forces` POSITION
   - Default counts (`minIterDivergence=1`, `minIterDensity=2`) → **~17 profiler scopes per substep**.
   - **At substeps=4**: 4 × 17 = **68 profiler scopes from the substep loop**, plus ~4 outside (depth, bilateral×N, thickness, composite) and any additional ImGui scope. At `bilateralIterations=4` that adds 4 scopes. Total ≤ ~80. **Well under `kMaxPasses=256`.**
   - **At substeps=8** (UI max): ~140 per frame. Still under cap.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
   - However, if the user raises `minIterDensity` to its UI max of 16, per substep that's `8 + 1 + 16 + 1 + 1 + 16 + 1 + 1 = ~45` profiler scopes — × substeps=8 = **360 scopes**, **exceeds kMaxPasses=256** and triggers the `if (f.pass_count >= kMaxPasses) { logWarn(...); return UINT32_MAX; }` path at `common-cpp/src/gpu_profiler.cpp:57-60`. **This is a soft-fail (no crash).** Still — flag.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **`MAX_CELLS = 1u << 18 = 262144`** (`main.cpp:952`). Independent of substep count. cell_starts buffer is sized `262144 * 4 = 1 MiB`. Independent.
 
 - **Particle/density_alpha/pressure_a/b buffers** sized by tier capacity, not substeps. Independent.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **`vkCmdFillBuffer` calls inside the loop** at `main.cpp:1918-1919, 1981-1982, 2009-2010` — 6 `vkCmdFillBuffer` per substep. At `substeps=8` that's 48 fill commands per frame, recorded into a single command buffer. Should be fine.
 
 - **Command-buffer recording cost:** the substep loop records all dispatches into the single per-frame command buffer. At `substeps=8` with `minIter*=16`, each frame records ~80 `vkCmdDispatch` + ~50 barriers + 6 fills × 8 = ~48 fills → ~580 commands per frame. Vulkan command buffers easily handle this.
@@ -1296,8 +1406,10 @@ void main() {
     gl_Position = proj * view_pos4;
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The vertex shader's `Particles` SSBO is bound at `main.cpp:1291-1292` via `writeParticleSpriteDescriptor(... tier.particles.handle() ...)`. The thickness vert is wired identically (`main.cpp:1293-1294`).
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **There is no particle position double buffer.** All compute kernels read and write the same single `tier.particles` buffer. The depth and thickness passes consume that same buffer post-substep. The depth pass is dispatched AFTER the substep loop closes (`main.cpp:2100-2126`); the substep loop ends at `main.cpp:2039`; intervening work is Alembic readback (host-mapped, no GPU writes to `particles`) and ImGui state.
 
 **Verdict:** rendering reads the **current** frame's post-substep particle positions. The persistent translucent box outline is **not** caused by stale reads — it has to come from either:
@@ -1311,32 +1423,44 @@ Both are simulation/post-process artifacts, not stale-buffer bugs. (Out of scope
 
 Bullet list — no fixes applied.
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Cell size = 2 × support radius is unusual** (`main.cpp:131`, `CELL_SIZE_RATIO_TO_SUPPORT = 2.0f`). Standard convention for grid-accelerated SPH is `cellSize == supportRadius` with 3×3×3 traversal (27 cells). With `cellSize = 2h`, a particle's full neighbor disc fits in its own cell and immediate neighbors; the 27-cell loop scans ~8× too much volume. Performance-only at default, but worth confirming intent.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Dead solver tuning fields:** `rt.maxIterDensity`, `rt.maxIterDivergence`, `rt.maxErrorDensityPercent`, `rt.maxErrorDivPercent` (`main.cpp:240-245`) are declared but never referenced. Their backing constants `DFSPH_MAX_ITER_DENSITY = 100`, `DFSPH_MAX_ITER_DIV = 100`, `DFSPH_MAX_ERROR_DENSITY = 0.01f`, `DFSPH_MAX_ERROR_DIV = 0.1f` (`main.cpp:115-119`) are also dead. **The solver runs `minIter*` iterations unconditionally and never measures error.**
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Dead `CFL_FACTOR`:** `constexpr float CFL_FACTOR = 0.5f;` at `main.cpp:124` is declared but never used. No CFL clamp anywhere; dt is purely wall-clock derived.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Dead `GRAVITY_Y`:** `constexpr float GRAVITY_Y = -9.81f;` at `main.cpp:128`. The actual gravity value pushed to the UBO uses a literal `-9.81f` at `main.cpp:1420`, not the constant.
 - **Skeleton DFSPH coupling term:** both `divergence_solve.comp.glsl` (lines 133-136) and `density_solve.comp.glsl` (lines 135-137) carry an explicit comment that the `coupling = particleMass * dot(grad_W, grad_W)` term is a **placeholder** and should be replaced with the symmetric `(factor_i + factor_j) · m_j · ∇W` form. The current form is **not numerically equivalent to DFSPH per Bender-Koschier 2015/2017**. This is likely the root cause of the "horizontal banding under gravity" / pattern-matches-tensile-instability symptom in the task brief: without proper symmetric coupling the Jacobi solver is approximating a weak-pressure correction with the wrong stencil → density never actually constrains itself → particles stratify by their initial-fill grid layout, which is exactly the horizontal-banding signature.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`vorticityStrength` slider has no effect.** `integrate_forces.comp.glsl:125`:
   ```glsl
       vec3 a_vorticity = vec3(0.0) * vorticityStrength;
   ```
   Always zero; multiplied by `vorticityStrength` for a `(void)variable`-style touch-the-uniform tic. Slider does nothing.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`cs_barrier()` uses overbroad `READ|WRITE` dst access** (`main.cpp:1903-1905`). Probably defensive; not load-bearing.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`writeDfsphSolveDescriptor` ping-pong wiring is correct**: ds[0] reads pressure_a / writes pressure_b; ds[1] swaps (`main.cpp:1254-1273`). The substep-loop iterator `i % 2` selects the descriptor set; semantics match upstream DFSPH Jacobi swap.
 - **`integrate_forces.comp.glsl` comment is stale:** the top-of-file docblock at lines 3-4 still says
   ```glsl
   //   gravity_pad.w == 0.0: FORCES_ONLY — v += dt · (gravity + viscosity + cohesion)
   //   gravity_pad.w == 1.0: POSITION_ONLY — x += dt · v with AABB box clamp
   ```
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
   but the actual implementation reads `pc.mode` (push constant) at line 71. The UBO write zeros `gravity_pad.w` (`main.cpp:1422 "mode now lives in push constant"`). Behaviour correct, comment lags.
 - **`density_alpha.comp.glsl` writes `da[gid] = vec4(density, alpha_stored, 0.0, 0.0)`** — explicitly zeroing slots `.z` and `.w` every frame. `_struct_layouts.txt` § 2 claims `.z = predicted_density (density_solve Pass 1)` and `.w = density_advect (divergence_solve Pass 1)`, but neither solver shader writes them — `density_solve` and `divergence_solve` only read `da[gid].x` (density) and `da[gid].y` (alpha) and produce `p_write[gid]`. The "predicted_density" and "density_advect" slots are never populated; documentation is aspirational.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **`cell_starts` buffer sentinel off-by-one risk:** every solver shader reads `cell_starts[nmorton + 1u]` (e.g., `density_alpha.comp.glsl:102`) to compute the end-of-cell range. For the last cell `nmorton = MAX_CELLS - 1`, this reads `cell_starts[MAX_CELLS]`. But `r.cell_starts` is sized `max_cells * 4` bytes (`main.cpp:881-882`), giving exactly `MAX_CELLS` entries → **last-cell read goes one entry past the end**. `_struct_layouts.txt` line 88 explicitly states size should be `(total_morton_cells + 1) * 4 bytes`. Probably benign on Linux + Vulkan (UB but typically reads adjacent allocation), but a sanitizer / validation layer / driver-on-different-hardware could trip.
 - **`r.cell_counts` and `r.cell_counts_atomic` are both zeroed every substep** but `prefix_sum_local` reads from `r.cell_counts` and writes per-block scan into `r.cell_block_prefixes` — there's no path that writes the final cell-count value to slot `[MAX_CELLS]` of `cell_starts` (the "total count" sentinel). Related to the above.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Particle SSBO is sized as `particle_count * 128 bytes`** (`main.cpp:862-863`) where `particle_count` is the **tier capacity** (e.g., 256k = `262144 × 128 = 32 MiB`). The renderer dispatches `wg_particle = (rt.particleCount + 255) / 256` work groups but the AABB clamp / sort / etc. operate over the same range. Tail particles (`gid >= rt.particleCount`) are correctly early-out'd in every shader. **Note:** the depth pass draws `vkCmdDraw(cmd, rt.particleCount, 1, 0, 0)` (`main.cpp:2122`); the thickness pass also (`main.cpp:2208`). Both render exactly `rt.particleCount` point sprites.
 - **`particle_mass = ρ₀ · (2r)³`** ignores the cubic-spline self-density relationship. SPlisHSPlasH typically initializes mass from the inverse of the cubic-spline self-density: `m = ρ₀ / Σ_i W(|x_i - x_j|, h)` over an idealized FCC packing. Using `ρ₀ · (2r)³` over-estimates particle mass for the 4× h-to-radius ratio because the kernel-sampled rest density at uniform `2r` spacing with `h = 4r` is significantly higher than `ρ₀`. This is a likely contributor to incorrect equilibrium behaviour.
 - **No CFL or velocity sanity-clamp anywhere.** Combined with the broken pressure stencil, particles can develop arbitrarily large velocities; the AABB clamp catches positions but velocities can still spike.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **Hot-reload watches enumerated by file name** (`main.cpp:1641-1661`) — five DFSPH compute shaders all watched. Standard pattern.
 - **Common-cpp `gpu_profiler.cpp` and `gpu_profiler.hpp` are in the git modified-set** per the gitStatus header, but I did not diff them (out of scope).
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - **The 256k-tier dam-break preset overflows brick count** (562k > 256k). Silently clamped at `main.cpp:1599` to capacity; no warning. Some particles are simply not placed. If the user lands on dam-break at 256k tier (the default tier is 1M but tier is user-settable), they get a half-empty brick.
 
 ---

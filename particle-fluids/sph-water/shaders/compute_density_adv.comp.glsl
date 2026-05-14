@@ -5,6 +5,7 @@
 // Result written to da[gid].z. Other components (.x density, .y α/ρ², .w
 // density_change) are preserved.
 //
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 // Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH::computeDensityAdv (TimeStepDFSPH.cpp:1188-1242).
 #version 460
 

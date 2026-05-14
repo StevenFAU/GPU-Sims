@@ -9,6 +9,7 @@
 // aij_pj_scratch[gid], so the Jacobi pressure-update step can consume it as-is.
 //
 // Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH::compute_aij_pj scalar variant
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 // (TimeStepDFSPH.cpp:1370-1422, fluid-only branch).
 #version 460
 

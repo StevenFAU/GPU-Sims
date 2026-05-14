@@ -4,6 +4,7 @@ date: 2026-05-14
 audience: architect-1
 role: probe-3 (read-only)
 upstream: references/SPlisHSPlasH/ (SPlisHSPlasH 2.16.1)
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 scope: scalar DFSPH reference functions; AVX twins (TimeStepDFSPH.cpp:735-1103) intentionally skipped per architect-1 instruction
 status: read-only — no edits, no builds, no binary runs
 ---
@@ -300,13 +301,20 @@ void TimeStepDFSPH::pressureSolve()
 
 ### B.observation — convergence-check identifiers
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The pressure-solve outer loop at `TimeStepDFSPH.cpp:324-341` references the following member variables and constants. Declaration sites listed:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_iterations` — `TimeStepDFSPH.h:29` (`unsigned int`). Initialized to 0 at `TimeStepDFSPH.cpp:34`. Reset at `TimeStepDFSPH.cpp:311`.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_minIterations` — `TimeStepDFSPH.h:31` (`unsigned int`). Initialized to `2` at `TimeStepDFSPH.cpp:35`. Parameter `MIN_ITERATIONS` registered at `TimeStepDFSPH.cpp:82-85` with min value 0.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_maxIterations` — `TimeStepDFSPH.h:32` (`unsigned int`). Initialized to `100` at `TimeStepDFSPH.cpp:36`. Parameter `MAX_ITERATIONS` at `TimeStepDFSPH.cpp:87-90` with min value 1.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_maxError` — `TimeStepDFSPH.h:30` (`Real`). Initialized to `0.01` at `TimeStepDFSPH.cpp:37`. Parameter `MAX_ERROR` at `TimeStepDFSPH.cpp:92-95` with min value `1e-6`. Comment at `TimeStepDFSPH.cpp:336` notes "maxError is given in percent".
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `avg_density_err` — local `Real`, `TimeStepDFSPH.cpp:317`. Recomputed each fluid model per iteration at `:332`; reduced inside `pressureSolveIteration` (see Section D).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `chk` — local `bool`, `TimeStepDFSPH.cpp:318`. Reset to `true` at start of each iteration `:326`, ANDed with `(avg_density_err <= eta)` at `:337`.
 - `eta` — local `Real`, computed per fluid as `m_maxError * 0.01 * density0` at `:336`.
 - `density0` — per-fluid reference density from `model->getDensity0()` at `:330`.
@@ -484,11 +492,16 @@ void TimeStepDFSPH::divergenceSolve()
 
 ### C.observation — divergence-solve convergence identifiers
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The divergence outer loop at `TimeStepDFSPH.cpp:477-495` references:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_iterationsV` — `TimeStepDFSPH.h:34` (`unsigned int`). Init 0 at `TimeStepDFSPH.cpp:38`. Reset at `:465`.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_maxIterationsV` — `TimeStepDFSPH.h:36` (`unsigned int`). Init 100 at `TimeStepDFSPH.cpp:40`. Aliased to local `maxIter` at `:395`. Parameter `MAX_ITERATIONS_V` registered at `TimeStepDFSPH.cpp:102-105`.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_maxErrorV` — `TimeStepDFSPH.h:35` (`Real`). Init 0.1 at `TimeStepDFSPH.cpp:41`. Aliased to local `maxError` at `:396`. Parameter `MAX_ERROR_V` at `:107-110`.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `m_enableDivergenceSolver` — `TimeStepDFSPH.h:33` (`bool`). Init true at `TimeStepDFSPH.cpp:39`. Read at `:164` in `step()` to gate the divergence solve.
 - `eta` — local `Real`, formula at `:490`: `(1/h) * maxError * 0.01 * density0`. Note: contrast with pressure-solve's `eta = m_maxError * 0.01 * density0` (no 1/h factor) at `:336`.
 - Loop guard: `while ((!chk || (m_iterationsV < 1)) && (m_iterationsV < maxIter))`. The minimum-iterations constraint here is the hard-coded literal `1`, **not** a member variable. (Compare pressure-solve which uses `m_minIterations` (= 2 by default).)
@@ -582,6 +595,7 @@ void TimeStepDFSPH::pressureSolveIteration(const unsigned int fluidModelIndex, R
 
 ### D.calls
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - Call: `computePressureAccel(fluidModelIndex, i, density0, m_simulationData.getPressureRho2Data())` @ line 569 (no `applyBoundaryForces` arg → defaults to `false` per `TimeStepDFSPH.h:46`).
 - Call: `compute_aij_pj(fluidModelIndex, i)` @ line 581.
 - Member access (read): `m_simulationData.getDensityAdv(fluidModelIndex, i)` @ line 589.
@@ -1361,6 +1375,7 @@ The form `gradW(r) = m_l * q * (3q - 2) * (r / |r|) / h` for q≤0.5 collapses t
 
 ### L.context — class boundaries
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The class begins at `SPHKernels.h:16` (preceded by a doc comment on line 14) and the closing `};` is at line 91. Static members are declared inside the class but defined (with their reset values) elsewhere — likely `SPHKernels.cpp`. This probe did not read `SPHKernels.cpp` per scope guardrails.
 
 ---
@@ -1452,6 +1467,7 @@ namespace SPH
 #endif
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ### M.constructor-initialized values (`TimeStepDFSPH.cpp:29-42`)
 
 ```cpp
@@ -1564,6 +1580,7 @@ namespace SPH
 
 ### N.1 — Gravity
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Added inside `clearAccelerations` (declared in `TimeStep.h:18`, called from `TimeStepDFSPH::step()` at `:177`):
 
 ```cpp
@@ -1575,6 +1592,7 @@ Added inside `clearAccelerations` (declared in `TimeStep.h:18`, called from `Tim
 		clearAccelerations(fluidModelIndex);
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The actual gravity addition body lives in `TimeStep::clearAccelerations` (declared `TimeStep.h:18`, body in `TimeStep.cpp` — not quoted here per scope).
 
 ### N.2 — Viscosity / non-pressure forces
@@ -1652,6 +1670,7 @@ This means **gravity + viscosity + surface tension are applied to velocity BEFOR
 	m_boundaryHandlingMethod = static_cast<int>(BoundaryHandlingMethods::Bender2019);
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 (inside `Simulation::Simulation()` ctor at `Simulation.cpp:80-89`.) Setter declared at `Simulation.h:370`:
 ```cpp
 void setBoundaryHandlingMethod(BoundaryHandlingMethods val) { m_boundaryHandlingMethod = (int) val; }
@@ -1675,6 +1694,7 @@ Total: 5 functions × 3 boundary methods = 15 boundary contribution sites. None 
 
 ### O.3 — `BoundaryModel_Akinci2012` structure (subset for GPU-port relevance)
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Full header at `BoundaryModel_Akinci2012.h:1-116`:
 
 ```cpp
@@ -1741,6 +1761,7 @@ Per-boundary-particle state:
 - `m_v[i]` — current velocity (relevant for dynamic / animated rigid bodies).
 - `m_V[i]` — boundary particle "ψ-volume" (scalar Real).
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Constructor body at `BoundaryModel_Akinci2012.cpp:13-21`:
 
 ```cpp
@@ -1756,6 +1777,7 @@ BoundaryModel_Akinci2012::BoundaryModel_Akinci2012() :
 }
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `computeBoundaryVolume()` body at `BoundaryModel_Akinci2012.cpp:48-75`:
 
 ```cpp
@@ -1804,6 +1826,7 @@ A future GPU Akinci2012 port would require:
 
 ## Section P — Incidental findings
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Kernel `m_l` normalization unit**: per `SPHKernels.h:32` upstream defines `m_l = 48 / (π * h³)` — *not* `48 / (π * h⁴)`. The radial `1/h` to make `gradW` have units of inverse-length-per-position arrives via `gradq /= m_radius` at `SPHKernels.h:70`. If our host-side code (`density_alpha.comp.glsl:5` and probe-1 Section F) bakes `48/(π h⁴)` into the GPU UBO directly, the numerical match depends on whether the shader also divides by `h` separately or whether the host folded it in pre-emptively. **Flag for architect-1 to verify.**
 - **Pressure solver uses `m_minIterations = 2` default; divergence solver hard-codes `< 1` (i.e., minimum 1 iteration)**. These are not symmetric: a GPU port that uses `MAX_PRESSURE_ITERATIONS` and `MAX_DIVERGENCE_ITERATIONS` with a single shared `min_iter` knob would not faithfully mirror upstream.
 - **Two different `eta` formulas**:
@@ -1812,13 +1835,16 @@ A future GPU Akinci2012 port would require:
   These differ by the factor `1/h`. Important for our GPU convergence-check (commit 3): the divergence check is comparing a rate, not a density delta.
 - **`pressureSolveIteration` filters by `ParticleState::Active`** (line 578) but **`divergenceSolveIteration` does not** (no such check after line 651). Worth flagging if the GPU port has identical kernels for both.
 - **`aij_pj` is scaled differently by caller**: pressure caller multiplies by `h²` (`:582`); divergence caller multiplies by `h` (`:656`). So the same `compute_aij_pj` is reused but the iteration math differs by one power of h. Easy to miss when porting.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Warmstart behavior**: `USE_WARMSTART` and `USE_WARMSTART_V` are `#define`-on by default at `TimeStepDFSPH.h:9-10`. The warmstart keeps the previous frame's `p/ρ²` (scaled by `h²`) and re-injects it at the start of the next frame. If our GPU port omits warmstart, expect higher per-frame iteration counts (the upstream initial iterates already encode pressure history; cold-start always begins at zero).
 - **Particle-deficiency clamp at `numNeighbors < 20` (3D) / `< 7` (2D)**: applied in both the divergence outer-loop init (`:421-435`) and inside `divergenceSolveIteration` (`:676-690`). NOT applied in the density-constancy solver. So density-constancy "ignores" particle deficiency; divergence-solve actively zeroes affected particles' contribution.
 - **`std::vector<std::vector<Real>>& pressure_rho2` parameter to `computePressureAccel`**: the function accesses `pressure_rho2[fluidModelIndex][i]` AND `pressure_rho2[pid][neighborIndex]` (inside `forall_fluid_neighbors`). So this is a per-fluid-model, per-particle pressure array, indexed by both the local model and the neighbor's model. GPU equivalent likely needs a SSBO indexed similarly (single-phase port can flatten).
 - **`fm_neighbor->getDensity0() / density0` in `computePressureAccel`** (line 1322): used to symmetrize cross-phase pressure contributions. For a single-fluid port this term is always 1.0 and can be removed.
 - **The `forall_density_maps` and `forall_volume_maps` loops are per-rigid-body, not per-particle**: their inner content executes **once per boundary body**, not once per neighbor particle. This affects how a GPU port would dispatch — a single uniform contribution per (fluid particle, boundary body) pair rather than a true neighbor iteration.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **`Simulation::Bender2019` is the default boundary method** (`Simulation.cpp:88`); this is what most upstream tutorials assume. Akinci2012 is the older legacy/research method but the most common reference in introductory SPH literature.
 - **No `m_simulationData` declaration visible in `TimeStepDFSPH.h` beyond `SimulationDataDFSPH m_simulationData;` at line 27**: per-particle scratch state (factor, densityAdv, pressureRho2, pressureRho2_V, pressureAccel) lives in `SimulationDataDFSPH.{h,cpp}` (not opened in this probe per scope). Probe-1 likely covered this — architect-1 should cross-reference.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **AVX vs scalar divergence**: not verified in this probe (scalar-only per architect-1 instruction). The AVX twins at `TimeStepDFSPH.cpp:735-1103` are nominally numerically identical but use packed 8-wide gather/scatter; if a future probe needs to confirm bit-exactness, it is worth comparing reduction order (AVX may produce slightly different rounding due to associativity).
 
 ---

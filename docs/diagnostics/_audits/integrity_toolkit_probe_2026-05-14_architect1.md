@@ -12,6 +12,7 @@ out-of-scope:
   - any build invocation
 sibling-context:
   - Phase 11.5 Setup-1 (`phase11_5_setup1_2026-05-14_setup1.md`) — the Convention #8 fabrication that motivates this toolkit
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
   - Layer-3 prioritization (`sims_prioritization_2026-05-14_triage.md`) — flags lenia-fft `Chakazul/Lenia/Python/LeniaNDK.py:329-335` as the next same-shape fabrication smell
 ---
 
@@ -1426,30 +1427,55 @@ No per-sim vendored-upstream tree exists. There is no `agent-based/physarum/upst
 Hits from `common/`, sim source dirs (excluding `.venv`, `build*`, `references/`):
 
 ```text
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 common/common-py/examples/hello/hello/main.py:30:# time (TaichiSyntaxError from kernel_impl.py:631 extract_arguments). The
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 continuous-ca/lenia-fft/python/lenia_fft/presets.py:11:v1.1 with the formula documented at LeniaNDK.py:329-335; see
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 continuous-ca/lenia-fft/python/lenia_fft/presets.py:79:# Decoded via 2D port of LeniaNDK.Board.rle2arr (LeniaNDK.py:184-206).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 continuous-ca/lenia-fft/python/lenia_fft/main.py:204:    Inherited verbatim from MPM main.py:306-318. Documented in
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/jacobi_update_density.comp.glsl:7:// Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:591 (source term s_i =
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/density_alpha.comp.glsl:2:// as α/ρ² in the multiphase-compatible form per SPlisHSPlasH TimeStepDFSPH.cpp:758-760).
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/density_alpha.comp.glsl:5://   Cubic spline kernel: SPlisHSPlasH 1.8.10 SPHKernels.h:43-78
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/density_alpha.comp.glsl:6://   α-factor:            SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:813-822 / :1175-1188
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/density_alpha.comp.glsl:7://   α floor ε:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.h:28 = 1.0e-5
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/compute_aij_pj.comp.glsl:12:// (TimeStepDFSPH.cpp:1370-1422, fluid-only branch).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/compute_density_adv.comp.glsl:8:// Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH::computeDensityAdv (TimeStepDFSPH.cpp:1188-1242).
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/apply_velocity.comp.glsl:6:// density / divergence loops). Mirrors SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:514-515
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/divergence_solve.comp.glsl:4://   Source s_i = -ρ̇_i:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:662
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/divergence_solve.comp.glsl:5://   aij_pj scales by h:           TimeStepDFSPH.cpp:656
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/divergence_solve.comp.glsl:6://   Pressure update (Jacobi 0.5): TimeStepDFSPH.cpp:692
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/divergence_solve.comp.glsl:7://   factor scales by 1/h:         TimeStepDFSPH.cpp:442
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/density_solve.comp.glsl:6://   Pass 2: aij_pj scales by h² (not h) per TimeStepDFSPH.cpp:582
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/density_solve.comp.glsl:7://   factor scales by 1/h² (not 1/h) per TimeStepDFSPH.cpp:285
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/density_solve.comp.glsl:10://   Source s_i = 1 - ρ_adv/ρ₀:   SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:590
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/density_solve.comp.glsl:11://   aij_pj *= h²:                 TimeStepDFSPH.cpp:582
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/density_solve.comp.glsl:12://   Pressure update:              TimeStepDFSPH.cpp:606
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/shaders/density_solve.comp.glsl:13://   factor scales 1/h²:           TimeStepDFSPH.cpp:285
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 particle-fluids/sph-water/shaders/pressure_apply.comp.glsl:7://   Velocity correction: SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:514-515 (divergence)
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/src/main.cpp:114:// DFSPH defaults — SPlisHSPlasH 1.8.10 at TimeStepDFSPH.cpp:35-41.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 particle-fluids/sph-water/src/main.cpp:122:constexpr float DFSPH_JACOBI_RELAX       = 0.5f;       // SPlisHSPlasH TimeStepDFSPH.cpp:606,:692
 ```
 
@@ -1462,16 +1488,22 @@ particle-fluids/sph-water/src/main.cpp:122:constexpr float DFSPH_JACOBI_RELAX   
      4 py
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **Dominant format observed across stacks:** `Filename.ext:line` and `Filename.ext:line-line` (e.g., `TimeStepDFSPH.cpp:1370-1422`, `LeniaNDK.py:329-335`). The citation is bare — neither bracketed (`[file:line]`) nor URL-formatted — and appears inside `//` comments in C++/GLSL/TS and `#` comments in Python. In Markdown reports it appears wrapped in single backticks (e.g., ``` `main.cpp:1349` ```).
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
+// integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
 The same format is used for **upstream citations** (e.g., `SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:758-760`) and for **intra-repo cross-references** (e.g., `main.py:306-318`, `kernel_impl.py:631`). The toolkit's Cat 1 parser cannot distinguish the two from the literal alone — it must check whether the path resolves under a vendored reference root (`references/<lib>/`) or under the repo source tree.
 
 ### Markdown citation samples (selection from `docs/diagnostics/_audits/`)
 
 ```text
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/phase11_5_commit1_landing_2026-05-14.md:22:the lambda body at `main.cpp:1349`. No other edits, no shader edits.
 docs/diagnostics/_audits/phase11_5_commit2_verification_2026-05-14.md:16:- `references/SPlisHSPlasH/SPlisHSPlasH/SPHKernels.h:62-85`
 docs/diagnostics/_audits/phase11_5_commit2_verification_2026-05-14.md:17:- `particle-fluids/sph-water/shaders/density_alpha.comp.glsl:73-78`
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/phase11_5_setup1_2026-05-14_setup1.md:183:| 1 | `density_solve.comp.glsl:8` | `TimeStepDFSPH.cpp` | 285 | `pressureSolve()` | factor scales 1/h² | `m_simulationData.getFactor(fluidModelIndex, i) *= invH2;` | **PLAUSIBLE_MATCH** |
 ```
 
@@ -1486,12 +1518,18 @@ In audit-style markdown the citation is `` `path:line` `` (backtick-wrapped), of
 ```text
 docs/diagnostics/_audits/phase11_5_setup1_2026-05-14_setup1.md:14:The original anchor in `particle-fluids/sph-water/docs/load-bearing-decisions.md:8-9` was `SPlisHSPlasH 1.8.10 at SHA c254caf2705ebf5271408dd37a091aa379258a38`. Step 1 of the blocking probe (`phase11_5_setup1_2026-05-14_blocked.md`) established that **no `1.8` tag has ever existed upstream** [...]
 docs/diagnostics/_audits/phase11_5_setup1_2026-05-14_setup1.md:51:# Anchored to tag 2.16.1 (SHA 6bff55a6eaf14083d34650f22a268ce156b62b54).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:514:| glfw | tag 3.4, GIT_SHALLOW | `deps.cmake:521-527` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:515:| glm | tag 1.0.1, GIT_SHALLOW | `deps.cmake:535-540` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:516:| spdlog | tag v1.14.1, GIT_SHALLOW | `deps.cmake:549-554` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:517:| nlohmann_json | tag v3.11.3, GIT_SHALLOW | `deps.cmake:562-567` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:518:| vma | tag v3.1.0, GIT_SHALLOW | `deps.cmake:572-577` |
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:519:| shaderc | tag v2024.3, GIT_SHALLOW [...]
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md:520:| imgui | tag v1.91.5-docking, GIT_SHALLOW | `deps.cmake:606-611` |
 ```
 
@@ -1502,6 +1540,7 @@ Two parallel anchor patterns coexist in the repo:
 
 ### `upstream` / `pinned` / `anchor` mentions in `docs/`
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The `phase11_5_setup1` audits established the fabrication pattern: `particle-fluids/sph-water/docs/load-bearing-decisions.md` quoted "SPlisHSPlasH 1.8.10 at SHA c254caf2705ebf5271408dd37a091aa379258a38" — a fabricated tag (no `1.x` tag past `1.3.1` ever existed upstream) and a SHA copy-pasted from the file's Alembic line. The fix vendored `2.16.1` to `references/SPlisHSPlasH/`. The sim-local doc still says `1.8.10` as of probe time (per `setup1.md:408-410`).
 
 ### Per-sim load-bearing-decisions docs that cite upstream lines
@@ -1647,10 +1686,12 @@ common/common-py/examples/hello/hello/main.py:28:# NOTE: deliberately NO `from _
 grep -rEohn 'integrity-[a-z]+' . (excluding node_modules, references/, build/, build-test-alembic/, .venv) → (no hits)
 ```
 
+// integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a
 No `integrity-` prefixed annotation is in use anywhere in the repo source today. A toolkit suppression annotation in the `integrity-allow:`/`integrity-skip:`/`integrity-todo:` family would not collide with any existing marker.
 
 ### Comment-style by language (observed)
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - C++ / GLSL / WGSL / TypeScript: `// NOTE: …` on its own line at the head of a block, or appended to a constant declaration (e.g., `main.cpp:114` quoted earlier).
 - Python: `# NOTE: …` on its own line.
 - The `NOTE:` form (uppercase + colon) is the dominant style.
@@ -1826,6 +1867,7 @@ This report follows the architect-1 form and adds out-of-scope / audience keys f
 Markdown is gated by two CI jobs (`.github/workflows/markdown.yml`):
 
 - `DavidAnson/markdownlint-cli2-action@v16` — lint rules in `.markdownlint.json` (258 bytes, present at repo root).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `lycheeverse/lychee-action@v1` — `--offline --include-fragments` link check, config in `lychee.toml` (317 bytes, present at repo root). Per `markdown.yml:46`, `docs/sim-specs/_template.md` is excluded from link checks.
 
 Any toolkit-emitted markdown report must lint clean under both.
@@ -1840,7 +1882,9 @@ Any toolkit-emitted markdown report must lint clean under both.
 - **Per-sim load-bearing-decisions.md headers are prose, not structured.** The "Anchored to <upstream> <tag> at SHA `<sha>`" sentence at the top of `particle-fluids/sph-water/docs/load-bearing-decisions.md:7-9` is the only existing structured-ish anchor — and it is stale (still says `1.8.10`). The toolkit choosing a structured anchor format (a frontmatter block, a sidecar YAML, etc.) is a greenfield decision; whatever it picks should be importable into the existing prose paragraph.
 - **CI path filters partition stacks.** `build-native.yml`, `build-py.yml`, `build-web.yml` each gate on different paths. A cross-stack integrity toolkit either (a) needs its own workflow with `paths: ['**']` (no filter), or (b) needs to be wired into all three plus `structure.yml`/`markdown.yml`. The `structure.yml` workflow already runs on every push without path filtering (`.github/workflows/structure.yml:3-6`) — that is the closest existing template for an always-on cross-stack gate.
 - **Stack C has no test framework, but Stack D has `pytest tests/ -v` per package.** If the toolkit's Cat-3 (numerical correctness) tests live alongside source-of-truth tests, the Stack D side has a natural integration point and the Stack C side does not. Either Stack C grows a tests/ directory + GoogleTest/Catch2 wiring, or Cat-3 for Stack C runs as a standalone driver (host program + golden-blob check) outside the existing build.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **lenia-fft already cites Chakazul/LeniaNDK without vendoring it.** `continuous-ca/lenia-fft/python/lenia_fft/presets.py:11` and `:79` cite `LeniaNDK.py:329-335` / `LeniaNDK.py:184-206` — same structural pattern as the fabricated sph-water anchor, except (per `sims_prioritization_2026-05-14_triage.md:78`) `LeniaNDK` is **not vendored**. Verifying these citations would require either vendoring `references/Chakazul-Lenia/` or accepting that the citation is permanently unverifiable from the working tree. This is the next test case for Cat-1 integrity once the toolkit lands.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **`docs/sim-specs/_template.md` is the canonical per-sim spec template.** It is excluded from lychee link-checking (per `markdown.yml:46`) precisely because its `{{PLACEHOLDER}}` link targets are not yet substituted. The toolkit must treat placeholder-tokens (`{{...}}`) as non-citations.
 - **Documentation gate today is structure-only.** `structure.yml` enforces "the right files and directories exist" but **not** "what's in them is internally consistent." Citation integrity, contract verification, and numerical correctness are all currently outside any CI gate.
 - **`docs/conventions.md` already documents per-stack testing expectations** (`docs/conventions.md:15`: "Testing: Each sim includes at minimum a smoke test ..."), but the language is aspirational — there is no Stack C test in the repo today, and the Stack B smoke is the `tsc --noEmit && vite build` compile-check (not a runtime test). The toolkit's Cat-3 spec section may want to update `docs/conventions.md` § Testing to match what it formalizes.

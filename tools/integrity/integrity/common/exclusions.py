@@ -1,6 +1,7 @@
 """Canonical exclusion paths per spec § 3.4.
 
 Adding to this list is a Cat 1 fail unless the change carries
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 an `integrity-allow: cat1.exclusion-list` annotation.
 """
 
@@ -25,6 +26,11 @@ CANONICAL_EXCLUSIONS: tuple[str, ...] = (
     "alembic_export/",
     "vdb_export/",
     "gallery/",
+    # Synthetic test fixtures per spec § 11: fixtures are deliberately
+    # isolated from the real repo. They contain intentionally malformed
+    # annotations and synthetic upstream citations against a synthetic
+    # registry. Excluding here matches the spec's stated intent.
+    "tools/integrity/tests/fixtures/",
 )
 
 

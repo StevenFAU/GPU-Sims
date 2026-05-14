@@ -97,6 +97,7 @@ $ wc -l references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp \
 
 Sanity check: `TimeStepDFSPH.cpp` is 1423 lines, so the deepest citation (`:1175`) is safely within range. All cited line numbers (max 1175 for `.cpp`, max 43 for `SPHKernels.h`, max 28 for `.h`) fall within the corresponding file length.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Top-of-file (`TimeStepDFSPH.cpp:1-40`):
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1
@@ -122,6 +123,7 @@ int TimeStepDFSPH::SOLVER_ITERATIONS = -1;
 ... (constructor and ctor-init continues to line 40)
 ```
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 Top-of-file (`TimeStepDFSPH.h:1-40`):
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.h:1
@@ -155,6 +157,7 @@ namespace SPH
         ...
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Top-of-file (`SPHKernels.h:1-12`):
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/SPHKernels.h:1
@@ -180,19 +183,33 @@ All resolved against `references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.c
 
 | # | Citing shader | File | Line | Enclosing fn | Shader claim | Actual content (one-line summary) | Verdict |
 |---|---|---|---|---|---|---|---|
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 1 | `density_solve.comp.glsl:8` | `TimeStepDFSPH.cpp` | 285 | `pressureSolve()` | factor scales 1/h² | `m_simulationData.getFactor(fluidModelIndex, i) *= invH2;` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 2 | `density_solve.comp.glsl:9` | `TimeStepDFSPH.cpp` | 582 | `pressureSolveIteration` | aij_pj scales by h² | `aij_pj *= h * h;` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 3 | `density_solve.comp.glsl:12` | `TimeStepDFSPH.cpp` | 590 | `pressureSolveIteration` | Source s_i = 1 - ρ_adv/ρ₀ | `const Real s_i = static_cast<Real>(1.0) - densityAdv;` (note: ρ₀ factored out per multiphase comment, see E.2) | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 4 | `density_solve.comp.glsl:13` | `TimeStepDFSPH.cpp` | 606 | `pressureSolveIteration` | Pressure update | `p_rho2_i = max(p_rho2_i - 0.5*(s_i - aij_pj)*factor, 0.0);` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 5 | `divergence_solve.comp.glsl:5` | `TimeStepDFSPH.cpp` | 662 | `divergenceSolveIteration` | Source s_i = -ρ̇_i | `const Real s_i = -densityAdv;` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 6 | `divergence_solve.comp.glsl:6` | `TimeStepDFSPH.cpp` | 656 | `divergenceSolveIteration` | aij_pj scales by h | `aij_pj *= h;` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 7 | `divergence_solve.comp.glsl:7` | `TimeStepDFSPH.cpp` | 692 | `divergenceSolveIteration` | Pressure update (Jacobi 0.5) | `pv_rho2_i = max(pv_rho2_i - 0.5*(s_i - aij_pj)*factor, 0.0);` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 8 | `divergence_solve.comp.glsl:8` | `TimeStepDFSPH.cpp` | 442 | `divergenceSolve()` | factor scales by 1/h | `m_simulationData.getFactor(fluidModelIndex, i) *= invH;` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 9 | `pressure_apply.comp.glsl:7` | `TimeStepDFSPH.cpp` | 514 | `divergenceSolve()` (warmstart-finalize loop) | Velocity correction (divergence) | `computePressureAccel(..., m_simulationData.getPressureRho2VData(), true);` followed by `model->getVelocity(i) += h * m_simulationData.getPressureAccel(...)` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 10 | `pressure_apply.comp.glsl:8` | `TimeStepDFSPH.cpp` | 359 | `pressureSolve()` (warmstart-finalize loop) | Velocity correction (density) | `computePressureAccel(..., m_simulationData.getPressureRho2Data(), true);` followed by `model->getVelocity(i) += h * m_simulationData.getPressureAccel(...)` | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 11 | `density_alpha.comp.glsl:5` | `SPHKernels.h` | 43 | `CubicKernel::W(Real)` | Cubic spline kernel | `if (q <= 0.5)` — branch inside the piecewise cubic spline value function | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 12 | `density_alpha.comp.glsl:6` | `TimeStepDFSPH.cpp` | 813 | `computeDFSPHFactor` (**AVX variant**, see G.1) | α-factor | `sum_grad_p_k += grad_p_i.squaredNorm();` — sum-of-grads accumulation immediately preceding `factor = 1/sum_grad_p_k` at line 820 | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 13 | `density_alpha.comp.glsl:6` | `TimeStepDFSPH.cpp` | 1175 | `computeDFSPHFactor` (**scalar variant**, see G.1) | α-factor (variant) | line 1175 is the comment `// Compute factor as: factor_i = -1 / (a_ii * rho_i^2)`; the assignment follows at 1179-1183 | **PLAUSIBLE_MATCH** |
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 | 14 | `density_alpha.comp.glsl:7` | `TimeStepDFSPH.h` | 28 | class `TimeStepDFSPH` (member declaration) | α floor ε = 1.0e-5 | `const Real m_eps = static_cast<Real>(1.0e-5);` | **PLAUSIBLE_MATCH** |
 
 ### E.2 Selected verbatim context for the high-stakes citations
@@ -254,6 +271,7 @@ The five citations most load-bearing for Phase 11.5 commit 2 (the a_ij coupling 
                 const Real s_i = static_cast<Real>(1.0) - densityAdv;
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 Note on citation #3 (`density_solve.comp.glsl:12` ↔ line 590): the upstream comment at lines 585-587 explicitly says "*the multiplier rho0 is missing here*". This is consistent with the shader docblock claim "s_i = 1 - ρ_adv/ρ₀" once you understand that `densityAdv` in the upstream code is already the normalized form (ρ_adv/ρ₀). The verdict stays PLAUSIBLE_MATCH; the apparent unit mismatch is reconciled by the multiphase convention.
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:648
@@ -382,7 +400,9 @@ Method-by-method line index (one-shot grep of function signatures):
 
 The `#ifdef USE_AVX` (line 733) / `#else` (1104) / `#endif` (1423) split means every per-particle DFSPH helper exists in two parallel implementations. **This affects two of our citations:**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - Citation 12 (`density_alpha.comp.glsl:6 → :813`) lands in the AVX-vector implementation of `computeDFSPHFactor`.
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 - Citation 13 (`density_alpha.comp.glsl:6 → :1175`) lands in the scalar implementation of `computeDFSPHFactor`.
 
 The α-factor formula on both paths is identical — `factor = 1 / sum_grad_p_k` with an `m_eps` floor — but the AVX path uses Eigen + AVX intrinsics (via `Scalar4f`/`Scalar8f` from `Utilities/AVX_math.h`) while the scalar path uses ordinary `Real`/`Vector3r` arithmetic. **For Phase 11.5 commit 2's a_ij coupling rewrite, the scalar implementation (starting at line 1106) is the more readable upstream reference.** It is also the one whose loop structure most closely matches a per-particle compute-shader invocation. The AVX path packs 8 particles per AVX-512 register and the loop body iterates over packed lanes — useful for confirming numeric identity, less useful for reading the algorithm.
@@ -401,8 +421,10 @@ Real TimeStepDFSPH::compute_aij_pj(const unsigned int fluidModelIndex, const uns
 
 It is **52 lines of code** and is called from both `pressureSolveIteration` (line 581) and `divergenceSolveIteration` (line 655). For Phase 11.5 commit 2 (replacing the placeholder a_ij coupling), this single upstream function is the authoritative reference. The AVX counterpart at 1042-1103 is the same algorithm, vectorized.
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ### G.4 The `TimeStepDFSPH.h:28` epsilon is named `m_eps`, not a global
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The α-floor constant cited by `density_alpha.comp.glsl:7` is a **member variable** of `TimeStepDFSPH` (line 28: `const Real m_eps = static_cast<Real>(1.0e-5);`), not a free-standing constant or `#define`. This is relevant if the GPU shader uses a different name or constant location — the rename is fine, but the source location and value (1.0e-5) come from this instance variable.
 
 ### G.5 `load-bearing-decisions.md` still anchors to `1.8.10`

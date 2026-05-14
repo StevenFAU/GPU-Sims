@@ -59,9 +59,11 @@ user's hardware (either machine) this is interactive at 512² and 1024²;
 
 **Why this banking is worth the disk space:** Architect-2 round-2 verification surfaced that the polyring path is what unlocks ~50+ additional named creatures upstream — Hydrogeminium, Gyrogeminium, the Scutium serratus family, etc. Phase 10's preset roster is intentionally limited to four creatures specifically because polyring is banked; if a future sim phase wants the broader Lenia menagerie, polyring is the load-bearing precondition.
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 **Formula anchor (architect-2 round-2 verified):** Upstream `Chakazul/Lenia/Python/LeniaNDK.py:329-335` defines the polyring kernel assembly. The exact construction (architect-2's intuited formula matches Chan's modulo two defensive guards):
 
 ```python
+# integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 # Per upstream LeniaNDK.py:329-335 (verified at architect-2 round-2):
 def kernel_shell(r, b, kn):
     """Build polyring kernel from b-string + base kernel-core function.
@@ -163,13 +165,16 @@ Items deferred from v1 to keep Phase 10 scoped:
 ## Polish-4 GGUI Y-convention asymmetry (Phase 10)
 
 Phase 10 polish-4 fixed a paint-cursor Y inversion in `cursor_to_field_cell`
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 (main.py:164) by removing a `(1.0 - fy_norm)` flip that empirically
 inverted paint position on the user's AMD desktop (Taichi 1.7.4, Vulkan,
 Ubuntu 24.04).
 
 The fix surfaces an asymmetry: `cursor_to_field_cell` (paint) now uses
 direct cursor-y → row-y mapping, while `cursor_in_any_panel`
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 (GUI-occlusion test, main.py:203) keeps the `(1.0 - cy_bottom)` flip
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 inherited verbatim from MPM main.py:306-318 (Phase 9 visual-verified).
 
 Both functions work empirically. The asymmetry suggests Taichi GGUI's

@@ -1,9 +1,13 @@
 // divergence_solve.comp.glsl — DFSPH divergence-free pressure inner-loop.
 //
 // References:
+// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
 //   Source s_i = -ρ̇_i:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:662
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   aij_pj scales by h:           TimeStepDFSPH.cpp:656
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   Pressure update (Jacobi 0.5): TimeStepDFSPH.cpp:692
+// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 //   factor scales by 1/h:         TimeStepDFSPH.cpp:442
 //
 // NOTE: the precise a_ij pair-coupling formula left as a skeleton; the canonical

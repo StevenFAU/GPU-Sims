@@ -3,6 +3,7 @@
 // vel_i += dt * pressure_accel[gid].xyz
 //
 // Dispatched once per inner-loop after pressure_accel has been resolved (DFSPH
+// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
 // density / divergence loops). Mirrors SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:514-515
 // (divergence) / :359-360 (density), where the velocity correction is the only
 // per-particle write after the inner iteration converges.

@@ -58,6 +58,7 @@ Codes match upstream entries.
 | 5 — 3D bootstrap | 3D Random Blob | — | 8 | 10 | 0.15 | 0.015 |
 
 Reference: `Chakazul/Lenia` on GitHub (MIT). Polyring (multi-peak) creatures
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 banked v1.1 with formula anchor at `LeniaNDK.py:329-335`.
 
 ## 6. Export paths
@@ -88,6 +89,7 @@ banked v1.1 with formula anchor at `LeniaNDK.py:329-335`.
 - Stack B WebGPU port: deferred (Phase 11 or 12).
 - Save-creature UX: v1.1.
 - Volumetric raymarch viewer: v1.1.
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - Polyring kernel extension: v1.1+ (formula anchor at `LeniaNDK.py:329-335`).
 
 ## 10. References

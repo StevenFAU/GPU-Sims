@@ -4,6 +4,7 @@ Mode: HARD_FAIL.
 
 False positives are defended by the grammar's extension filter and the
 template-token mask. False positives that still escape are suppressible
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 via `integrity-allow: cat1.intra-repo; <reason>; <issue-ref>`.
 """
 

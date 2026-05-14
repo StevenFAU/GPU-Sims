@@ -19,6 +19,7 @@ at two test points). The GPU shader bakes the `1/h` factor into the host
 constant, so upstream's `m_l = 48 / (π · h³)` becomes the host-side
 `8 / (π · h⁴)` (i.e. `48 / 6` to absorb the gradient polynomial's `1/6`
 scaling that the shader applies on-GPU). Changed `48.0f` → `8.0f` inside
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 the lambda body at `main.cpp:1349`. No other edits, no shader edits.
 
 ---

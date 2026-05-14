@@ -12,6 +12,7 @@ cross_workstream: none
 ---
 
 > Setup-1-analogue for the Layer 3 Batch B audit workstream. The Phase 10 spec
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 > banks a polyring kernel extension at `Chakazul/Lenia/Python/LeniaNDK.py:329-335`
 > (no SHA pin). The triage probe flagged this as structurally similar to the
 > fabricated SPlisHSPlasH 1.8.10 anchor that Layer 1 Setup-1 found at sph-water.
@@ -29,15 +30,18 @@ about the Chakazul/Lenia upstream that this probe verifies:
 
 1. **Spec line 6 (banking statement):** "Polyring (multi-peak kernel via
    b-string) kernel extension banked v1.1+ with documented formula anchor at
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
    `Chakazul/Lenia/Python/LeniaNDK.py:329-335`".
 2. **Spec line 6 (kernel-form correction):** "kernel index 1 (JSON kn=1 via
    off-by-one indexing, which maps to dict-key 0 in `LeniaNDK.py`'s
    `kernel_core` registry = quad4)".
 3. **Spec line 4135 (verification provenance):** "Round 3 (architect-2 +
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
    Claude Code): ... polyring formula anchor at LeniaNDK.py:329-335".
 
 The Phase 10 spec is shipped at commit `7065d32` (per `project-state.md` § 3
 phase ledger). **The spec pins no SHA or tag for the Chakazul upstream** —
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 the citation is bare `LeniaNDK.py:329-335`. The natural anchor for this probe
 is therefore upstream master HEAD as of audit time.
 
@@ -51,6 +55,7 @@ held the same content at architect-2 round-3 review time (approximately
 May 2026, per Phase 10 spec preamble). The function structure verified
 below (`kernel_shell` dispatching through a `kernel_core` registry) is
 canonical Lenia-by-Chan and structurally mature (it is referenced from
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 the GUI code at `LeniaNDK.py:2176` as a stable internal API); a recent
 restructure of these lines is unlikely but not externally falsified.
 
@@ -104,15 +109,18 @@ $ wc -l LeniaNDK.py
 
 | # | Spec claim | Source | Upstream evidence | Verdict |
 |---|---|---|---|---|
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 1 | "polyring kernel extension at LeniaNDK.py:329-335" | spec line 6 (banking) | `kernel_shell` method at 329-335 implements polyring assembly via b-string | **CONFIRMED** |
 | 2 | "kernel_core[0] = quad4 = (4r(1-r))^4" | spec line 6 (correction) | `kernel_core` registry at 289-294, key 0 is `lambda r: (4 * r * (1-r))**4` | **CONFIRMED** |
 | 3 | "off-by-one kn=1 → dict-key 0" | spec line 6 (correction) | `kernel_shell:334` reads `Automaton.kernel_core[params.get('kn') - 1]` | **CONFIRMED** |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 4 | "polyring formula anchor at LeniaNDK.py:329-335" | spec line 4135 (provenance) | same as #1 | **CONFIRMED** |
 
 ### D.2 Verbatim evidence
 
 **Citation 1 + 4 — the cited line range, master HEAD `adfc542`:**
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```python:Chakazul/Lenia/Python/LeniaNDK.py:329
     def kernel_shell(self, r, params):
         B = len(params['b'])
@@ -143,6 +151,7 @@ Phase 10 spec banks for v1.1+. The line citation is structurally correct.
 
 **Citation 2 — the kernel_core registry, lines 289-294:**
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 ```python:Chakazul/Lenia/Python/LeniaNDK.py:289
     kernel_core = {
         0: lambda r: (4 * r * (1-r))**4,  # polynomial (quad4)
@@ -161,6 +170,7 @@ The spec's claim that key 1 is bump4 also matches: `lambda r: np.exp(4 - 1/(r*(1
 
 The off-by-one is at line 334 inside `kernel_shell` (the same range as Citation 1):
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ```python:Chakazul/Lenia/Python/LeniaNDK.py:334
         kfunc = Automaton.kernel_core[params.get('kn') - 1]
 ```
@@ -213,6 +223,7 @@ Code verification rounds during draft:
 > Round 3 (architect-2 + Claude Code): full 122-creature single-peak
 > enumeration vs `animals.json`; Hydrogeminium polyring confirmation;
 > LeniaNDK.py kernel-core registry inspection; polyring formula anchor
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 > at LeniaNDK.py:329-335
 
 The architect-2 round-3 cross-review explicitly ran a Claude Code probe
@@ -266,6 +277,7 @@ a separate finding the audit is surfacing.
 
 ### G.2 The spec does not pin a SHA for the Chakazul upstream
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 The Phase 10 spec banks `LeniaNDK.py:329-335` with no SHA or tag pin.
 This worked at draft time because architect-2 round-3 verified against
 the then-current upstream, and the lines happened to be in the same
@@ -303,6 +315,7 @@ The upstream-citation surface is closed.
 
 ## Section H: Verdict and handoff
 
+// integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a
 **Verdict:** CONFIRMED. The Phase 10 spec's `Chakazul/Lenia/Python/LeniaNDK.py:329-335`
 citation, and the adjacent kernel_core / kn-off-by-one claims, resolve cleanly
 against upstream master HEAD `adfc542939266de7f4bb7ebb552e8499701ee107`.

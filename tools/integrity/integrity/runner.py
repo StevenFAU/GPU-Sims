@@ -144,6 +144,8 @@ def main(argv: list[str]) -> int:
     try:
         checks = discover_checks(args)
         findings = run_checks(checks, args)
+        from integrity.common.suppression import apply_suppressions
+        findings = apply_suppressions(findings, args.root)
         summary = RunSummary(
             passes=sum(1 for cid, _ in checks
                        if not any(f.check_id == cid for f in findings)),

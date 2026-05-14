@@ -41,7 +41,7 @@ def test_extract_public_surface_finds_class_and_function(fixtures_dir: Path) -> 
 def test_extract_public_surface_enumerates_fields(fixtures_dir: Path) -> None:
     symbols = extract_public_surface(fixtures_dir / "bad_contracts_c")
     field_names = {s.name for s in symbols if s.kind == SymbolKind.CLASS_FIELD}
-    assert "radii" in field_names
+    assert "radii_ptr" in field_names
     assert "positions" in field_names
 
 
@@ -52,7 +52,7 @@ def test_good_contracts_c_yield_no_findings(fixtures_dir: Path) -> None:
 
 def test_bad_contracts_c_flag_unused_radii(fixtures_dir: Path) -> None:
     findings = run(fixtures_dir / "bad_contracts_c")
-    radii = [f for f in findings if "radii" in f.message]
+    radii = [f for f in findings if "radii_ptr" in f.message]
     assert len(radii) == 1, f"findings: {[f.message for f in findings]}"
 
 

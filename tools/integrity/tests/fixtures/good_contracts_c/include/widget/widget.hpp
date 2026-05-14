@@ -1,14 +1,12 @@
 #pragma once
 
-#include <string>
-
 namespace widget {
 
 struct Widget {
-    std::string name;
+    int name_len;
     int count;
 };
 
-Widget make_widget(const std::string& name);
+Widget make_widget(int initial_len);
 
 }  // namespace widget

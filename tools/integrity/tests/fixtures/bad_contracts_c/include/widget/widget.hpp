@@ -1,14 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
 namespace widget {
 
-// Mirrors the ParticleFrame::radii defect: radii is declared but never read.
+// Mirrors the ParticleFrame::radii defect: `radii_ptr` is declared but never read.
 struct Frame {
-    std::vector<float> positions;
-    std::vector<float> radii;
+    float* positions;
+    float* radii_ptr;
     int count;
 };
 

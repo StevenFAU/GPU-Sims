@@ -2,8 +2,8 @@
 
 namespace widget {
 
-Widget make_widget(const std::string& name) {
-    return Widget{name, 0};
+Widget make_widget(int initial_len) {
+    return Widget{initial_len, 0};
 }
 
 }  // namespace widget

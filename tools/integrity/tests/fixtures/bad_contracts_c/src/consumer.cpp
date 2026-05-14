@@ -2,5 +2,9 @@
 
 int use_frame() {
     auto f = widget::make_frame(10);
-    return static_cast<int>(f.positions.size()) + f.count;
+    int n = 0;
+    if (f.positions != nullptr) {
+        n += 1;
+    }
+    return n + f.count;
 }

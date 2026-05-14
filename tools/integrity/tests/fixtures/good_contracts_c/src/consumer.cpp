@@ -1,6 +1,6 @@
 #include "widget/widget.hpp"
 
 int use_widget() {
-    auto w = widget::make_widget("hello");
-    return static_cast<int>(w.name.size()) + w.count;
+    auto w = widget::make_widget(5);
+    return w.name_len + w.count;
 }

@@ -647,6 +647,141 @@ static void writePressureApplyDescriptor(VkDevice device,
     vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
 }
 
+// --------------------------------------------------------------------------
+// DFSPH commit-2a helpers — wired but unused until commit 2b rewires the
+// substep dispatch chain. Binding shape matches the new shaders in
+// particle-fluids/sph-water/shaders/compute_*.comp.glsl + apply_velocity.
+// --------------------------------------------------------------------------
+
+static void writeComputeDensityAdvDescriptor(VkDevice device,
+                                             VkDescriptorSet ds,
+                                             VkBuffer particles,
+                                             VkBuffer density_alpha,
+                                             VkBuffer cell_starts,
+                                             VkBuffer sorted_index,
+                                             VkBuffer uniform_buffer) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;   b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=cell_starts;     b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=sorted_index;    b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 5> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[4].pBufferInfo=&u_i;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+// Identical binding shape to writeComputeDensityAdvDescriptor — split for
+// per-pipeline clarity and so the two can diverge without touching both.
+static void writeComputeDensityChangeDescriptor(VkDevice device,
+                                                VkDescriptorSet ds,
+                                                VkBuffer particles,
+                                                VkBuffer density_alpha,
+                                                VkBuffer cell_starts,
+                                                VkBuffer sorted_index,
+                                                VkBuffer uniform_buffer) {
+    writeComputeDensityAdvDescriptor(device, ds, particles, density_alpha,
+                                     cell_starts, sorted_index, uniform_buffer);
+}
+
+static void writeComputePressureAccelDescriptor(VkDevice device,
+                                                VkDescriptorSet ds,
+                                                VkBuffer particles,
+                                                VkBuffer density_alpha,
+                                                VkBuffer pressure_read,
+                                                VkBuffer cell_starts,
+                                                VkBuffer sorted_index,
+                                                VkBuffer pressure_accel,
+                                                VkBuffer uniform_buffer) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;   b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=pressure_read;   b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=cell_starts;     b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b4{}; b4.buffer=sorted_index;    b4.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b5{}; b5.buffer=pressure_accel;  b5.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 7> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[4].pBufferInfo=&b4;
+    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
+    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
+    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
+    w[6].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[6].pBufferInfo=&u_i;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+static void writeComputeAijPjDescriptor(VkDevice device,
+                                        VkDescriptorSet ds,
+                                        VkBuffer particles,
+                                        VkBuffer density_alpha,
+                                        VkBuffer cell_starts,
+                                        VkBuffer sorted_index,
+                                        VkBuffer pressure_accel,
+                                        VkBuffer aij_pj_scratch,
+                                        VkBuffer uniform_buffer) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;   b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=cell_starts;     b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=sorted_index;    b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b4{}; b4.buffer=pressure_accel;  b4.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b5{}; b5.buffer=aij_pj_scratch;  b5.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 7> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[4].pBufferInfo=&b4;
+    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
+    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
+    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
+    w[6].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[6].pBufferInfo=&u_i;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+static void writeApplyVelocityDescriptor(VkDevice device,
+                                         VkDescriptorSet ds,
+                                         VkBuffer particles,
+                                         VkBuffer pressure_accel,
+                                         VkBuffer uniform_buffer) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=pressure_accel;  b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 3> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[2].pBufferInfo=&u_i;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
 // Shared by particle_sprite (depth pass) vert+frag pair.
 static void writeParticleSpriteDescriptor(VkDevice device,
                                           VkDescriptorSet ds,
@@ -818,6 +953,8 @@ struct TierResources {
     gv::Buffer density_alpha;        // N x 16 bytes
     gv::Buffer pressure_a;           // N x 4 bytes (Jacobi ping)
     gv::Buffer pressure_b;           // N x 4 bytes (Jacobi pong)
+    gv::Buffer pressure_accel;       // N x 16 bytes — per-particle pressure acceleration (commit 2a; unused until commit 2b)
+    gv::Buffer aij_pj_scratch;       // N x 4 bytes  — per-particle aij_pj sum (commit 2a; unused until commit 2b)
     gv::Buffer morton_codes;         // N x 4 bytes
     gv::Buffer sorted_index;         // N x 4 bytes
     gv::Buffer cell_counts;          // MAX_CELLS x 4 bytes (atomic counters)
@@ -867,6 +1004,10 @@ static TierResources createTierResources(gv::Context& ctx,
                                          kSsboUsage, gv::MemoryUsage::DeviceLocal, "pressure_a");
     r.pressure_b    = gv::Buffer::create(ctx, std::size_t(particle_count) * 4,
                                          kSsboUsage, gv::MemoryUsage::DeviceLocal, "pressure_b");
+    r.pressure_accel = gv::Buffer::create(ctx, std::size_t(particle_count) * 16,
+                                          kSsboUsage, gv::MemoryUsage::DeviceLocal, "pressure_accel");
+    r.aij_pj_scratch = gv::Buffer::create(ctx, std::size_t(particle_count) * 4,
+                                          kSsboUsage, gv::MemoryUsage::DeviceLocal, "aij_pj_scratch");
     r.morton_codes  = gv::Buffer::create(ctx, std::size_t(particle_count) * 4,
                                          kSsboUsage, gv::MemoryUsage::DeviceLocal, "morton_codes");
     r.sorted_index  = gv::Buffer::create(ctx, std::size_t(particle_count) * 4,
@@ -1104,6 +1245,20 @@ int main(int argc, char** argv) {
     auto pipe_pressure_apply   = make_compute("pressure_apply.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,U,1,CS}});
 
+    // ----- Commit 2a: new DFSPH inner-loop kernels (wired but unused; commit 2b -----
+    // rewires the substep dispatch chain to actually dispatch these).
+    auto pipe_compute_density_adv    = make_compute("compute_density_adv.comp.glsl",
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+    auto pipe_compute_density_change = make_compute("compute_density_change.comp.glsl",
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+    auto pipe_compute_pressure_accel = make_compute("compute_pressure_accel.comp.glsl",
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS}});
+    auto pipe_compute_aij_pj         = make_compute("compute_aij_pj.comp.glsl",
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS}},
+                                                    sizeof(std::uint32_t));  // solver_mode push-const (0=density, 1=divergence)
+    auto pipe_apply_velocity         = make_compute("apply_velocity.comp.glsl",
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,U,1,CS}});
+
     auto pipe_cell_count          = make_compute_pinned("cell_count.comp.glsl",
                                                         {{0,B,1,CS},{1,B,1,CS},{2,U,1,CS}});
     auto pipe_prefix_sum_local    = make_compute_pinned("prefix_sum_local.comp.glsl",
@@ -1183,6 +1338,20 @@ int main(int argc, char** argv) {
     };
     VkDescriptorSet ds_integrate_forces = pipe_integrate_forces.allocateDescriptorSet();
     VkDescriptorSet ds_pressure_apply   = pipe_pressure_apply.allocateDescriptorSet();
+    // Commit 2a: descriptor sets for the new DFSPH kernels. Two sets for the
+    // pressure-accel/aij_pj pair so the Jacobi ping-pong can flip p_read
+    // between pressure_a and pressure_b without rewriting descriptors mid-frame.
+    VkDescriptorSet ds_compute_density_adv     = pipe_compute_density_adv.allocateDescriptorSet();
+    VkDescriptorSet ds_compute_density_change  = pipe_compute_density_change.allocateDescriptorSet();
+    VkDescriptorSet ds_compute_pressure_accel[2] = {
+        pipe_compute_pressure_accel.allocateDescriptorSet(),
+        pipe_compute_pressure_accel.allocateDescriptorSet(),
+    };
+    VkDescriptorSet ds_compute_aij_pj[2] = {
+        pipe_compute_aij_pj.allocateDescriptorSet(),
+        pipe_compute_aij_pj.allocateDescriptorSet(),
+    };
+    VkDescriptorSet ds_apply_velocity          = pipe_apply_velocity.allocateDescriptorSet();
     // Bilateral DS variants: 0 = depth_image -> smoothed_a (first iter only),
     //                        1 = smoothed_a -> smoothed_b,
     //                        2 = smoothed_b -> smoothed_a.
@@ -1279,6 +1448,45 @@ int main(int argc, char** argv) {
             tier.particles.handle(), tier.density_alpha.handle(),
             tier.pressure_a.handle(), tier.cell_starts.handle(),
             tier.sorted_index.handle(), tier.uniform_dfsph.handle());
+        // ----- Commit 2a: new DFSPH kernel descriptors (unused until commit 2b) -----
+        writeComputeDensityAdvDescriptor(ctx.device(), ds_compute_density_adv,
+            tier.particles.handle(), tier.density_alpha.handle(),
+            tier.cell_starts.handle(), tier.sorted_index.handle(),
+            tier.uniform_dfsph.handle());
+        writeComputeDensityChangeDescriptor(ctx.device(), ds_compute_density_change,
+            tier.particles.handle(), tier.density_alpha.handle(),
+            tier.cell_starts.handle(), tier.sorted_index.handle(),
+            tier.uniform_dfsph.handle());
+        // pressure_accel: ds[0] reads p_read=pressure_a; ds[1] reads p_read=pressure_b.
+        writeComputePressureAccelDescriptor(ctx.device(), ds_compute_pressure_accel[0],
+            tier.particles.handle(), tier.density_alpha.handle(),
+            tier.pressure_a.handle(),
+            tier.cell_starts.handle(), tier.sorted_index.handle(),
+            tier.pressure_accel.handle(),
+            tier.uniform_dfsph.handle());
+        writeComputePressureAccelDescriptor(ctx.device(), ds_compute_pressure_accel[1],
+            tier.particles.handle(), tier.density_alpha.handle(),
+            tier.pressure_b.handle(),
+            tier.cell_starts.handle(), tier.sorted_index.handle(),
+            tier.pressure_accel.handle(),
+            tier.uniform_dfsph.handle());
+        // aij_pj: bindings identical across both sets — pre-allocated for future
+        // divergence/density split if either solve diverges in its read set.
+        writeComputeAijPjDescriptor(ctx.device(), ds_compute_aij_pj[0],
+            tier.particles.handle(), tier.density_alpha.handle(),
+            tier.cell_starts.handle(), tier.sorted_index.handle(),
+            tier.pressure_accel.handle(),
+            tier.aij_pj_scratch.handle(),
+            tier.uniform_dfsph.handle());
+        writeComputeAijPjDescriptor(ctx.device(), ds_compute_aij_pj[1],
+            tier.particles.handle(), tier.density_alpha.handle(),
+            tier.cell_starts.handle(), tier.sorted_index.handle(),
+            tier.pressure_accel.handle(),
+            tier.aij_pj_scratch.handle(),
+            tier.uniform_dfsph.handle());
+        writeApplyVelocityDescriptor(ctx.device(), ds_apply_velocity,
+            tier.particles.handle(), tier.pressure_accel.handle(),
+            tier.uniform_dfsph.handle());
         writeBilateralSmoothDescriptor(ctx.device(), ds_bilateral[0],
             tier.depth_image.view(), tier.smoothed_depth_a.view(),
             tier.sampler_linear, tier.uniform_bilateral.handle());
@@ -1346,7 +1554,7 @@ int main(int argc, char** argv) {
     };
     auto grad_kernel_norm_3d_value = [&]() {
         float h = rt.supportRadius;
-        return 48.0f / (float(M_PI) * h * h * h * h);
+        return 8.0f / (float(M_PI) * h * h * h * h);
     };
 
     auto pack_sort_uniform = [&]() {
@@ -1631,6 +1839,12 @@ int main(int argc, char** argv) {
     bool reload_scatter=false, reload_density_alpha=false;
     bool reload_divergence_solve=false, reload_density_solve=false;
     bool reload_integrate_forces=false, reload_pressure_apply=false;
+    // Commit 2a hot-reload flags (unused dispatches until commit 2b).
+    bool reload_compute_density_adv=false;
+    bool reload_compute_density_change=false;
+    bool reload_compute_pressure_accel=false;
+    bool reload_compute_aij_pj=false;
+    bool reload_apply_velocity=false;
     bool reload_bilateral_smooth=false;
     bool reload_depth=false, reload_thickness=false, reload_composite=false;
 
@@ -1652,6 +1866,11 @@ int main(int argc, char** argv) {
     W_watch("density_solve.comp.glsl",       &reload_density_solve);
     W_watch("integrate_forces.comp.glsl",    &reload_integrate_forces);
     W_watch("pressure_apply.comp.glsl",      &reload_pressure_apply);
+    W_watch("compute_density_adv.comp.glsl",    &reload_compute_density_adv);
+    W_watch("compute_density_change.comp.glsl", &reload_compute_density_change);
+    W_watch("compute_pressure_accel.comp.glsl", &reload_compute_pressure_accel);
+    W_watch("compute_aij_pj.comp.glsl",         &reload_compute_aij_pj);
+    W_watch("apply_velocity.comp.glsl",         &reload_apply_velocity);
     W_watch("bilateral_smooth.comp.glsl",    &reload_bilateral_smooth);
     W_watch("particle_sprite.vert.glsl",     &reload_depth);
     W_watch("particle_sprite.frag.glsl",     &reload_depth);
@@ -1874,6 +2093,11 @@ int main(int argc, char** argv) {
         try_reload(pipe_density_solve,       reload_density_solve,       "density_solve.comp.glsl");
         try_reload(pipe_integrate_forces,    reload_integrate_forces,    "integrate_forces.comp.glsl");
         try_reload(pipe_pressure_apply,      reload_pressure_apply,      "pressure_apply.comp.glsl");
+        try_reload(pipe_compute_density_adv,    reload_compute_density_adv,    "compute_density_adv.comp.glsl");
+        try_reload(pipe_compute_density_change, reload_compute_density_change, "compute_density_change.comp.glsl");
+        try_reload(pipe_compute_pressure_accel, reload_compute_pressure_accel, "compute_pressure_accel.comp.glsl");
+        try_reload(pipe_compute_aij_pj,         reload_compute_aij_pj,         "compute_aij_pj.comp.glsl");
+        try_reload(pipe_apply_velocity,         reload_apply_velocity,         "apply_velocity.comp.glsl");
         try_reload(pipe_bilateral_smooth,    reload_bilateral_smooth,    "bilateral_smooth.comp.glsl");
         try_reload(pipe_depth,               reload_depth,               "particle_sprite.{vert,frag}.glsl");
         try_reload(pipe_thickness,           reload_thickness,           "thickness.{vert,frag}.glsl");

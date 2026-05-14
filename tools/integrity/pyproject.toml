@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpusims-integrity"
+version = "0.1.0"
+description = "Cross-stack integrity verification toolkit for GPU-Sims"
+authors = [{ name = "Steven Cohen" }]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Cat 1 has no external deps (uses stdlib re, pathlib, ast)
+    # Cat 2 Stack C needs libclang at runtime
+    "libclang>=18,<19",
+    # Cat 3 TOML loading
+    "tomli>=2.0,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6,<1.0",
+    "mypy>=1.11,<2",
+    "pytest>=8,<9",
+    "pytest-cov>=5,<6",
+]
+
+[project.scripts]
+integrity = "integrity.__main__:main"
+
+[tool.setuptools]
+packages = [
+    "integrity",
+    "integrity.common",
+    "integrity.cat1_citations",
+    "integrity.cat1_citations.checks",
+    "integrity.cat2_contracts",
+    "integrity.cat2_contracts.checks",
+    "integrity.cat3_numerical",
+    "integrity.cat3_numerical.checks",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "PIE", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["libclang.*", "clang.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

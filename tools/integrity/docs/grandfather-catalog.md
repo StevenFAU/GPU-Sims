@@ -7,6 +7,7 @@ classifier in `tools/integrity/integrity/grandfather.py`).
 
 The toolkit will continue to gate CI strictly on any NEW findings introduced
 after this commit. Grandfathered findings are suppressed via inline
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` annotations per spec § 3.2.
 
 ## Categories
@@ -62,6 +63,7 @@ record of what was wrong.
 **Pattern:** `cat1.annotation-form` findings in `docs/integrity-toolkit-spec.md`
 or files under `tools/integrity/docs/`.
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 **Why grandfathered:** The spec and toolkit docs include `integrity-allow:`
 strings as illustrative grammar examples (in tables, in prose, in code
 fences). The `cat1.annotation-form` check parses every such literal as if
@@ -77,6 +79,7 @@ always fail the check.
 `tools/integrity/integrity/`.
 
 **Why grandfathered:** The toolkit's own source code references the
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` grammar in docstrings and regex literals (specifically
 in `common/annotations.py` and the checks that look for the grammar).
 These are not real annotations; they are the parser definition itself.
@@ -89,6 +92,7 @@ These are not real annotations; they are the parser definition itself.
 `docs/diagnostics/_audits/`.
 
 **Why grandfathered:** Audit reports document toolkit findings, which means
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 they quote `integrity-allow:` strings. Same reason class as
 `spec-grammar-example`.
 
@@ -108,6 +112,7 @@ and likely promoted to a more specific category.
 
 Each suppressed finding has an inline annotation per spec § 3.2:
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
     integrity-allow: <check-id>; <reason from category>; n/a
 
 Issue-refs are `n/a` for v1 grandfather suppressions; no per-finding GitHub
@@ -118,5 +123,6 @@ tracked at the category level rather than per-annotation.
 ## Removing a suppression
 
 When the underlying finding is fixed (e.g., a citation is updated, a
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 field gains a consumer), remove the corresponding `integrity-allow:`
 annotation. The toolkit's CI check will pass without it.

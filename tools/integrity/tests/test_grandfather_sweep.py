@@ -25,6 +25,7 @@ def test_live_shader_1810_classification() -> None:
     f = _f(
         "cat1.upstream-citation",
         "particle-fluids/sph-water/shaders/density_alpha.comp.glsl",
+# integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
         message="SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:42: version '1.8.10' does not match",
     )
     assert classify(f).category == "live-shader-1810"
@@ -34,6 +35,7 @@ def test_audit_doc_1810_classification() -> None:
     f = _f(
         "cat1.upstream-citation",
         "docs/diagnostics/_audits/phase11_5_probe_2026-05-14_architect1.md",
+# integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
         message="SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:42: version '1.8.10' does not match",
     )
     assert classify(f).category == "audit-doc-1810"
@@ -63,18 +65,22 @@ def test_other_cat1_fallthrough() -> None:
 
 
 def test_comment_form_python() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     assert comment_form_for("foo/bar.py") == "# integrity-allow: {body}"
 
 
 def test_comment_form_cpp() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     assert comment_form_for("foo/bar.cpp") == "// integrity-allow: {body}"
 
 
 def test_comment_form_glsl() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     assert comment_form_for("foo/bar.comp.glsl") == "// integrity-allow: {body}"
 
 
 def test_comment_form_markdown() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     assert comment_form_for("foo/bar.md") == "<!-- integrity-allow: {body} -->"
 
 
@@ -101,16 +107,19 @@ def test_at_fence_open_line() -> None:
 
 
 def test_annotation_already_present_exact_match() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     line = "// integrity-allow: cat1.intra-repo; reason here; n/a"
     assert annotation_already_present(line, "cat1.intra-repo")
 
 
 def test_annotation_already_present_wildcard() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     line = "// integrity-allow: cat1.*; reason here; n/a"
     assert annotation_already_present(line, "cat1.intra-repo")
 
 
 def test_annotation_not_present_different_category() -> None:
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     line = "// integrity-allow: cat2.*; reason here; n/a"
     assert annotation_already_present(line, "cat1.intra-repo") is False
 
@@ -123,6 +132,7 @@ def test_render_single_finding_in_markdown() -> None:
     )
     assert len(out) == 1
     assert "cat1.intra-repo" in out[0]
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     assert "integrity-allow:" in out[0]
     assert out[0].startswith("<!--") and out[0].endswith("-->")
 

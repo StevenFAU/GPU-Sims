@@ -1,3 +1,4 @@
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 """Inline `integrity-allow:` annotation application per spec § 3.2.
 
 After checks produce raw findings, this module marks each finding as

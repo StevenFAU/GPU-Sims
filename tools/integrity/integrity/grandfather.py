@@ -1,6 +1,7 @@
 """Grandfather-sweep logic for the integrity toolkit v1.
 
 Classifies HARD_FAIL findings into one of seven pre-v1 categories and
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 generates inline `integrity-allow:` annotations on the cited source
 lines. See `tools/integrity/docs/grandfather-catalog.md` for the
 per-category rationale.
@@ -94,12 +95,16 @@ def comment_form_for(file_path: str) -> str:
     """Return the comment-form template for a file by extension.
 
     Template contains `{body}` placeholder for the annotation body
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     (everything after `integrity-allow: `)."""
     p = file_path.lower()
     if p.endswith((".py", ".pyi")):
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         return "# integrity-allow: {body}"
     if p.endswith((".md", ".rst")):
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         return "<!-- integrity-allow: {body} -->"
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     return "// integrity-allow: {body}"
 
 
@@ -137,22 +142,28 @@ def is_inside_fenced_block(
 def comment_form_for_md_inside_fence(fence_lang: str | None) -> str:
     """Pick a comment form for an annotation inside a markdown code block."""
     if fence_lang is None:
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         return "// integrity-allow: {body}"
     lang = fence_lang.lower()
     if lang in ("python", "py", "toml", "yaml", "yml", "sh", "bash", "ini", "cfg"):
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         return "# integrity-allow: {body}"
     if lang in ("json",):
         # JSON has no comments; fall back to a JS-style line comment, which
         # the integrity parser will read but JSON validators won't.
         # Real JSON code-block annotations are best avoided.
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         return "// integrity-allow: {body}"
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     return "// integrity-allow: {body}"
 
 
 def annotation_already_present(prev_line: str, check_id: str) -> bool:
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     """True if `prev_line` already carries an `integrity-allow:`
     annotation that covers `check_id` (specifically or via category
     wildcard)."""
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     if "integrity-allow:" not in prev_line:
         return False
     cat = check_id.split(".")[0]

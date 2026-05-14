@@ -680,7 +680,7 @@ static void writeBilateralSmoothDescriptor(VkDevice device,
                                            VkSampler   sampler_linear,
                                            VkBuffer    uniform_buffer) {
     VkDescriptorImageInfo in_i{};
-    in_i.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    in_i.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
     in_i.imageView   = input_depth_view;
     in_i.sampler     = VK_NULL_HANDLE;
 
@@ -1116,8 +1116,8 @@ int main(int argc, char** argv) {
                                                         {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,U,1,CS}});
     auto pipe_scatter             = make_compute_pinned("scatter.comp.glsl",
                                                         {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
-    auto pipe_bilateral_smooth    = make_compute_pinned("bilateral_smooth.comp.glsl",
-                                                        {{0,T,1,CS},{1,I,1,CS},{2,S,1,CS},{3,U,1,CS}});
+    auto pipe_bilateral_smooth    = make_compute("bilateral_smooth.comp.glsl",
+                                                 {{0,T,1,CS},{1,I,1,CS},{2,S,1,CS},{3,U,1,CS}});
 
     // Depth pass — particle_sprite vert+frag → R32_SFLOAT off-screen color
     // attachment. Point-list topology; vert writes gl_PointSize, frag writes
@@ -1192,7 +1192,17 @@ int main(int argc, char** argv) {
     };
     VkDescriptorSet ds_depth     = pipe_depth.allocateDescriptorSet();
     VkDescriptorSet ds_thickness = pipe_thickness.allocateDescriptorSet();
-    VkDescriptorSet ds_composite = pipe_composite.allocateDescriptorSet();
+    // Composite reads the bilateral final-output view, which is one of:
+    //   [0] depth_image       (when bilateralIterations == 0)
+    //   [1] smoothed_depth_a  (even-iter final: 2, 4, …)
+    //   [2] smoothed_depth_b  (odd-iter final: 1, 3, …)
+    // Pre-allocate all three and bind per-frame to avoid Vulkan VUID-03047
+    // (descriptor cannot be updated while in flight).
+    VkDescriptorSet ds_composite[3] = {
+        pipe_composite.allocateDescriptorSet(),
+        pipe_composite.allocateDescriptorSet(),
+        pipe_composite.allocateDescriptorSet(),
+    };
 
     // ------------------------------------------------------------------------
     // Initial tier creation.
@@ -1281,12 +1291,18 @@ int main(int argc, char** argv) {
             tier.particles.handle(), tier.uniform_render_view.handle());
         writeThicknessDescriptor(ctx.device(), ds_thickness,
             tier.particles.handle(), tier.uniform_render_view.handle());
-        // Composite reads the FINAL bilateral output. Bilateral lands the
-        // result in smoothed_depth_a when iterations is even and 0; in
-        // smoothed_depth_b when odd. We default to smoothed_a here and patch
-        // the descriptor per-frame inside the main loop if the count is odd.
-        writeCompositeDescriptor(ctx.device(), ds_composite,
+        // Composite reads the FINAL bilateral output. Pre-write one descriptor
+        // per possible final view; main loop binds whichever matches the actual
+        // bilateral iteration count (Fix D: descriptors are not rewritten while
+        // command buffers are in flight).
+        writeCompositeDescriptor(ctx.device(), ds_composite[0],
+            tier.depth_image.view(), tier.thickness_image.view(),
+            tier.sampler_linear, tier.uniform_composite.handle());
+        writeCompositeDescriptor(ctx.device(), ds_composite[1],
             tier.smoothed_depth_a.view(), tier.thickness_image.view(),
+            tier.sampler_linear, tier.uniform_composite.handle());
+        writeCompositeDescriptor(ctx.device(), ds_composite[2],
+            tier.smoothed_depth_b.view(), tier.thickness_image.view(),
             tier.sampler_linear, tier.uniform_composite.handle());
     };
     rewriteAllDescriptors();
@@ -1360,7 +1376,7 @@ int main(int argc, char** argv) {
         tier.uniform_sort.uploadDirect(&u, sizeof(u));
     };
 
-    auto pack_dfsph_uniform = [&](float dt) {
+    auto pack_dfsph_uniform = [&](float dt, float mode) {
         glm::uvec3 axes; std::uint32_t maxAxis;
         compute_cells_per_axis(axes, maxAxis);
         struct alignas(16) Layout {
@@ -1373,9 +1389,14 @@ int main(int argc, char** argv) {
             float particleMass;
             float density0;
             float dt;
+            float viscosity;
+            float cohesion;
+            float vorticityStrength;
             float kernelNorm3D;
             float gradKernelNorm3D;
-            float jacobiRelax;
+            float _pad0;
+            float _pad1;
+            float gravity_pad[4];
             float domainMin_cellSize[4];
             float domainMax_pad[4];
         } u{};
@@ -1388,9 +1409,15 @@ int main(int argc, char** argv) {
         u.particleMass    = particle_mass();
         u.density0        = DENSITY_0;
         u.dt              = dt;
+        u.viscosity       = rt.viscosity;
+        u.cohesion        = rt.cohesion;
+        u.vorticityStrength = rt.vorticityStrength;
         u.kernelNorm3D    = kernel_norm_3d_value();
         u.gradKernelNorm3D= grad_kernel_norm_3d_value();
-        u.jacobiRelax     = DFSPH_JACOBI_RELAX;
+        u.gravity_pad[0]  = 0.0f;
+        u.gravity_pad[1]  = -9.81f;
+        u.gravity_pad[2]  = 0.0f;
+        u.gravity_pad[3]  = mode;
         u.domainMin_cellSize[0] = rt.domainMin.x;
         u.domainMin_cellSize[1] = rt.domainMin.y;
         u.domainMin_cellSize[2] = rt.domainMin.z;
@@ -1859,7 +1886,7 @@ int main(int argc, char** argv) {
         const float substep_dt = std::clamp(frame_dt / float(std::max(rt.substeps, 1)), DT_MIN, DT_MAX);
         rt.dt = substep_dt;
         pack_sort_uniform();
-        pack_dfsph_uniform(substep_dt);
+        pack_dfsph_uniform(substep_dt, 0.0f);  // FORCES mode for forces calls
         pack_render_view_uniform();
         pack_composite_uniform();
         pack_apply_emitter_uniform(substep_dt);
@@ -1994,6 +2021,15 @@ int main(int argc, char** argv) {
             }
             cs_barrier();
 
+            // Re-pack uniform with mode=1 (POSITION_ONLY) and dispatch again.
+            // Position-update advances x += dt*v with AABB clamp.
+            pack_dfsph_uniform(substep_dt, 1.0f);
+            {
+                auto _ = profiler.scope(cmd, "integrate_position");
+                pipe_integrate_forces.dispatch(cmd, ds_integrate_forces, wg_particle, 1, 1);
+            }
+            cs_barrier();
+
             if (!rt.paused) rt.iteration++;
         }
 
@@ -2086,7 +2122,7 @@ int main(int argc, char** argv) {
 
         gv::Image::transitionLayout(cmd, tier.depth_image.handle(),
             VK_IMAGE_ASPECT_COLOR_BIT,
-            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
         gv::Image::transitionLayout(cmd, tier.smoothed_depth_a.handle(),
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
@@ -2125,15 +2161,18 @@ int main(int argc, char** argv) {
             }
         }
         // Final smoothed buffer needs SHADER_READ_ONLY_OPTIMAL for composite.
-        if (final_smoothed_img != tier.depth_image.handle()) {
-            gv::Image::transitionLayout(cmd, final_smoothed_img,
-                VK_IMAGE_ASPECT_COLOR_BIT,
-                VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        }
-        // Repoint composite's depth-input descriptor at the final smoothed view.
-        writeCompositeDescriptor(ctx.device(), ds_composite,
-            final_smoothed_view, tier.thickness_image.view(),
-            tier.sampler_linear, tier.uniform_composite.handle());
+        // depth_image is already GENERAL post-depth-pass; smoothed_a/b are GENERAL
+        // throughout the bilateral ping-pong (Fix C: ES "everything in GENERAL").
+        gv::Image::transitionLayout(cmd, final_smoothed_img,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        // Select the composite descriptor whose pre-written depth-input view
+        // matches `final_smoothed_img`. Pre-written at init: [0]=depth_image,
+        // [1]=smoothed_a, [2]=smoothed_b.
+        std::uint32_t composite_idx = 0;
+        if (final_smoothed_img == tier.smoothed_depth_a.handle())      composite_idx = 1;
+        else if (final_smoothed_img == tier.smoothed_depth_b.handle()) composite_idx = 2;
+        (void)final_smoothed_view;
 
         // Thickness pass.
         gv::Image::transitionLayout(cmd, tier.thickness_image.handle(),
@@ -2249,7 +2288,7 @@ int main(int argc, char** argv) {
         vkCmdSetScissor(cmd, 0, 1, &scissor);
         {
             auto _ = profiler.scope(cmd, "composite");
-            pipe_composite.bind(cmd, ds_composite);
+            pipe_composite.bind(cmd, ds_composite[composite_idx]);
             vkCmdDraw(cmd, 3, 1, 0, 0);   // fullscreen triangle
         }
         gpusims::ui::renderImGui(cmd);

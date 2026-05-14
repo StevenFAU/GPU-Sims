@@ -40,7 +40,7 @@ void GpuProfiler::beginFrame(VkCommandBuffer cmd, std::uint32_t frame_in_flight_
     current_frame_idx_ = frame_in_flight_idx;
     auto& f = frames_[current_frame_idx_];
     f.pass_count = 0;
-    readBackResults(current_frame_idx_);
+    readBackResults((current_frame_idx_ + 1) % kMaxFramesInFlight);
     if (pools_[current_frame_idx_] != VK_NULL_HANDLE) {
         vkCmdResetQueryPool(cmd, pools_[current_frame_idx_], 0, kQueriesPerFrame);
     }

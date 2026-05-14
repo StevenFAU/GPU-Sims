@@ -313,6 +313,7 @@ void Context::createDevice(const ContextCreateInfo& info) {
                 "rather than silently producing platform-dependent behavior.");
         }
         f13.subgroupSizeControl = VK_TRUE;
+        f13.computeFullSubgroups = VK_TRUE;
     }
 
     VkPhysicalDeviceVulkan12Features f12{};

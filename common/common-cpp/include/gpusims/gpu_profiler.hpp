@@ -44,7 +44,7 @@ class Context;
 
 class GpuProfiler {
 public:
-    static constexpr std::uint32_t kMaxPasses = 64;
+    static constexpr std::uint32_t kMaxPasses = 256;
 
     explicit GpuProfiler(vk::Context& ctx);
     ~GpuProfiler();

@@ -137,3 +137,10 @@ perf.data*
 .claude/
 CLAUDE.local.md
 imgui.ini
+
+# Phase 11.5: SPlisHSPlasH vendored upstream reference (clone-on-setup, gitignored).
+# Anchored to tag 2.16.1 (SHA 6bff55a6eaf14083d34650f22a268ce156b62b54).
+# See docs/diagnostics/_audits/phase11_5_setup1_*.md for the setup record and the
+# anchor-decision context (the original load-bearing-decisions.md anchor of
+# "1.8.10" was non-existent upstream; 2.16.1 was selected as a fresh anchor).
+/references/

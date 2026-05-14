@@ -117,6 +117,8 @@ def emit_output(summary: RunSummary, findings: list[Finding], args: CliArgs) -> 
         sys.stdout.write("\n")
     elif args.output == "github":
         for f in findings:
+            if f.suppressed:
+                continue
             kind = "error" if f.mode == FailureMode.HARD_FAIL else "warning"
             sys.stdout.write(
                 f"::{kind} file={f.file},line={f.line}::{f.check_id}: {f.message}\n"

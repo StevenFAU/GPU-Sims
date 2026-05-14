@@ -43,6 +43,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install workspace deps (for Stack B module resolution)
+        run: npm install --silent
+
       - name: Install + build TS helper for Stack B integrity check
         working-directory: tools/integrity/integrity/cat2_contracts/ts_helper
         run: |

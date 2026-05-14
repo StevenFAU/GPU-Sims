@@ -782,6 +782,49 @@ static void writeApplyVelocityDescriptor(VkDevice device,
     vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
 }
 
+// Jacobi-update step for the density solve (consumes aij_pj_scratch produced
+// by compute_aij_pj with solver_mode==0). Caller flips pressure_read/_write
+// to ping-pong across inner iterations.
+static void writeJacobiUpdateDensityDescriptor(VkDevice device,
+                                               VkDescriptorSet ds,
+                                               VkBuffer density_alpha,
+                                               VkBuffer aij_pj_scratch,
+                                               VkBuffer pressure_read,
+                                               VkBuffer pressure_write,
+                                               VkBuffer uniform_buffer) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=density_alpha;   b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=aij_pj_scratch;  b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=pressure_read;   b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=pressure_write;  b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 5> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[4].pBufferInfo=&u_i;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+// Identical binding shape to writeJacobiUpdateDensityDescriptor — trampoline
+// so the two pipelines can diverge without touching both call sites.
+static void writeJacobiUpdateDivergenceDescriptor(VkDevice device,
+                                                  VkDescriptorSet ds,
+                                                  VkBuffer density_alpha,
+                                                  VkBuffer aij_pj_scratch,
+                                                  VkBuffer pressure_read,
+                                                  VkBuffer pressure_write,
+                                                  VkBuffer uniform_buffer) {
+    writeJacobiUpdateDensityDescriptor(device, ds, density_alpha, aij_pj_scratch,
+                                       pressure_read, pressure_write, uniform_buffer);
+}
+
 // Shared by particle_sprite (depth pass) vert+frag pair.
 static void writeParticleSpriteDescriptor(VkDevice device,
                                           VkDescriptorSet ds,
@@ -1258,6 +1301,12 @@ int main(int argc, char** argv) {
                                                     sizeof(std::uint32_t));  // solver_mode push-const (0=density, 1=divergence)
     auto pipe_apply_velocity         = make_compute("apply_velocity.comp.glsl",
                                                     {{0,B,1,CS},{1,B,1,CS},{2,U,1,CS}});
+    // Commit 2b: Jacobi-update kernels — consume aij_pj_scratch from
+    // compute_aij_pj and write the next-iteration pressure.
+    auto pipe_jacobi_update_density    = make_compute("jacobi_update_density.comp.glsl",
+                                                      {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+    auto pipe_jacobi_update_divergence = make_compute("jacobi_update_divergence.comp.glsl",
+                                                      {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
 
     auto pipe_cell_count          = make_compute_pinned("cell_count.comp.glsl",
                                                         {{0,B,1,CS},{1,B,1,CS},{2,U,1,CS}});
@@ -1352,6 +1401,16 @@ int main(int argc, char** argv) {
         pipe_compute_aij_pj.allocateDescriptorSet(),
     };
     VkDescriptorSet ds_apply_velocity          = pipe_apply_velocity.allocateDescriptorSet();
+    // Commit 2b: Jacobi-update DS pairs — set[0] reads pressure_a / writes
+    // pressure_b; set[1] swaps. Selected by (i % 2) in the inner solver loops.
+    VkDescriptorSet ds_jacobi_update_density[2] = {
+        pipe_jacobi_update_density.allocateDescriptorSet(),
+        pipe_jacobi_update_density.allocateDescriptorSet(),
+    };
+    VkDescriptorSet ds_jacobi_update_divergence[2] = {
+        pipe_jacobi_update_divergence.allocateDescriptorSet(),
+        pipe_jacobi_update_divergence.allocateDescriptorSet(),
+    };
     // Bilateral DS variants: 0 = depth_image -> smoothed_a (first iter only),
     //                        1 = smoothed_a -> smoothed_b,
     //                        2 = smoothed_b -> smoothed_a.
@@ -1486,6 +1545,24 @@ int main(int argc, char** argv) {
             tier.uniform_dfsph.handle());
         writeApplyVelocityDescriptor(ctx.device(), ds_apply_velocity,
             tier.particles.handle(), tier.pressure_accel.handle(),
+            tier.uniform_dfsph.handle());
+        // Commit 2b: Jacobi-update descriptor writes — ds[0] reads pressure_a /
+        // writes pressure_b; ds[1] swaps. Identical pattern to ds_*_solve above.
+        writeJacobiUpdateDensityDescriptor(ctx.device(), ds_jacobi_update_density[0],
+            tier.density_alpha.handle(), tier.aij_pj_scratch.handle(),
+            tier.pressure_a.handle(), tier.pressure_b.handle(),
+            tier.uniform_dfsph.handle());
+        writeJacobiUpdateDensityDescriptor(ctx.device(), ds_jacobi_update_density[1],
+            tier.density_alpha.handle(), tier.aij_pj_scratch.handle(),
+            tier.pressure_b.handle(), tier.pressure_a.handle(),
+            tier.uniform_dfsph.handle());
+        writeJacobiUpdateDivergenceDescriptor(ctx.device(), ds_jacobi_update_divergence[0],
+            tier.density_alpha.handle(), tier.aij_pj_scratch.handle(),
+            tier.pressure_a.handle(), tier.pressure_b.handle(),
+            tier.uniform_dfsph.handle());
+        writeJacobiUpdateDivergenceDescriptor(ctx.device(), ds_jacobi_update_divergence[1],
+            tier.density_alpha.handle(), tier.aij_pj_scratch.handle(),
+            tier.pressure_b.handle(), tier.pressure_a.handle(),
             tier.uniform_dfsph.handle());
         writeBilateralSmoothDescriptor(ctx.device(), ds_bilateral[0],
             tier.depth_image.view(), tier.smoothed_depth_a.view(),
@@ -1845,6 +1922,9 @@ int main(int argc, char** argv) {
     bool reload_compute_pressure_accel=false;
     bool reload_compute_aij_pj=false;
     bool reload_apply_velocity=false;
+    // Commit 2b hot-reload flags.
+    bool reload_jacobi_update_density=false;
+    bool reload_jacobi_update_divergence=false;
     bool reload_bilateral_smooth=false;
     bool reload_depth=false, reload_thickness=false, reload_composite=false;
 
@@ -1871,6 +1951,8 @@ int main(int argc, char** argv) {
     W_watch("compute_pressure_accel.comp.glsl", &reload_compute_pressure_accel);
     W_watch("compute_aij_pj.comp.glsl",         &reload_compute_aij_pj);
     W_watch("apply_velocity.comp.glsl",         &reload_apply_velocity);
+    W_watch("jacobi_update_density.comp.glsl",    &reload_jacobi_update_density);
+    W_watch("jacobi_update_divergence.comp.glsl", &reload_jacobi_update_divergence);
     W_watch("bilateral_smooth.comp.glsl",    &reload_bilateral_smooth);
     W_watch("particle_sprite.vert.glsl",     &reload_depth);
     W_watch("particle_sprite.frag.glsl",     &reload_depth);
@@ -2098,6 +2180,8 @@ int main(int argc, char** argv) {
         try_reload(pipe_compute_pressure_accel, reload_compute_pressure_accel, "compute_pressure_accel.comp.glsl");
         try_reload(pipe_compute_aij_pj,         reload_compute_aij_pj,         "compute_aij_pj.comp.glsl");
         try_reload(pipe_apply_velocity,         reload_apply_velocity,         "apply_velocity.comp.glsl");
+        try_reload(pipe_jacobi_update_density,    reload_jacobi_update_density,    "jacobi_update_density.comp.glsl");
+        try_reload(pipe_jacobi_update_divergence, reload_jacobi_update_divergence, "jacobi_update_divergence.comp.glsl");
         try_reload(pipe_bilateral_smooth,    reload_bilateral_smooth,    "bilateral_smooth.comp.glsl");
         try_reload(pipe_depth,               reload_depth,               "particle_sprite.{vert,frag}.glsl");
         try_reload(pipe_thickness,           reload_thickness,           "thickness.{vert,frag}.glsl");
@@ -2199,28 +2283,56 @@ int main(int argc, char** argv) {
             }
             cs_barrier();
 
-            // Divergence-free Jacobi inner loop. Zero both pressure buffers
-            // at the start; alternate ds_divergence_solve[i%2].
+            // ============================================================
+            // DIVERGENCE SOLVE — source term (density_change) once, then
+            // Jacobi inner loop driving the upstream-exact DFSPH stencil.
+            // Each iteration: compute_pressure_accel → compute_aij_pj →
+            // jacobi_update_divergence. Final pressure_accel feeds
+            // apply_velocity which integrates onto particle velocity.
+            // ============================================================
+            {
+                auto _ = profiler.scope(cmd, "compute_density_change");
+                pipe_compute_density_change.dispatch(cmd, ds_compute_density_change, wg_particle, 1, 1);
+            }
+            cs_barrier();
+
             if (rt.divSolverEnabled) {
-                vkCmdFillBuffer(cmd, tier.pressure_a.handle(), 0, VK_WHOLE_SIZE, 0u);
-                vkCmdFillBuffer(cmd, tier.pressure_b.handle(), 0, VK_WHOLE_SIZE, 0u);
+                vkCmdFillBuffer(cmd, tier.pressure_a.handle(),     0, VK_WHOLE_SIZE, 0u);
+                vkCmdFillBuffer(cmd, tier.pressure_b.handle(),     0, VK_WHOLE_SIZE, 0u);
+                vkCmdFillBuffer(cmd, tier.pressure_accel.handle(), 0, VK_WHOLE_SIZE, 0u);
                 gv::memoryBarrier(cmd,
                     VK_PIPELINE_STAGE_2_TRANSFER_BIT, VK_ACCESS_2_TRANSFER_WRITE_BIT,
                     VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT, VK_ACCESS_2_SHADER_READ_BIT | VK_ACCESS_2_SHADER_WRITE_BIT);
+
                 int iters = std::max(rt.minIterDivergence, 1);
                 for (int i = 0; i < iters; ++i) {
-                    auto _ = profiler.scope(cmd, "divergence_solve");
-                    pipe_divergence_solve.dispatch(cmd, ds_divergence_solve[i % 2], wg_particle, 1, 1);
+                    auto _ = profiler.scope(cmd, "divergence_iter");
+
+                    pipe_compute_pressure_accel.dispatch(cmd, ds_compute_pressure_accel[i % 2], wg_particle, 1, 1);
+                    cs_barrier();
+
+                    {
+                        std::uint32_t solver_mode = 1u;   // divergence: aij_pj *= dt
+                        pipe_compute_aij_pj.dispatch(cmd, ds_compute_aij_pj[0], wg_particle, 1, 1,
+                                                     &solver_mode, sizeof(solver_mode));
+                    }
+                    cs_barrier();
+
+                    pipe_jacobi_update_divergence.dispatch(cmd, ds_jacobi_update_divergence[i % 2], wg_particle, 1, 1);
                     cs_barrier();
                 }
-                {
-                    auto _ = profiler.scope(cmd, "pressure_apply_div");
-                    pipe_pressure_apply.dispatch(cmd, ds_pressure_apply, wg_particle, 1, 1);
-                }
+
+                // Final pressure_accel from converged pressure values.
+                int final_i = std::max(rt.minIterDivergence, 1);
+                pipe_compute_pressure_accel.dispatch(cmd, ds_compute_pressure_accel[final_i % 2], wg_particle, 1, 1);
+                cs_barrier();
+                pipe_apply_velocity.dispatch(cmd, ds_apply_velocity, wg_particle, 1, 1);
                 cs_barrier();
             }
 
-            // Integrate non-pressure forces (gravity + viscosity).
+            // ============================================================
+            // INTEGRATE FORCES — gravity, viscosity, cohesion.
+            // ============================================================
             {
                 auto _ = profiler.scope(cmd, "integrate_forces");
                 std::uint32_t mode = 0u;
@@ -2229,25 +2341,50 @@ int main(int argc, char** argv) {
             }
             cs_barrier();
 
-            // Density-constancy Jacobi inner loop.
-            vkCmdFillBuffer(cmd, tier.pressure_a.handle(), 0, VK_WHOLE_SIZE, 0u);
-            vkCmdFillBuffer(cmd, tier.pressure_b.handle(), 0, VK_WHOLE_SIZE, 0u);
+            // ============================================================
+            // DENSITY SOLVE — source term (density_adv) once, then Jacobi
+            // inner loop using compute_pressure_accel → compute_aij_pj
+            // (solver_mode==0 → *= dt*dt) → jacobi_update_density. Final
+            // pressure_accel feeds apply_velocity.
+            // ============================================================
+            {
+                auto _ = profiler.scope(cmd, "compute_density_adv");
+                pipe_compute_density_adv.dispatch(cmd, ds_compute_density_adv, wg_particle, 1, 1);
+            }
+            cs_barrier();
+
+            vkCmdFillBuffer(cmd, tier.pressure_a.handle(),     0, VK_WHOLE_SIZE, 0u);
+            vkCmdFillBuffer(cmd, tier.pressure_b.handle(),     0, VK_WHOLE_SIZE, 0u);
+            vkCmdFillBuffer(cmd, tier.pressure_accel.handle(), 0, VK_WHOLE_SIZE, 0u);
             gv::memoryBarrier(cmd,
                 VK_PIPELINE_STAGE_2_TRANSFER_BIT, VK_ACCESS_2_TRANSFER_WRITE_BIT,
                 VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT, VK_ACCESS_2_SHADER_READ_BIT | VK_ACCESS_2_SHADER_WRITE_BIT);
+
             {
                 int iters = std::max(rt.minIterDensity, 1);
                 for (int i = 0; i < iters; ++i) {
-                    auto _ = profiler.scope(cmd, "density_solve");
-                    pipe_density_solve.dispatch(cmd, ds_density_solve[i % 2], wg_particle, 1, 1);
+                    auto _ = profiler.scope(cmd, "density_iter");
+
+                    pipe_compute_pressure_accel.dispatch(cmd, ds_compute_pressure_accel[i % 2], wg_particle, 1, 1);
+                    cs_barrier();
+
+                    {
+                        std::uint32_t solver_mode = 0u;   // density: aij_pj *= dt*dt
+                        pipe_compute_aij_pj.dispatch(cmd, ds_compute_aij_pj[0], wg_particle, 1, 1,
+                                                     &solver_mode, sizeof(solver_mode));
+                    }
+                    cs_barrier();
+
+                    pipe_jacobi_update_density.dispatch(cmd, ds_jacobi_update_density[i % 2], wg_particle, 1, 1);
                     cs_barrier();
                 }
+
+                int final_i = std::max(rt.minIterDensity, 1);
+                pipe_compute_pressure_accel.dispatch(cmd, ds_compute_pressure_accel[final_i % 2], wg_particle, 1, 1);
+                cs_barrier();
+                pipe_apply_velocity.dispatch(cmd, ds_apply_velocity, wg_particle, 1, 1);
+                cs_barrier();
             }
-            {
-                auto _ = profiler.scope(cmd, "pressure_apply_density");
-                pipe_pressure_apply.dispatch(cmd, ds_pressure_apply, wg_particle, 1, 1);
-            }
-            cs_barrier();
 
             // Position-update advances x += dt*v with AABB clamp.
             // mode is pushed per-dispatch via push constant.

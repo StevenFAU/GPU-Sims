@@ -53,12 +53,15 @@ set(SHADER_SOURCES
     shaders/density_solve.comp.glsl
     shaders/pressure_apply.comp.glsl
     shaders/integrate_forces.comp.glsl
-    # Commit 2a DFSPH inner-loop kernels (5; wired but unused until commit 2b)
+    # Commit 2a DFSPH inner-loop kernels (5)
     shaders/compute_density_adv.comp.glsl
     shaders/compute_density_change.comp.glsl
     shaders/compute_pressure_accel.comp.glsl
     shaders/compute_aij_pj.comp.glsl
     shaders/apply_velocity.comp.glsl
+    # Commit 2b Jacobi-update kernels (2)
+    shaders/jacobi_update_density.comp.glsl
+    shaders/jacobi_update_divergence.comp.glsl
     # Emitter + initial fill (2)
     shaders/apply_emitter.comp.glsl
     shaders/initial_fill.comp.glsl

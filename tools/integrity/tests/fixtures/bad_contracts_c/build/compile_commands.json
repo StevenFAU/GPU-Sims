@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "/tmp/fixture",
+    "command": "/usr/bin/clang++ -std=c++20 -I../include -c ../src/widget.cpp -o /tmp/widget.o",
+    "file": "/tmp/fixture/../src/widget.cpp"
+  }
+]

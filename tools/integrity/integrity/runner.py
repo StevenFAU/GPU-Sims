@@ -68,17 +68,32 @@ def parse_args(argv: list[str]) -> CliArgs:
 
 
 def discover_checks(args: CliArgs) -> list[Any]:
-    """Discover registered check modules per --cat / --check filters.
+    """Discover registered check modules per --cat / --check filters."""
+    from integrity.cat1_citations.checks import REGISTERED_CHECKS as cat1_checks
 
-    Commit 1: no checks registered. Returns []. Commits 2+ populate
-    the check registry by importing per-category modules.
-    """
-    return []
+    all_checks: list[tuple[str, Any]] = []
+    if args.cat is None or args.cat == 1:
+        all_checks.extend(cat1_checks)
+    # Cat 2 and Cat 3 registered in subsequent commits
+
+    if args.check is not None:
+        all_checks = [(cid, mod) for cid, mod in all_checks if cid == args.check]
+
+    return all_checks
 
 
 def run_checks(checks: list[Any], args: CliArgs) -> list[Finding]:
-    """Execute the given checks. Commit 1: no-op (no checks)."""
-    return []
+    """Execute the given checks against args.root, return all findings."""
+    findings: list[Finding] = []
+    for check_id, module in checks:
+        try:
+            check_findings = module.run(args.root)
+            findings.extend(check_findings)
+        except Exception as e:
+            # A check-internal exception is INTERNAL_FAIL; re-raise so the
+            # main() handler emits the diagnostic and exits 2.
+            raise RuntimeError(f"check {check_id} raised: {e}") from e
+    return findings
 
 
 def emit_output(summary: RunSummary, findings: list[Finding], args: CliArgs) -> None:
@@ -130,9 +145,11 @@ def main(argv: list[str]) -> int:
         checks = discover_checks(args)
         findings = run_checks(checks, args)
         summary = RunSummary(
-            passes=0,
+            passes=sum(1 for cid, _ in checks
+                       if not any(f.check_id == cid for f in findings)),
             soft_warns=sum(1 for f in findings if f.mode == FailureMode.SOFT_WARN),
-            hard_fails=sum(1 for f in findings if f.mode == FailureMode.HARD_FAIL and not f.suppressed),
+            hard_fails=sum(1 for f in findings
+                           if f.mode == FailureMode.HARD_FAIL and not f.suppressed),
             suppressions=sum(1 for f in findings if f.suppressed),
         )
         emit_output(summary, findings, args)

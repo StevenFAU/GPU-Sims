@@ -1,0 +1,2 @@
+// Two lines.
+int x;

@@ -21,8 +21,10 @@ namespace abc {
 struct ParticleFrame {
     const float*    positions  = nullptr;  // 3 floats per particle (x, y, z)
     const float*    velocities = nullptr;  // 3 floats per particle (optional)
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     const float*    radii      = nullptr;  // 1 float per particle (optional)
     const std::uint64_t* ids   = nullptr;  // optional
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::size_t     count      = 0;
 };
 
@@ -30,10 +32,12 @@ struct ParticleFrame {
 // once per simulation frame to be exported.
 class ParticleWriter {
 public:
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     static std::unique_ptr<ParticleWriter> create(const std::filesystem::path& path,
                                                   double fps = 24.0);
     virtual ~ParticleWriter();
 
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     virtual bool writeFrame(const ParticleFrame& frame) = 0;
 
 protected:

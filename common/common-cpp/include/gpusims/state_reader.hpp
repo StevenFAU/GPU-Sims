@@ -31,16 +31,21 @@ public:
     findLatest(const std::filesystem::path& root);
 
     // Top-level metadata. Returns null json if key not present.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     nlohmann::json meta(const std::string& key) const;
 
     // Buffer descriptor (the per-buffer meta passed to StateWriter::saveBuffer).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     nlohmann::json bufferMeta(const std::string& name) const;
 
     // Raw bytes for a saved buffer. Empty if not present.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::vector<std::uint8_t> buffer(const std::string& name) const;
 
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t frameIndex() const { return frame_idx_; }
 
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     const std::filesystem::path& dir() const { return dir_; }
 
 private:

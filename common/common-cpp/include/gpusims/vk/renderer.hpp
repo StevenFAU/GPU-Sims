@@ -53,11 +53,15 @@ public:
     void waitIdle();
 
     // Accessors
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     Context& ctx()    const { return *ctx_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     Window&  window() const { return *window_; }
 
     // Frames-in-flight slots (kMaxFramesInFlight of them).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     Frame& frame(std::uint32_t i) { return frames_[i]; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t framesInFlight() const { return kMaxFramesInFlight; }
 
 private:

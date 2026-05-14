@@ -29,30 +29,39 @@ public:
     // Per-frame
     bool shouldClose() const;
     void pollEvents();
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void waitEvents();
 
     // Acquire the next swapchain image. Returns:
     //   - imageIndex on success
     //   - std::nullopt if swapchain is out-of-date and was recreated; caller
     //     should skip this frame and retry next iteration.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::optional<std::uint32_t> acquireNextImage(VkSemaphore image_available);
 
     // Present the rendered swapchain image. wait_semaphore signals when render
     // is complete. Returns false if the swapchain became out-of-date during
     // presentation; caller should recreate next frame.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     bool present(std::uint32_t image_index, VkSemaphore wait_semaphore);
 
     // Force-recreate the swapchain (e.g., after window-resize message).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void recreateSwapchain();
 
     // Handles
     GLFWwindow*       glfwWindow()   const { return window_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkSurfaceKHR      surface()      const { return surface_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkSwapchainKHR    swapchain()    const { return swapchain_; }
     VkFormat          colorFormat()  const { return color_format_; }
     VkExtent2D        extent()       const { return extent_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t     imageCount()   const { return static_cast<std::uint32_t>(images_.size()); }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkImage           image(std::uint32_t i)     const { return images_[i]; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkImageView       imageView(std::uint32_t i) const { return image_views_[i]; }
 
     // Aspect ratio for camera projection.

@@ -48,12 +48,14 @@ public:
     void watch(const std::filesystem::path& file, Callback cb);
 
     // Stop watching a previously-registered file.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void unwatch(const std::filesystem::path& file);
 
     // Process pending change events. Call once per frame from the main thread.
     void poll();
 
     // Number of files currently being watched (including transitive includes).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::size_t watchCount() const;
 
     // Recently-fired events (for ImGui overlay). Each entry is a path + a
@@ -65,15 +67,18 @@ public:
         std::string           message;
         std::chrono::steady_clock::time_point t;
     };
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::vector<Event> recentEvents() const;
 
     // Called from the consumer's reload callback to record success/failure
     // for ImGui display.
     void reportSuccess(const std::filesystem::path& path);
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void reportFailure(const std::filesystem::path& path, std::string message);
 
 private:
     struct WatchedFile {
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
         std::filesystem::path                  path;
         Callback                               callback;       // user callback
         std::filesystem::file_time_type        last_mtime;

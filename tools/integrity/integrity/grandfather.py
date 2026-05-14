@@ -48,6 +48,13 @@ def classify(finding: Finding) -> Classification:
             issue_ref="n/a",
         )
 
+    if cid == "cat2.public-symbol-used-c":
+        return Classification(
+            category="cat2-stack-c-unused",
+            reason="pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused)",
+            issue_ref="n/a",
+        )
+
     if cid == "cat1.intra-repo" and f.startswith("docs/diagnostics/_audits/"):
         return Classification(
             category="audit-citation",

@@ -26,9 +26,11 @@ public:
     explicit StateWriter(std::filesystem::path root_dir);
 
     // Begin a new capture. Creates capture_<frame_idx_padded>/ subdir.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void beginFrame(std::uint32_t frame_idx);
 
     // Set arbitrary metadata; copied into state.json under the "meta" key.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setMeta(const std::string& key, const nlohmann::json& value);
 
     // Save a binary blob.
@@ -37,6 +39,7 @@ public:
     //   bytes: byte count
     //   meta: per-buffer metadata (e.g., {"count": 1000000, "stride": 32})
     //         describes how to interpret the binary data on reload.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void saveBuffer(const std::string&    name,
                     const void*           data,
                     std::size_t           bytes,
@@ -46,6 +49,7 @@ public:
     void endFrame();
 
     // Path to current capture directory (valid between begin/endFrame).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     const std::filesystem::path& currentDir() const { return current_dir_; }
 
 private:

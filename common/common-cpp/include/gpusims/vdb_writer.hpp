@@ -22,6 +22,7 @@ namespace gpusims {
 namespace vdb {
 
 // Write a single dense float grid to a .vdb file. Returns false on failure.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 bool writeFloatGrid(const std::filesystem::path& path,
                     const float*                 data,
                     glm::ivec3                   dims,
@@ -30,6 +31,7 @@ bool writeFloatGrid(const std::filesystem::path& path,
                     const char*                  grid_name = "density");
 
 // Write a single dense vec3 grid to a .vdb file (interleaved xyz floats).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 bool writeVec3Grid(const std::filesystem::path& path,
                    const float*                 data,
                    glm::ivec3                   dims,
@@ -38,6 +40,7 @@ bool writeVec3Grid(const std::filesystem::path& path,
                    const char*                  grid_name = "velocity");
 
 // Convenience for sequence frames. Writes to <base>_<NNNN>.vdb.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 bool writeFloatFrame(const std::filesystem::path& base,
                      std::uint32_t                frame_idx,
                      const float*                 data,

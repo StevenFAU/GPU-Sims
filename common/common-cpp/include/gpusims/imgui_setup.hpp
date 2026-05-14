@@ -59,6 +59,7 @@ void shutdownImGui();
 
 // Convenience: create + own a small descriptor pool sized for ImGui's needs.
 // Returned pool must be destroyed by the caller via vkDestroyDescriptorPool.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 VkDescriptorPool createImGuiDescriptorPool(VkDevice device);
 
 // Top-right toast list, used by the renderer to show hot-reload events.

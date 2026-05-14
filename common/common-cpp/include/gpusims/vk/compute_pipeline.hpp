@@ -21,6 +21,7 @@ struct Frame;
 // The wrapper below hides pool / set allocation; per-sim code writes
 // descriptors via WriteDescriptorSet and dispatches with explicit binding.
 
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 struct DescriptorBinding {
     std::uint32_t      binding;
     VkDescriptorType   type;
@@ -72,6 +73,7 @@ public:
     // Old VkShaderModule / VkPipeline are appended to the current frame's
     // deletion queue (passed in) so they're destroyed safely once in-flight
     // frames complete.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     bool reload(Context&                   ctx,
                 ShaderCompiler&            compiler,
                 Frame&                     current_frame,
@@ -82,6 +84,7 @@ public:
 
     // Bind & dispatch. Caller is responsible for inserting any required
     // memory barriers around the dispatch.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void dispatch(VkCommandBuffer cmd,
                   VkDescriptorSet ds,
                   std::uint32_t   gx,
@@ -91,10 +94,15 @@ public:
                   std::uint32_t   push_size      = 0);
 
     // Handles for callers that want to bind/dispatch directly.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkPipeline            handle()        const { return pipeline_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkPipelineLayout      pipelineLayout()const { return pipeline_layout_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkDescriptorSetLayout descriptorSetLayout() const { return ds_layout_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     const std::filesystem::path& shaderPath() const { return desc_.shader_path; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     const std::vector<std::filesystem::path>& includes() const { return last_includes_; }
 
 private:

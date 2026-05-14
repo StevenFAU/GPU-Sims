@@ -62,14 +62,19 @@ public:
     VkPhysicalDevice physicalDevice()  const { return physical_device_; }
     VkDevice         device()          const { return device_; }
     VkQueue          graphicsQueue()   const { return graphics_queue_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkQueue          computeQueue()    const { return compute_queue_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t    graphicsQueueFamily() const { return graphics_queue_family_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t    computeQueueFamily()  const { return compute_queue_family_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VmaAllocator     allocator()       const { return allocator_; }
 
     // Properties of the chosen physical device, available for sims that
     // want to scale parameters by hardware capability.
     const VkPhysicalDeviceProperties&    deviceProperties()    const { return props_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     const VkPhysicalDeviceMemoryProperties& memoryProperties() const { return mem_props_; }
 
     // Subgroup-size-control properties.
@@ -81,8 +86,11 @@ public:
     //
     // Values originate from VkPhysicalDeviceSubgroupSizeControlProperties
     // queried via vkGetPhysicalDeviceProperties2 during Context construction.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t subgroupSizeMin()              const { return subgroup_size_min_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t subgroupSizeMax()              const { return subgroup_size_max_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::uint32_t requiredSubgroupSizeStages()   const { return required_subgroup_size_stages_; }
     bool          subgroupSizeControlEnabled()   const { return subgroup_size_control_enabled_; }
 
@@ -92,6 +100,7 @@ public:
 
     // Convenience: allocate a transient command buffer, run callback, submit,
     // wait, and free. Used for one-shot setup work (image transitions, etc.).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void runOneShot(const std::function<void(VkCommandBuffer)>& fn);
 
 private:

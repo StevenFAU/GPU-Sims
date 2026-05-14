@@ -44,6 +44,7 @@ public:
     // Mode and per-frame update
     // ----------------------------------------------------------------------
     void setMode(Mode m);
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     Mode mode() const { return mode_; }
 
     // Advance the camera by `dt` seconds, applying input.
@@ -52,13 +53,20 @@ public:
     // ----------------------------------------------------------------------
     // Output transforms
     // ----------------------------------------------------------------------
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::mat4 view()           const;
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::mat4 projection()     const;
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::mat4 viewProjection() const { return projection() * view(); }
 
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::vec3 position() const { return position_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::vec3 forward()  const;
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::vec3 right()    const;
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     glm::vec3 up()       const;
 
     // ----------------------------------------------------------------------
@@ -68,27 +76,35 @@ public:
     void setAspect(float aspect)           { aspect_  = aspect; }
     void setNearFar(float n, float f)      { near_    = n; far_ = f; }
     float fovDeg() const                   { return fov_deg_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     float aspect() const                   { return aspect_; }
 
     // ----------------------------------------------------------------------
     // Free-fly tuning
     // ----------------------------------------------------------------------
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setMoveSpeed(float units_per_sec)  { move_speed_ = units_per_sec; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setLookSpeed(float deg_per_pixel)  { look_speed_ = deg_per_pixel; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setBoostMultiplier(float m)        { boost_mul_  = m; }
 
     // ----------------------------------------------------------------------
     // Arcball / Orbit tuning
     // ----------------------------------------------------------------------
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setTarget(glm::vec3 t)              { target_         = t; }
     void setOrbitDistance(float d)           { orbit_distance_ = d; }
     void setOrbitSpeed(float deg_per_sec)    { orbit_speed_    = deg_per_sec; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void resetArcball();  // reset arcball orientation to look at target
 
     // ----------------------------------------------------------------------
     // Direct positioning (for spec scripted shots, state restore)
     // ----------------------------------------------------------------------
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setPosition(glm::vec3 p)               { position_ = p; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void setOrientation(float yaw_deg, float pitch_deg);
 
     // ----------------------------------------------------------------------
@@ -99,7 +115,9 @@ public:
     // ----------------------------------------------------------------------
     // State capture serialization
     // ----------------------------------------------------------------------
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void toJson(nlohmann::json& j) const;
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void fromJson(const nlohmann::json& j);
 
 private:

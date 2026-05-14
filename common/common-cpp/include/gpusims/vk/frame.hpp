@@ -41,9 +41,11 @@ struct Frame {
 };
 
 // Allocate a Frame's resources. Called by Renderer once per in-flight slot.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 void initFrame(Context& ctx, Frame& frame, std::uint32_t in_flight_index);
 
 // Free a Frame's resources. Called by Renderer at shutdown.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
 void destroyFrame(Context& ctx, Frame& frame);
 
 // Issue a single global VkMemoryBarrier2 via vkCmdPipelineBarrier2. Used by

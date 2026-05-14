@@ -23,6 +23,7 @@ struct ImageCreateInfo {
     VkFormat          format = VK_FORMAT_R8G8B8A8_UNORM;
     std::uint32_t     mip_levels   = 1;
     std::uint32_t     array_layers = 1;                       // ignored for 3D
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkSampleCountFlagBits samples  = VK_SAMPLE_COUNT_1_BIT;
     VkImageUsageFlags usage    = 0;                           // caller must set
     VkImageLayout     initial_layout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -42,16 +43,22 @@ public:
     Image& operator=(Image&& other) noexcept;
 
     // Handles
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkImage           handle()    const { return image_; }
     VkImageView       view()      const { return view_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VmaAllocation     allocation()const { return allocation_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkExtent3D        extent()    const { return info_.extent; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkFormat          format()    const { return info_.format; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     ImageType         type()      const { return info_.type; }
 
     // Helper for transitioning an image's layout. Records pipeline barriers
     // into `cmd`. The user is responsible for tracking current layout — we
     // don't automatically remember (explicit > implicit).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     static void transitionLayout(VkCommandBuffer cmd,
                                  VkImage         image,
                                  VkImageAspectFlags aspect,
@@ -64,12 +71,14 @@ public:
     // staging buffer, copies via vkCmdCopyBufferToImage on the graphics queue,
     // and waits. Image is transitioned to GENERAL on return. Works for both
     // 2D and 3D images; `bytes` must equal extent.width*height*depth*texelSize.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void upload(const void* src, std::size_t bytes);
 
     // Synchronous device -> host copy. The image must currently be in
     // VK_IMAGE_LAYOUT_GENERAL. Allocates a transient staging buffer,
     // copies via vkCmdCopyImageToBuffer, waits, and reads back. Image is
     // restored to GENERAL on return. Works for 2D and 3D.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void readback(void* dst, std::size_t bytes);
 
 private:

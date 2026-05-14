@@ -20,6 +20,7 @@ enum class MemoryUsage {
 
 class Buffer {
 public:
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     static Buffer create(Context&         ctx,
                          std::size_t      bytes,
                          VkBufferUsageFlags usage,
@@ -35,20 +36,26 @@ public:
     Buffer& operator=(Buffer&& other) noexcept;
 
     // Handles
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkBuffer      handle()      const { return buffer_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VmaAllocation allocation()  const { return allocation_; }
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     std::size_t   sizeBytes()   const { return size_; }
 
     // Mapped pointer; non-null only for HostVisible* memory usages.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void*         mapped()      const { return mapped_; }
 
     // Convenience: copy `bytes` from src into the mapped pointer. Aborts in
     // Debug if this buffer is not host-visible.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void uploadDirect(const void* src, std::size_t bytes, std::size_t offset = 0);
 
     // Stage-and-copy upload for DeviceLocal buffers. Allocates a transient
     // staging buffer, copies src into it, and submits a copy on the graphics
     // queue. Synchronous (waits for copy to complete).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void stage(Context& ctx, const void* src, std::size_t bytes, std::size_t offset = 0);
 
     // Symmetric counterpart to stage(): copy bytes out of a DeviceLocal buffer
@@ -56,9 +63,11 @@ public:
     // submits a vkCmdCopyBuffer on the graphics queue, waits, and memcpys
     // the staging contents into dst. Synchronous. Phase 11 sph-water consumer
     // for F5 capture-save + Alembic-export per-frame readback.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void readback(Context& ctx, void* dst, std::size_t bytes, std::size_t offset = 0);
 
     // Get a VkBufferDeviceAddress (for buffer device addresses).
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     VkDeviceAddress deviceAddress(VkDevice device) const;
 
 private:

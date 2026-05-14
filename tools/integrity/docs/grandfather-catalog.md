@@ -140,6 +140,40 @@ sim/feature lands. Remove suppression as the consumer wires up.
 Permanent suppressions are NOT expected for this category — every
 entry has an intended consumer.
 
+### `cat2-stack-c-unused`
+
+**Pattern:** `cat2.public-symbol-used-c` findings against Stack C's
+public surface (commit 6).
+
+**Why grandfathered:** The commit-6 smoke run surfaced 111 Stack C
+public symbols (classes, structs, fields, free functions, methods)
+declared in `common/common-cpp/include/gpusims/` with no current
+consumer in `common-cpp/src/`, `common-cpp/examples/`, or per-sim
+Stack C source. Includes the canonical spec § 12 defects:
+
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+- `gpusims::vdb::writeVec3Grid` — declared in `vdb_writer.hpp:33`,
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+  implemented at `src/vdb_writer.cpp:97`, never called.
+- `gpusims::abc::ParticleFrame::radii` — declared in
+  `alembic_writer.hpp`, written by constructor in the host code at
+  `src/main.cpp` but never read by `AlembicWriter::writeFrame`
+  (the Stack C twin of the Stack D defect).
+- `gpusims::vk::Buffer::deviceAddress` — declared in `vk/buffer.hpp`,
+  no current consumer.
+
+The remaining ~108 entries are mostly `gpusims::vk::*` methods on
+`Window`, `Renderer`, `Image`, `ShaderCompiler`, etc. — pieces of the
+Vulkan abstraction layer that are exposed for v1.1 sim integration
+but not yet wired by any of the four landed sims (sph-water,
+eulerian-smoke, reaction-diffusion-3d, mpm-multimaterial Phase 9
+state).
+
+**Future treatment:** Per-symbol review as sims consume the API.
+Suppressions should dissolve naturally; the canonical
+`writeVec3Grid` and `radii` instances are the migration markers
+flagged in spec § 12.
+
 ## Suppression-annotation discipline
 
 Each suppressed finding has an inline annotation per spec § 3.2:

@@ -53,6 +53,7 @@ public:
     GpuProfiler& operator=(const GpuProfiler&) = delete;
 
     // Per-frame
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void beginFrame(VkCommandBuffer cmd, std::uint32_t frame_in_flight_idx);
     void endFrame(VkCommandBuffer cmd);
 
@@ -82,6 +83,7 @@ public:
     };
 
     // Most recent results read from the GPU. Updated by beginFrame.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     [[nodiscard]] const std::vector<PassResult>& lastResults() const { return last_results_; }
 
     // Render an ImGui collapsible window with timing bars.
@@ -89,6 +91,7 @@ public:
 
     // Append the most recent frame's results to a CSV file. Header is
     // written on first call; subsequent calls append rows.
+// integrity-allow: cat2.public-symbol-used-c; pre-v1 Stack C public symbol with no current consumer (tracked for v1.1 review per grandfather-catalog cat2-stack-c-unused); n/a
     void appendCsv(const std::filesystem::path& path);
 
 private:

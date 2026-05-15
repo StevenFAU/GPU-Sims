@@ -4,6 +4,7 @@ Mode: HARD_FAIL.
 
 Compares the Stack C driver's evaluation of W(r,h) and the magnitude of
 gradW against analytically-derived expected values from the cubic
+# integrity-allow: cat1.upstream-citation; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 spline formula in SPlisHSPlasH 2.16.1 SPHKernels.h:43-78 at the
 registered vendor anchor SHA.
 
@@ -74,6 +75,7 @@ def run(repo_root: Path) -> list[Finding]:
                     f"expected={tp.expected_W:.7g} "
                     f"(atol={atol}, rtol={rtol})"
                 ),
+# integrity-allow: cat1.upstream-citation; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
                 ground_truth_ref="SPlisHSPlasH 2.16.1 SPHKernels.h:43-52 + spec § 8.2",
             ))
 
@@ -90,6 +92,7 @@ def run(repo_root: Path) -> list[Finding]:
                     f"expected={tp.expected_gradW_magnitude:.7g} "
                     f"(atol={atol}, rtol={rtol})"
                 ),
+# integrity-allow: cat1.upstream-citation; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
                 ground_truth_ref="SPlisHSPlasH 2.16.1 SPHKernels.h:62-85 + spec § 8.2",
             ))
 

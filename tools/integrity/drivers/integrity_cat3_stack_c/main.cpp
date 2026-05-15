@@ -6,6 +6,7 @@
 // The kernel implementation is a literal transcription of the cubic
 // spline formula from
 // particle-fluids/sph-water/shaders/density_alpha.comp.glsl:72-82,
+// integrity-allow: cat1.upstream-citation; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 // which itself transcribes SPlisHSPlasH 2.16.1 SPHKernels.h:43-85.
 // Any drift in this C++ transcription will surface as a tolerance
 // failure when the Python check compares against the spec-formula

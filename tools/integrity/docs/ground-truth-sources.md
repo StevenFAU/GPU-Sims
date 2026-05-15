@@ -21,6 +21,17 @@ vendor_root    = "references/SPlisHSPlasH"
 anchor_doc     = ".gitignore"
 upstream_url   = "https://github.com/InteractiveComputerGraphics/SPlisHSPlasH"
 used_by_checks = ["cat1.upstream-citation", "cat1.upstream-anchor", "cat3.cubic-kernel"]
+
+[Krueger]
+anchor_version = "book-companion-code-2016"
+anchor_sha     = "6e2c592fdc3592c14dfd52f860fc1ceea930bcb0"
+vendor_root    = "references/lbm-principles-practice"
+anchor_doc     = "LICENSE.txt"
+upstream_url   = "https://github.com/lbm-principles-practice/code"
+used_by_checks = ["cat1.upstream-citation", "cat1.upstream-anchor"]
+# Scope note: D2Q9 only. Used as a math-pattern reference (equilibrium
+# form, halfway bounce-back convention) for Phase 12's D3Q19 sim. D3Q19
+# constants come from [Algebraic_D3Q19], not from this anchor.
 ```
 
 ## Notes on v1 registry contents
@@ -28,6 +39,13 @@ used_by_checks = ["cat1.upstream-citation", "cat1.upstream-anchor", "cat3.cubic-
 - **SPlisHSPlasH:** Vendored at Phase 11.5 setup-1 after the original
   fabricated `1.8.10` anchor was found non-existent. See
   `docs/diagnostics/_audits/phase11_5_setup1_2026-05-14_setup1.md`.
+- **Krueger:** Vendored at Phase 12 setup-1. The repository is D2Q9 only;
+  the citation in Phase 12 shader doc-blocks references the chapter13 CPU
+  equilibrium pattern at `chapter13/cpu/LBM.cpp:97` and `chapter13/cpu_intro/main.cpp:271`,
+  and the halfway bounce-back pattern at `chapter5/poiseuille_BB.m:123`.
+  The 3D specifics (D3Q19 velocity set, ω_i weights) are NOT in this
+  anchor — see `tools/integrity/docs/algebraic/d3q19.md` and
+  registry entry `[Algebraic_D3Q19]` (Phase 12 setup-2).
 
 ## Not yet registered (intentional)
 

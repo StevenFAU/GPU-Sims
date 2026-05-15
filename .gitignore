@@ -144,3 +144,11 @@ imgui.ini
 # anchor-decision context (the original load-bearing-decisions.md anchor of
 # "1.8.10" was non-existent upstream; 2.16.1 was selected as a fresh anchor).
 /references/
+
+# Phase 12: lbm-principles-practice (Krüger et al. LBM textbook companion
+# code) vendored upstream reference (clone-on-setup, gitignored).
+# Anchored to HEAD SHA 6e2c592fdc3592c14dfd52f860fc1ceea930bcb0 (2D D2Q9
+# pedagogical reference only — D3Q19 specifics derive from
+# tools/integrity/docs/algebraic/d3q19.md, see setup commit 2).
+# See docs/diagnostics/_audits/phase12_lbm_predraft_probe_2026-05-15_architect1.md
+# for the characterization and the dimensional-scope finding.

@@ -15,13 +15,27 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Grandfather-sweep integrity findings")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--repo-root", type=Path, default=None)
+    parser.add_argument(
+        "--sweep-live-source",
+        action="store_true",
+        help=(
+            "Also sweep LIVE-SOURCE other-cat1 findings. Default is to skip them "
+            "(triage section B policy). Use only when a deliberate live-source "
+            "sweep is required."
+        ),
+    )
     ns = parser.parse_args(argv)
 
     root = ns.repo_root if ns.repo_root else find_repo_root()
-    files, anns, counts = apply_annotations(root, ns.dry_run)
+    files, anns, counts, live_source_skipped = apply_annotations(
+        root, ns.dry_run, sweep_live_source=ns.sweep_live_source,
+    )
 
     label = "would modify" if ns.dry_run else "modified"
     print(f"grandfather-sweep: {label} {files} files; {anns} annotations added")
+    if live_source_skipped:
+        suffix = "" if ns.sweep_live_source else " (use --sweep-live-source to include)"
+        print(f"  skipped as live-source (other-cat1): {live_source_skipped}{suffix}")
     for cat, n in sorted(counts.items(), key=lambda kv: -kv[1]):
         print(f"  {cat:>35s}: {n}")
     return 0

@@ -153,3 +153,111 @@ def test_render_two_same_category_emits_one_specific_annotation() -> None:
     )
     assert len(out) == 1
     assert "cat1.intra-repo" in out[0]
+
+
+# ---------------------------------------------------------------------------
+# P1.8 -- live-source path-bucket tests
+# ---------------------------------------------------------------------------
+
+
+def test_is_live_source_path_audit_doc_paths_are_sweepable() -> None:
+    from integrity.grandfather import is_live_source_path
+    assert is_live_source_path("docs/diagnostics/_audits/foo.md") is False
+    assert is_live_source_path("docs/diagnostics/_audits/sub/bar.md") is False
+    assert is_live_source_path("docs/retro/integrity-toolkit-v1.md") is False
+
+
+def test_is_live_source_path_toolkit_doc_paths_are_sweepable() -> None:
+    from integrity.grandfather import is_live_source_path
+    assert is_live_source_path("tools/integrity/docs/ground-truth-sources.md") is False
+    assert is_live_source_path("tools/integrity/README.md") is False
+    assert is_live_source_path("docs/integrity-toolkit-spec.md") is False
+    assert is_live_source_path("project-state.md") is False
+
+
+def test_is_live_source_path_live_source_paths_return_true() -> None:
+    from integrity.grandfather import is_live_source_path
+    assert is_live_source_path("docs/phase12_lattice_boltzmann.md") is True
+    assert is_live_source_path("particle-fluids/sph-water/shaders/compute_boundary_volume.comp.glsl") is True
+    assert is_live_source_path("CHANGELOG.md") is True
+    assert is_live_source_path("common/common-cpp/include/gpusims/alembic_writer.hpp") is True
+
+
+def test_is_live_source_path_normalizes_backslashes() -> None:
+    from integrity.grandfather import is_live_source_path
+    # Windows-style path separators normalize to forward slash before matching.
+    assert is_live_source_path("docs\\diagnostics\\_audits\\foo.md") is False
+
+
+def test_apply_annotations_default_skips_live_source_other_cat1(tmp_path, monkeypatch) -> None:
+    """With sweep_live_source=False (default), live-source other-cat1 findings are filtered out."""
+    from integrity import grandfather
+
+    # Construct a synthetic finding set: one audit-doc (sweepable) + one live-source.
+    audit_finding = _f("cat1.intra-repo", "docs/diagnostics/_audits/foo.md", "X:1: path 'X' does not resolve")
+    live_finding = _f("cat1.intra-repo", "some/live/path.py", "Y:1: path 'Y' does not resolve")
+
+    # Stub collect_findings to return our synthetic set.
+    monkeypatch.setattr(grandfather, "collect_findings", lambda root: [audit_finding, live_finding])
+
+    # Need a writable repo root with the target files present so the renderer
+    # has something to splice into. Create minimal fixtures.
+    audit_dir = tmp_path / "docs" / "diagnostics" / "_audits"
+    audit_dir.mkdir(parents=True)
+    (audit_dir / "foo.md").write_text("line 1\n", encoding="utf-8")
+    live_dir = tmp_path / "some" / "live"
+    live_dir.mkdir(parents=True)
+    (live_dir / "path.py").write_text("# line 1\n", encoding="utf-8")
+
+    files, anns, counts, skipped = grandfather.apply_annotations(tmp_path, dry_run=True, sweep_live_source=False)
+    # Live-source finding filtered out; only the audit-doc one is processed.
+    assert skipped == 1
+    # The audit-doc finding classifies as audit-citation (not other-cat1) so it
+    # wouldn't trigger the filter even without the sweep_live_source flag.
+    # Verify the live-source one was specifically skipped:
+    assert "other-cat1" not in counts or counts.get("other-cat1", 0) == 0
+
+
+def test_apply_annotations_sweep_live_source_includes_live_source(tmp_path, monkeypatch) -> None:
+    """With sweep_live_source=True, live-source other-cat1 findings are processed."""
+    from integrity import grandfather
+
+    live_finding = _f("cat1.intra-repo", "some/live/path.py", "Y:1: path 'Y' does not resolve")
+    monkeypatch.setattr(grandfather, "collect_findings", lambda root: [live_finding])
+
+    live_dir = tmp_path / "some" / "live"
+    live_dir.mkdir(parents=True)
+    (live_dir / "path.py").write_text("# line 1\n", encoding="utf-8")
+
+    files, anns, counts, skipped = grandfather.apply_annotations(tmp_path, dry_run=True, sweep_live_source=True)
+    assert skipped == 0
+    assert counts.get("other-cat1", 0) == 1
+
+
+def test_apply_annotations_default_still_sweeps_named_category_on_live_source(tmp_path, monkeypatch) -> None:
+    """Named classifier categories (like live-shader-1810) on live-source paths are still swept by default.
+
+    P1.8 only protects the other-cat1 fallthrough bucket. Named categories are
+    intentional migration-tracking; they should continue to be swept.
+    """
+    from integrity import grandfather
+
+    # live-shader-1810 path -- particle-fluids/sph-water/shaders/ subset.
+# integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
+    named_finding = _f(
+        "cat1.upstream-citation",
+        "particle-fluids/sph-water/shaders/density_alpha.comp.glsl",
+# integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a
+        "SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:42: version '1.8.10' does not match",
+    )
+    monkeypatch.setattr(grandfather, "collect_findings", lambda root: [named_finding])
+
+    shader_dir = tmp_path / "particle-fluids" / "sph-water" / "shaders"
+    shader_dir.mkdir(parents=True)
+    (shader_dir / "density_alpha.comp.glsl").write_text("// line 1\n", encoding="utf-8")
+
+    files, anns, counts, skipped = grandfather.apply_annotations(tmp_path, dry_run=True, sweep_live_source=False)
+    # The finding classifies as live-shader-1810, not other-cat1, so the filter
+    # doesn't apply. Should be processed normally.
+    assert skipped == 0
+    assert counts.get("live-shader-1810", 0) == 1

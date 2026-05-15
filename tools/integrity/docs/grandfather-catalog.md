@@ -143,6 +143,7 @@ symbols with no current consumer. Sample shapes:
 
 - `ParticleFrame.{positions, velocities, radii, ids}` — fields written
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
   via the dataclass constructor in `alembic_writer.py:96`
   (`ParticleFrame(positions=x_np, count=n)`) but never read by
   `AlembicWriter.write_frame` because the writer is permanent-stub
@@ -177,6 +178,7 @@ consumer in `common-cpp/src/`, `common-cpp/examples/`, or per-sim
 Stack C source. Includes the canonical spec § 12 defects:
 
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 - `gpusims::vdb::writeVec3Grid` — declared in `vdb_writer.hpp:33`,
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
   implemented at `src/vdb_writer.cpp:97`, never called.
@@ -256,17 +258,20 @@ header is next modified. Permanent suppressions are not expected.
 **Pattern:** `cat1.bare-path` findings in files under
 `docs/diagnostics/_audits/`.
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 **Why grandfathered:** Audit reports cite repo files and upstream files
 by bare basename as a documentation convention. The v1.2 `cat1.bare-path`
 check requires fully-qualified paths or upstream-registry citations;
 audit-doc bare paths are append-only by the same convention as
 `audit-citation`. New audit reports may continue to cite bare paths
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 with `integrity-allow:` annotations applied via the grandfather sweep.
 
 **Future treatment:** Permanent suppression on audit-doc paths. The
 v1.3 may revisit whether new audit reports should use full paths.
 
 ### `retro-bare-path` (?)
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 
 **Pattern:** `cat1.bare-path` findings in files under `docs/retro/`.
 

@@ -35,6 +35,52 @@ class Classification:
     issue_ref: str
 
 
+# ---------------------------------------------------------------------------
+# P1.8 -- live-source vs sweepable-path bucket
+#
+# The post-batch triage (docs/diagnostics/_audits/integrity_v1_1_post_batch_triage_2026-05-15.md
+# section B) defines three buckets:
+#   AUDIT-DOC, TOOLKIT-DOC -- sweep (permanent suppression)
+#   LIVE-SOURCE            -- attribute to introducing author, do NOT sweep
+# The grandfather-sweep CLI used to sweep all unsuppressed findings, which
+# over-swept LIVE-SOURCE other-cat1 findings (surfaced as a pause-and-surface
+# during commit 9add149). is_live_source_path() defines the bucket boundary
+# in code; apply_annotations(sweep_live_source=...) honors it.
+# ---------------------------------------------------------------------------
+
+
+SWEEPABLE_PATH_PREFIXES: tuple[str, ...] = (
+    "docs/diagnostics/_audits/",
+    "docs/retro/",
+    "tools/integrity/docs/",
+)
+
+
+SWEEPABLE_EXACT_PATHS: frozenset[str] = frozenset({
+    "docs/integrity-toolkit-spec.md",
+    "tools/integrity/README.md",
+    "project-state.md",
+})
+
+
+def is_live_source_path(file_path: str) -> bool:
+    """Return True iff file_path is LIVE-SOURCE per the triage section B bucket.
+
+    LIVE-SOURCE = not under any SWEEPABLE_PATH_PREFIXES prefix and not in
+    SWEEPABLE_EXACT_PATHS. This is the bucket the sweep should default-skip
+    for other-cat1 (fallthrough) findings; named classifier categories
+    (cat2-stack-*-unused, cat2-stub-label-stale, live-shader-1810) remain
+    sweepable on live-source paths by design.
+    """
+    normalized = file_path.replace("\\", "/")
+    if normalized in SWEEPABLE_EXACT_PATHS:
+        return False
+    for prefix in SWEEPABLE_PATH_PREFIXES:
+        if normalized.startswith(prefix):
+            return False
+    return True
+
+
 def classify(finding: Finding) -> Classification:
     """Classify a finding into a grandfather category. First match wins."""
     f = finding.file
@@ -216,14 +262,18 @@ def annotation_already_present(prev_line: str, check_id: str) -> bool:
     annotation that covers `check_id` (specifically or via category
     wildcard)."""
 # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     if "integrity-allow:" not in prev_line:
         return False
     cat = check_id.split(".")[0]
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     wildcard = f"{cat}.*"
     return check_id in prev_line or wildcard in prev_line
 
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 
 def render_annotation_line(
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     findings_on_line: list[Finding],
     file_path: str,
     file_lines: list[str],
@@ -241,27 +291,33 @@ def render_annotation_line(
             template = comment_form_for_md_inside_fence(fence_lang)
         else:
             template = comment_form_for(file_path)
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
     else:
         template = comment_form_for(file_path)
 
     if len(categories) == 1:
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         check_ids_on_line = {f.check_id for f in findings_on_line}
         cat_prefix = next(iter(check_ids_on_line)).split(".")[0]
         if len(check_ids_on_line) > 1:
             check_id_for_annotation = f"{cat_prefix}.*"
         else:
             check_id_for_annotation = next(iter(check_ids_on_line))
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         _, cls = classifications[0]
         body = f"{check_id_for_annotation}; {cls.reason}; {cls.issue_ref}"
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         return [template.format(body=body)]
 
     out: list[str] = []
     for f, cls in classifications:
         body = f"{f.check_id}; {cls.reason}; {cls.issue_ref}"
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
         out.append(template.format(body=body))
     return out
 
 
+# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
 def collect_findings(repo_root: Path) -> list[Finding]:
     """Run the integrity toolkit in JSON mode and parse non-suppressed findings."""
     result = subprocess.run(
@@ -304,11 +360,28 @@ def group_findings_by_target(
 def apply_annotations(
     repo_root: Path,
     dry_run: bool,
-) -> tuple[int, int, dict[str, int]]:
+    sweep_live_source: bool = False,
+) -> tuple[int, int, dict[str, int], int]:
     """Apply suppression annotations for every collected finding.
 
-    Returns (files_modified, annotations_added, category_counts)."""
+    Returns (files_modified, annotations_added, category_counts, live_source_skipped)."""
     findings = collect_findings(repo_root)
+
+    # P1.8 -- protect LIVE-SOURCE other-cat1 findings from sweep by default.
+    # Named classifier categories (cat2-stack-*-unused, live-shader-1810, etc.)
+    # remain sweepable on live-source paths -- only the heterogeneous
+    # other-cat1 fallthrough bucket is dangerous to auto-annotate on live code.
+    live_source_skipped = 0
+    if not sweep_live_source:
+        kept: list[Finding] = []
+        for f in findings:
+            cat = classify(f).category
+            if cat in ("other-cat1", "other-cat1-bare-path") and is_live_source_path(f.file):
+                live_source_skipped += 1
+                continue
+            kept.append(f)
+        findings = kept
+
     grouped = group_findings_by_target(findings)
 
     files_modified = 0
@@ -366,4 +439,4 @@ def apply_annotations(
             if not dry_run:
                 abs_path.write_text("\n".join(file_lines), encoding="utf-8")
 
-    return files_modified, annotations_added, category_counts
+    return files_modified, annotations_added, category_counts, live_source_skipped

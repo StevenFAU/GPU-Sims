@@ -19,34 +19,43 @@ layout(set=0, binding=3, std430) restrict readonly buffer CellStarts { uint cell
 layout(set=0, binding=4, std430) restrict readonly buffer SortedIndex { uint sorted_index[]; };
 layout(set=0, binding=5, std430) restrict writeonly buffer PressureAccel { vec4 pressure_accel[]; };
 layout(set=0, binding=6, std140) uniform U {
-    // Integer counts                            offset
-    uint  particleCount;                       //   0
-    uint  cellsPerAxisX;                       //   4
-    uint  cellsPerAxisY;                       //   8
-    uint  cellsPerAxisZ;                       //  12
-    // SPH kernel constants
-    float supportRadius;                       //  16
-    float particleMass;                        //  20
-    float density0;                            //  24
-    float kernelNorm3D;                        //  28
-    float gradKernelNorm3D;                    //  32
-    // Time integration
-    float dt;                                  //  36
-    // Force coefficients
-    float viscosity;                           //  40
-    float cohesion;                            //  44
-    float vorticityStrength;                   //  48
-    // Solver tuning
-    float jacobiRelax;                         //  52
-    // Padding to align next vec4 to 16 B
-    float _pad0;                               //  56
-    float _pad1;                               //  60
-    // Vec4 block
-    vec4  gravity_pad;                         //  64  (.xyz=gravity, .w=mode)
-    vec4  domainMin_cellSize;                  //  80  (.xyz=domainMin, .w=cellSize)
-    vec4  domainMax_pad;                       //  96  (.xyz=domainMax)
+    uint  particleCount;
+    uint  cellsPerAxisX;
+    uint  cellsPerAxisY;
+    uint  cellsPerAxisZ;
+    float supportRadius;
+    float particleMass;
+    float density0;
+    float kernelNorm3D;
+    float gradKernelNorm3D;
+    float dt;
+    float viscosity;
+    float cohesion;
+    float vorticityStrength;
+    float jacobiRelax;
+    float _pad0;
+    float _pad1;
+    vec4  gravity_pad;
+    vec4  domainMin_cellSize;
+    vec4  domainMax_pad;
+    uint  boundaryParticleCount;
+    uint  _bpad0;
+    uint  _bpad1;
+    uint  _bpad2;
 };
-// Total: 112 bytes
+// Total: 128 bytes
+layout(set=0, binding=7, std430) restrict readonly buffer BoundaryParticles {
+    vec4 boundary_particles[];
+};
+layout(set=0, binding=8, std430) restrict readonly buffer BoundaryVolumes {
+    float boundary_volumes[];
+};
+layout(set=0, binding=9, std430) restrict readonly buffer BoundaryCellStarts {
+    uint boundary_cell_starts[];
+};
+layout(set=0, binding=10, std430) restrict readonly buffer BoundarySortedIndex {
+    uint boundary_sorted_index[];
+};
 
 const float DFSPH_ALPHA_EPS = 1.0e-5;
 
@@ -111,6 +120,36 @@ void main() {
             float rho_j2    = max(density_j * density_j, DFSPH_ALPHA_EPS);
             float p_rho2_j  = p_j / rho_j2;
             a_press -= particleMass * (p_rho2_i + p_rho2_j) * grad_W;
+        }
+    }
+
+    // Akinci2012 boundary contribution at SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1335-1344:
+    // boundary has no pressure, so pSum reduces to p_rho2_i alone and
+    // grad_p_j = -V_b * grad_W. Skip when |p_rho2_i| is below eps
+    // (upstream condition at line 1333).
+    if (boundaryParticleCount > 0u && abs(p_rho2_i) > DFSPH_ALPHA_EPS) {
+        for (int dz = -1; dz <= 1; ++dz)
+        for (int dy = -1; dy <= 1; ++dy)
+        for (int dx = -1; dx <= 1; ++dx) {
+            ivec3 ncell = cell_i + ivec3(dx, dy, dz);
+            if (any(lessThan(ncell, ivec3(0))) ||
+                any(greaterThanEqual(ncell, ivec3(cellsPerAxisX, cellsPerAxisY, cellsPerAxisZ))))
+                continue;
+            uint nmorton = morton_encode_3d(uvec3(ncell));
+            uint nstart  = boundary_cell_starts[nmorton];
+            uint nend    = boundary_cell_starts[nmorton + 1u];
+            for (uint k = nstart; k < nend; ++k) {
+                uint j_b = boundary_sorted_index[k];
+                vec3  pos_j = boundary_particles[j_b].xyz;
+                float Vb_j  = boundary_volumes[j_b];
+                vec3  r_ij  = pos_i - pos_j;
+                float r_mag = length(r_ij);
+                float q     = r_mag / supportRadius;
+                if (q >= 1.0 || r_mag < 1e-7) continue;
+                vec3 grad_W = kernel_gradW(r_ij, r_mag, q, gradKernelNorm3D);
+                // grad_p_j = -V_b * grad_W; a = p_rho2_i * grad_p_j
+                a_press -= p_rho2_i * Vb_j * grad_W;
+            }
         }
     }
 

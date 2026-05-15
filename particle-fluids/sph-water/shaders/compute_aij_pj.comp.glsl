@@ -20,34 +20,43 @@ layout(set=0, binding=3, std430) restrict readonly buffer SortedIndex { uint sor
 layout(set=0, binding=4, std430) restrict readonly buffer PressureAccel { vec4 pressure_accel[]; };
 layout(set=0, binding=5, std430) restrict writeonly buffer AijPjScratch { float aij_pj_scratch[]; };
 layout(set=0, binding=6, std140) uniform U {
-    // Integer counts                            offset
-    uint  particleCount;                       //   0
-    uint  cellsPerAxisX;                       //   4
-    uint  cellsPerAxisY;                       //   8
-    uint  cellsPerAxisZ;                       //  12
-    // SPH kernel constants
-    float supportRadius;                       //  16
-    float particleMass;                        //  20
-    float density0;                            //  24
-    float kernelNorm3D;                        //  28
-    float gradKernelNorm3D;                    //  32
-    // Time integration
-    float dt;                                  //  36
-    // Force coefficients
-    float viscosity;                           //  40
-    float cohesion;                            //  44
-    float vorticityStrength;                   //  48
-    // Solver tuning
-    float jacobiRelax;                         //  52
-    // Padding to align next vec4 to 16 B
-    float _pad0;                               //  56
-    float _pad1;                               //  60
-    // Vec4 block
-    vec4  gravity_pad;                         //  64  (.xyz=gravity, .w=mode)
-    vec4  domainMin_cellSize;                  //  80  (.xyz=domainMin, .w=cellSize)
-    vec4  domainMax_pad;                       //  96  (.xyz=domainMax)
+    uint  particleCount;
+    uint  cellsPerAxisX;
+    uint  cellsPerAxisY;
+    uint  cellsPerAxisZ;
+    float supportRadius;
+    float particleMass;
+    float density0;
+    float kernelNorm3D;
+    float gradKernelNorm3D;
+    float dt;
+    float viscosity;
+    float cohesion;
+    float vorticityStrength;
+    float jacobiRelax;
+    float _pad0;
+    float _pad1;
+    vec4  gravity_pad;
+    vec4  domainMin_cellSize;
+    vec4  domainMax_pad;
+    uint  boundaryParticleCount;
+    uint  _bpad0;
+    uint  _bpad1;
+    uint  _bpad2;
 };
-// Total: 112 bytes
+// Total: 128 bytes
+layout(set=0, binding=7, std430) restrict readonly buffer BoundaryParticles {
+    vec4 boundary_particles[];
+};
+layout(set=0, binding=8, std430) restrict readonly buffer BoundaryVolumes {
+    float boundary_volumes[];
+};
+layout(set=0, binding=9, std430) restrict readonly buffer BoundaryCellStarts {
+    uint boundary_cell_starts[];
+};
+layout(set=0, binding=10, std430) restrict readonly buffer BoundarySortedIndex {
+    uint boundary_sorted_index[];
+};
 
 layout(push_constant) uniform PC {
     uint solver_mode;   // 0 = density (*= dt²), 1 = divergence (*= dt)
@@ -116,6 +125,38 @@ void main() {
 
     float V_i = particleMass / max(density_i, DFSPH_ALPHA_EPS);
     aij_pj_sum *= V_i;
+
+    // Akinci2012 boundary contribution at SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1401-1406:
+    // static boundary has no pressure_accel, so contribution reduces to
+    // V_b * a_i · grad_W. Added BEFORE the dt scaling (upstream applies
+    // dt*dt or dt to the full sum).
+    if (boundaryParticleCount > 0u) {
+        float aij_pj_b = 0.0;
+        for (int dz = -1; dz <= 1; ++dz)
+        for (int dy = -1; dy <= 1; ++dy)
+        for (int dx = -1; dx <= 1; ++dx) {
+            ivec3 ncell = cell_i + ivec3(dx, dy, dz);
+            if (any(lessThan(ncell, ivec3(0))) ||
+                any(greaterThanEqual(ncell, ivec3(cellsPerAxisX, cellsPerAxisY, cellsPerAxisZ))))
+                continue;
+            uint nmorton = morton_encode_3d(uvec3(ncell));
+            uint nstart  = boundary_cell_starts[nmorton];
+            uint nend    = boundary_cell_starts[nmorton + 1u];
+            for (uint k = nstart; k < nend; ++k) {
+                uint j_b = boundary_sorted_index[k];
+                vec3  pos_j = boundary_particles[j_b].xyz;
+                float Vb_j  = boundary_volumes[j_b];
+                vec3  r_ij  = pos_i - pos_j;
+                float r_mag = length(r_ij);
+                float q     = r_mag / supportRadius;
+                if (q >= 1.0 || r_mag < 1e-7) continue;
+                vec3 grad_W = kernel_gradW(r_ij, r_mag, q, gradKernelNorm3D);
+                aij_pj_b += Vb_j * dot(a_i, grad_W);
+            }
+        }
+        aij_pj_sum += aij_pj_b;
+    }
+
     if (pc.solver_mode == 0u) aij_pj_sum *= dt * dt;
     else                       aij_pj_sum *= dt;
     aij_pj_scratch[gid] = aij_pj_sum;

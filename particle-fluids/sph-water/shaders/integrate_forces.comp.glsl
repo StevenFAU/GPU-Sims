@@ -71,14 +71,28 @@ void main() {
     int  mode  = int(pc.mode);
 
     if (mode == 1) {
-        // POSITION_ONLY mode.
+        // POSITION_ONLY mode. With Akinci2012 boundary handling (commit 3),
+        // fluid pressure keeps particles inside the box; this clamp is now
+        // only a fail-safe for catastrophic escape (> 0.5 * particleRadius
+        // outside the AABB), where it reflects the position back inside and
+        // zeros the velocity component in the escape direction. Within the
+        // AABB and within the small fail-safe margin, no position correction
+        // is applied.
         vec3 pos_new = pos_i + dt * vel_i;
         vec3 vel_new = vel_i;
         vec3 dmin    = domainMin_cellSize.xyz;
         vec3 dmax    = domainMax_pad.xyz;
+        // supportRadius = 4 * particleRadius (per spec § 2.D.h-ratio),
+        // so 0.5 * particleRadius = 0.125 * supportRadius.
+        float escape_margin = 0.125 * supportRadius;
         for (int ax = 0; ax < 3; ++ax) {
-            if (pos_new[ax] < dmin[ax]) { pos_new[ax] = dmin[ax]; vel_new[ax] = max(vel_new[ax], 0.0); }
-            if (pos_new[ax] > dmax[ax]) { pos_new[ax] = dmax[ax]; vel_new[ax] = min(vel_new[ax], 0.0); }
+            if (pos_new[ax] < dmin[ax] - escape_margin) {
+                pos_new[ax] = dmin[ax];
+                vel_new[ax] = max(vel_new[ax], 0.0);
+            } else if (pos_new[ax] > dmax[ax] + escape_margin) {
+                pos_new[ax] = dmax[ax];
+                vel_new[ax] = min(vel_new[ax], 0.0);
+            }
         }
         p[gid * 8u + 0u].xyz = pos_new;
         p[gid * 8u + 1u].xyz = vel_new;

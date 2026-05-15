@@ -50,8 +50,26 @@ layout(set=0, binding=4, std140) uniform U {
     vec4  gravity_pad;                         //  64  (.xyz=gravity, .w=mode)
     vec4  domainMin_cellSize;                  //  80  (.xyz=domainMin, .w=cellSize)
     vec4  domainMax_pad;                       //  96  (.xyz=domainMax)
+    uint  boundaryParticleCount;               // 112
+    uint  _bpad0;                              // 116
+    uint  _bpad1;                              // 120
+    uint  _bpad2;                              // 124
 };
-// Total: 112 bytes
+// Total: 128 bytes
+// Akinci2012 boundary bindings (commit 3): static boundary particles + their
+// volumes + a dedicated boundary cell grid, all written once at preset load.
+layout(set=0, binding=5, std430) restrict readonly buffer BoundaryParticles {
+    vec4 boundary_particles[];
+};
+layout(set=0, binding=6, std430) restrict readonly buffer BoundaryVolumes {
+    float boundary_volumes[];
+};
+layout(set=0, binding=7, std430) restrict readonly buffer BoundaryCellStarts {
+    uint boundary_cell_starts[];
+};
+layout(set=0, binding=8, std430) restrict readonly buffer BoundarySortedIndex {
+    uint boundary_sorted_index[];
+};
 
 const float DFSPH_ALPHA_EPS = 1.0e-5;
 
@@ -116,6 +134,39 @@ void main() {
                 vec3 grad_term = particleMass * grad_W;
                 sum_grad      += grad_term;
                 sum_grad_sq   += dot(grad_term, grad_term);
+            }
+        }
+    }
+
+    // Akinci2012 boundary contribution (forall_boundary_neighbors) at
+    // SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1150-1156:
+    // boundary contributes m_b = density0 * V_b to fluid density, and -V_b *
+    // grad_W to grad_p_i. Asymmetric with fluid branch: boundary contribution
+    // is NOT squared and added to sum_grad_p_k (per the upstream branch).
+    if (boundaryParticleCount > 0u) {
+        for (int dz = -1; dz <= 1; ++dz)
+        for (int dy = -1; dy <= 1; ++dy)
+        for (int dx = -1; dx <= 1; ++dx) {
+            ivec3 ncell = cell_i + ivec3(dx, dy, dz);
+            if (any(lessThan(ncell, ivec3(0))) ||
+                any(greaterThanEqual(ncell, ivec3(cellsPerAxisX, cellsPerAxisY, cellsPerAxisZ))))
+                continue;
+            uint nmorton = morton_encode_3d(uvec3(ncell));
+            uint nstart  = boundary_cell_starts[nmorton];
+            uint nend    = boundary_cell_starts[nmorton + 1u];
+            for (uint k = nstart; k < nend; ++k) {
+                uint j_b = boundary_sorted_index[k];
+                vec3  pos_j = boundary_particles[j_b].xyz;
+                float Vb_j  = boundary_volumes[j_b];
+                vec3  r_ij  = pos_i - pos_j;
+                float r_mag = length(r_ij);
+                float q     = r_mag / supportRadius;
+                if (q >= 1.0) continue;
+                density += density0 * Vb_j * kernel_W(q, kernelNorm3D);
+                if (r_mag > 1e-7) {
+                    vec3 grad_W = kernel_gradW(r_ij, r_mag, q, gradKernelNorm3D);
+                    sum_grad   += Vb_j * grad_W;
+                }
             }
         }
     }

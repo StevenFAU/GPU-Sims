@@ -146,6 +146,11 @@ constexpr int   EMITTER_CAP                = 8;
 constexpr uint32_t MORTON_BITS_PER_AXIS    = 10;
 constexpr uint32_t MAX_CELLS_PER_AXIS      = 1u << MORTON_BITS_PER_AXIS;
 
+// Akinci2012 boundary particles — hex-close-packed on six AABB faces at
+// particle-diameter spacing. ~84k for 1M-tier Dam-Break; cap at 500k.
+constexpr uint32_t BOUNDARY_PARTICLE_CAP   = 500u * 1024u;
+constexpr float    BOUNDARY_SPACING_RATIO  = 2.0f;   // diameter = 2 * particleRadius
+
 constexpr float FOV_DEG_DEFAULT = 50.0f;
 constexpr float NEAR_PLANE      = 0.05f;
 constexpr float FAR_PLANE       = 100.0f;
@@ -532,13 +537,21 @@ static void writeDensityAlphaDescriptor(VkDevice device,
                                         VkBuffer cell_starts,
                                         VkBuffer sorted_index,
                                         VkBuffer density_alpha,
-                                        VkBuffer uniform_buffer) {
-    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b1{}; b1.buffer=cell_starts;     b1.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b2{}; b2.buffer=sorted_index;    b2.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b3{}; b3.buffer=density_alpha;   b3.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
-    std::array<VkWriteDescriptorSet, 5> w{};
+                                        VkBuffer uniform_buffer,
+                                        VkBuffer boundary_particles,
+                                        VkBuffer boundary_volumes,
+                                        VkBuffer boundary_cell_starts,
+                                        VkBuffer boundary_sorted_index) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;             b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=cell_starts;           b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=sorted_index;          b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=density_alpha;         b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer;       u_i.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b5{}; b5.buffer=boundary_particles;    b5.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b6{}; b6.buffer=boundary_volumes;      b6.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b7{}; b7.buffer=boundary_cell_starts;  b7.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b8{}; b8.buffer=boundary_sorted_index; b8.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 9> w{};
     for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
     w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
@@ -550,6 +563,14 @@ static void writeDensityAlphaDescriptor(VkDevice device,
     w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
     w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
     w[4].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[4].pBufferInfo=&u_i;
+    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
+    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
+    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
+    w[6].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[6].pBufferInfo=&b6;
+    w[7].dstSet=ds; w[7].dstBinding=7; w[7].descriptorCount=1;
+    w[7].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[7].pBufferInfo=&b7;
+    w[8].dstSet=ds; w[8].dstBinding=8; w[8].descriptorCount=1;
+    w[8].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[8].pBufferInfo=&b8;
     vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
 }
 
@@ -660,12 +681,176 @@ static void writeComputeDensityAdvDescriptor(VkDevice device,
                                              VkBuffer density_alpha,
                                              VkBuffer cell_starts,
                                              VkBuffer sorted_index,
-                                             VkBuffer uniform_buffer) {
-    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;   b1.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b2{}; b2.buffer=cell_starts;     b2.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b3{}; b3.buffer=sorted_index;    b3.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
+                                             VkBuffer uniform_buffer,
+                                             VkBuffer boundary_particles,
+                                             VkBuffer boundary_volumes,
+                                             VkBuffer boundary_cell_starts,
+                                             VkBuffer boundary_sorted_index) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;             b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;         b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=cell_starts;           b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=sorted_index;          b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer;       u_i.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b5{}; b5.buffer=boundary_particles;    b5.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b6{}; b6.buffer=boundary_volumes;      b6.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b7{}; b7.buffer=boundary_cell_starts;  b7.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b8{}; b8.buffer=boundary_sorted_index; b8.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 9> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[4].pBufferInfo=&u_i;
+    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
+    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
+    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
+    w[6].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[6].pBufferInfo=&b6;
+    w[7].dstSet=ds; w[7].dstBinding=7; w[7].descriptorCount=1;
+    w[7].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[7].pBufferInfo=&b7;
+    w[8].dstSet=ds; w[8].dstBinding=8; w[8].descriptorCount=1;
+    w[8].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[8].pBufferInfo=&b8;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+// Identical binding shape to writeComputeDensityAdvDescriptor — split for
+// per-pipeline clarity and so the two can diverge without touching both.
+static void writeComputeDensityChangeDescriptor(VkDevice device,
+                                                VkDescriptorSet ds,
+                                                VkBuffer particles,
+                                                VkBuffer density_alpha,
+                                                VkBuffer cell_starts,
+                                                VkBuffer sorted_index,
+                                                VkBuffer uniform_buffer,
+                                                VkBuffer boundary_particles,
+                                                VkBuffer boundary_volumes,
+                                                VkBuffer boundary_cell_starts,
+                                                VkBuffer boundary_sorted_index) {
+    writeComputeDensityAdvDescriptor(device, ds, particles, density_alpha,
+                                     cell_starts, sorted_index, uniform_buffer,
+                                     boundary_particles, boundary_volumes,
+                                     boundary_cell_starts, boundary_sorted_index);
+}
+
+static void writeComputePressureAccelDescriptor(VkDevice device,
+                                                VkDescriptorSet ds,
+                                                VkBuffer particles,
+                                                VkBuffer density_alpha,
+                                                VkBuffer pressure_read,
+                                                VkBuffer cell_starts,
+                                                VkBuffer sorted_index,
+                                                VkBuffer pressure_accel,
+                                                VkBuffer uniform_buffer,
+                                                VkBuffer boundary_particles,
+                                                VkBuffer boundary_volumes,
+                                                VkBuffer boundary_cell_starts,
+                                                VkBuffer boundary_sorted_index) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;             b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;         b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=pressure_read;         b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=cell_starts;           b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b4{}; b4.buffer=sorted_index;          b4.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b5{}; b5.buffer=pressure_accel;        b5.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer;       u_i.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b7{}; b7.buffer=boundary_particles;    b7.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b8{}; b8.buffer=boundary_volumes;      b8.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b9{}; b9.buffer=boundary_cell_starts;  b9.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b10{};b10.buffer=boundary_sorted_index;b10.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 11> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[4].pBufferInfo=&b4;
+    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
+    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
+    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
+    w[6].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[6].pBufferInfo=&u_i;
+    w[7].dstSet=ds; w[7].dstBinding=7; w[7].descriptorCount=1;
+    w[7].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[7].pBufferInfo=&b7;
+    w[8].dstSet=ds; w[8].dstBinding=8; w[8].descriptorCount=1;
+    w[8].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[8].pBufferInfo=&b8;
+    w[9].dstSet=ds; w[9].dstBinding=9; w[9].descriptorCount=1;
+    w[9].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[9].pBufferInfo=&b9;
+    w[10].dstSet=ds; w[10].dstBinding=10; w[10].descriptorCount=1;
+    w[10].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[10].pBufferInfo=&b10;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+static void writeComputeAijPjDescriptor(VkDevice device,
+                                        VkDescriptorSet ds,
+                                        VkBuffer particles,
+                                        VkBuffer density_alpha,
+                                        VkBuffer cell_starts,
+                                        VkBuffer sorted_index,
+                                        VkBuffer pressure_accel,
+                                        VkBuffer aij_pj_scratch,
+                                        VkBuffer uniform_buffer,
+                                        VkBuffer boundary_particles,
+                                        VkBuffer boundary_volumes,
+                                        VkBuffer boundary_cell_starts,
+                                        VkBuffer boundary_sorted_index) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=particles;             b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;         b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=cell_starts;           b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=sorted_index;          b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b4{}; b4.buffer=pressure_accel;        b4.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b5{}; b5.buffer=aij_pj_scratch;        b5.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer;       u_i.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b7{}; b7.buffer=boundary_particles;    b7.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b8{}; b8.buffer=boundary_volumes;      b8.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b9{}; b9.buffer=boundary_cell_starts;  b9.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b10{};b10.buffer=boundary_sorted_index;b10.range=VK_WHOLE_SIZE;
+    std::array<VkWriteDescriptorSet, 11> w{};
+    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
+    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
+    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
+    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
+    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
+    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
+    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
+    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
+    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
+    w[4].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[4].pBufferInfo=&b4;
+    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
+    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
+    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
+    w[6].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[6].pBufferInfo=&u_i;
+    w[7].dstSet=ds; w[7].dstBinding=7; w[7].descriptorCount=1;
+    w[7].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[7].pBufferInfo=&b7;
+    w[8].dstSet=ds; w[8].dstBinding=8; w[8].descriptorCount=1;
+    w[8].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[8].pBufferInfo=&b8;
+    w[9].dstSet=ds; w[9].dstBinding=9; w[9].descriptorCount=1;
+    w[9].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[9].pBufferInfo=&b9;
+    w[10].dstSet=ds; w[10].dstBinding=10; w[10].descriptorCount=1;
+    w[10].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[10].pBufferInfo=&b10;
+    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
+}
+
+static void writeComputeBoundaryVolumeDescriptor(VkDevice device,
+                                                 VkDescriptorSet ds,
+                                                 VkBuffer boundary_particles,
+                                                 VkBuffer boundary_cell_starts,
+                                                 VkBuffer boundary_sorted_index,
+                                                 VkBuffer boundary_volumes,
+                                                 VkBuffer uniform_buffer) {
+    VkDescriptorBufferInfo b0{}; b0.buffer=boundary_particles;    b0.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b1{}; b1.buffer=boundary_cell_starts;  b1.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b2{}; b2.buffer=boundary_sorted_index; b2.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo b3{}; b3.buffer=boundary_volumes;      b3.range=VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer;       u_i.range=VK_WHOLE_SIZE;
     std::array<VkWriteDescriptorSet, 5> w{};
     for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
@@ -678,89 +863,6 @@ static void writeComputeDensityAdvDescriptor(VkDevice device,
     w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
     w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
     w[4].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[4].pBufferInfo=&u_i;
-    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
-}
-
-// Identical binding shape to writeComputeDensityAdvDescriptor — split for
-// per-pipeline clarity and so the two can diverge without touching both.
-static void writeComputeDensityChangeDescriptor(VkDevice device,
-                                                VkDescriptorSet ds,
-                                                VkBuffer particles,
-                                                VkBuffer density_alpha,
-                                                VkBuffer cell_starts,
-                                                VkBuffer sorted_index,
-                                                VkBuffer uniform_buffer) {
-    writeComputeDensityAdvDescriptor(device, ds, particles, density_alpha,
-                                     cell_starts, sorted_index, uniform_buffer);
-}
-
-static void writeComputePressureAccelDescriptor(VkDevice device,
-                                                VkDescriptorSet ds,
-                                                VkBuffer particles,
-                                                VkBuffer density_alpha,
-                                                VkBuffer pressure_read,
-                                                VkBuffer cell_starts,
-                                                VkBuffer sorted_index,
-                                                VkBuffer pressure_accel,
-                                                VkBuffer uniform_buffer) {
-    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;   b1.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b2{}; b2.buffer=pressure_read;   b2.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b3{}; b3.buffer=cell_starts;     b3.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b4{}; b4.buffer=sorted_index;    b4.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b5{}; b5.buffer=pressure_accel;  b5.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
-    std::array<VkWriteDescriptorSet, 7> w{};
-    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
-    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
-    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
-    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
-    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
-    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
-    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
-    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
-    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
-    w[4].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[4].pBufferInfo=&b4;
-    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
-    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
-    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
-    w[6].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[6].pBufferInfo=&u_i;
-    vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
-}
-
-static void writeComputeAijPjDescriptor(VkDevice device,
-                                        VkDescriptorSet ds,
-                                        VkBuffer particles,
-                                        VkBuffer density_alpha,
-                                        VkBuffer cell_starts,
-                                        VkBuffer sorted_index,
-                                        VkBuffer pressure_accel,
-                                        VkBuffer aij_pj_scratch,
-                                        VkBuffer uniform_buffer) {
-    VkDescriptorBufferInfo b0{}; b0.buffer=particles;       b0.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b1{}; b1.buffer=density_alpha;   b1.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b2{}; b2.buffer=cell_starts;     b2.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b3{}; b3.buffer=sorted_index;    b3.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b4{}; b4.buffer=pressure_accel;  b4.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo b5{}; b5.buffer=aij_pj_scratch;  b5.range=VK_WHOLE_SIZE;
-    VkDescriptorBufferInfo u_i{};u_i.buffer=uniform_buffer; u_i.range=VK_WHOLE_SIZE;
-    std::array<VkWriteDescriptorSet, 7> w{};
-    for (auto& wi : w) wi.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    w[0].dstSet=ds; w[0].dstBinding=0; w[0].descriptorCount=1;
-    w[0].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[0].pBufferInfo=&b0;
-    w[1].dstSet=ds; w[1].dstBinding=1; w[1].descriptorCount=1;
-    w[1].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[1].pBufferInfo=&b1;
-    w[2].dstSet=ds; w[2].dstBinding=2; w[2].descriptorCount=1;
-    w[2].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[2].pBufferInfo=&b2;
-    w[3].dstSet=ds; w[3].dstBinding=3; w[3].descriptorCount=1;
-    w[3].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[3].pBufferInfo=&b3;
-    w[4].dstSet=ds; w[4].dstBinding=4; w[4].descriptorCount=1;
-    w[4].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[4].pBufferInfo=&b4;
-    w[5].dstSet=ds; w[5].dstBinding=5; w[5].descriptorCount=1;
-    w[5].descriptorType=VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; w[5].pBufferInfo=&b5;
-    w[6].dstSet=ds; w[6].dstBinding=6; w[6].descriptorCount=1;
-    w[6].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; w[6].pBufferInfo=&u_i;
     vkUpdateDescriptorSets(device, uint32_t(w.size()), w.data(), 0, nullptr);
 }
 
@@ -1011,10 +1113,27 @@ struct TierResources {
     gv::Buffer uniform_apply_emitter;
     gv::Buffer uniform_initial_fill;
     gv::Buffer uniform_sort;         // shared by morton_code, cell_count, prefix_sum_*, scatter
+    gv::Buffer uniform_sort_boundary;// boundary sort UBO (boundaryParticleCount)
     gv::Buffer uniform_dfsph;        // shared by density_alpha, *_solve, integrate_forces, pressure_apply
     gv::Buffer uniform_render_view;  // shared by particle_sprite + thickness
     gv::Buffer uniform_bilateral;
     gv::Buffer uniform_composite;
+
+    // Akinci2012 boundary buffers: per-AABB-face hex-packed particle samples
+    // + per-particle volumes (computed once at preset load). Storage sized
+    // for BOUNDARY_PARTICLE_CAP; `boundary_particle_count` is the live count.
+    gv::Buffer boundary_particles;        // CAP x 16 bytes (vec4 pos, .w pad)
+    gv::Buffer boundary_volumes;          // CAP x 4 bytes
+    gv::Buffer boundary_morton_codes;     // CAP x 4 bytes
+    gv::Buffer boundary_sorted_index;     // CAP x 4 bytes
+    gv::Buffer boundary_cell_counts;      // MAX_CELLS x 4 bytes
+    gv::Buffer boundary_cell_counts_atomic;
+    gv::Buffer boundary_cell_starts;      // MAX_CELLS x 4 bytes
+    gv::Buffer boundary_cell_block_sums;
+    gv::Buffer boundary_cell_block_prefixes;
+    gv::Buffer boundary_cell_l2_sums;
+    gv::Buffer boundary_cell_l2_prefixes;
+    std::uint32_t boundary_particle_count = 0;
 
     gv::Image  depth_image;
     gv::Image  smoothed_depth_a;
@@ -1084,10 +1203,36 @@ static TierResources createTierResources(gv::Context& ctx,
     r.uniform_apply_emitter = makeUbo(2048, "uniform_apply_emitter"); // 32 B header + 8 emitters x 96 B
     r.uniform_initial_fill  = makeUbo( 256, "uniform_initial_fill");
     r.uniform_sort          = makeUbo( 256, "uniform_sort");
+    r.uniform_sort_boundary = makeUbo( 256, "uniform_sort_boundary");
     r.uniform_dfsph         = makeUbo( 256, "uniform_dfsph");
     r.uniform_render_view   = makeUbo( 512, "uniform_render_view");
     r.uniform_bilateral     = makeUbo( 256, "uniform_bilateral");
     r.uniform_composite     = makeUbo( 256, "uniform_composite");
+
+    // Akinci2012 boundary buffers — sized for BOUNDARY_PARTICLE_CAP regardless
+    // of the live count, so the boundary spatial hash sort pipelines bind once.
+    r.boundary_particles    = gv::Buffer::create(ctx, std::size_t(BOUNDARY_PARTICLE_CAP) * 16,
+                                                 kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_particles");
+    r.boundary_volumes      = gv::Buffer::create(ctx, std::size_t(BOUNDARY_PARTICLE_CAP) * 4,
+                                                 kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_volumes");
+    r.boundary_morton_codes = gv::Buffer::create(ctx, std::size_t(BOUNDARY_PARTICLE_CAP) * 4,
+                                                 kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_morton_codes");
+    r.boundary_sorted_index = gv::Buffer::create(ctx, std::size_t(BOUNDARY_PARTICLE_CAP) * 4,
+                                                 kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_sorted_index");
+    r.boundary_cell_counts        = gv::Buffer::create(ctx, std::size_t(max_cells) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_counts");
+    r.boundary_cell_counts_atomic = gv::Buffer::create(ctx, std::size_t(max_cells) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_counts_atomic");
+    r.boundary_cell_starts        = gv::Buffer::create(ctx, std::size_t(max_cells) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_starts");
+    r.boundary_cell_block_sums    = gv::Buffer::create(ctx, std::size_t(num_blocks) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_block_sums");
+    r.boundary_cell_block_prefixes= gv::Buffer::create(ctx, std::size_t(num_blocks) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_block_prefixes");
+    r.boundary_cell_l2_sums       = gv::Buffer::create(ctx, std::size_t(std::max(num_l2_blocks, 1u)) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_l2_sums");
+    r.boundary_cell_l2_prefixes   = gv::Buffer::create(ctx, std::size_t(std::max(num_l2_blocks, 1u)) * 4,
+                                                       kSsboUsage, gv::MemoryUsage::DeviceLocal, "boundary_cell_l2_prefixes");
 
     const std::uint32_t W = window.extent().width;
     const std::uint32_t H = window.extent().height;
@@ -1135,6 +1280,125 @@ static void destroyTierResources(gv::Context& ctx, TierResources& r) {
 // at the spec's default supportRadius / cell-size ratios. 64^3 keeps cell_*
 // buffers under 1 MiB each.
 constexpr std::uint32_t MAX_CELLS = 1u << 18;  // 262 144
+
+// ============================================================================
+// Akinci2012 boundary sampling — hex-close-packed positions on six AABB faces
+// at particle-diameter spacing. Returns the count actually written (clamped to
+// BOUNDARY_PARTICLE_CAP). Mirrors the upstream sampling pattern at
+// SPlisHSPlasH 2.16.1 SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:77-110
+// (initModel — caller pre-generates positions and resizes m_x0/m_x/m_v/m_V).
+// ============================================================================
+static std::uint32_t generateBoundaryParticles(const glm::vec3& dmin,
+                                               const glm::vec3& dmax,
+                                               float particle_radius,
+                                               std::vector<glm::vec4>& out_positions) {
+    out_positions.clear();
+    const float spacing = BOUNDARY_SPACING_RATIO * particle_radius;
+    if (spacing <= 0.0f) return 0u;
+
+    auto sample_face = [&](int normal_axis, float plane_coord,
+                           int axis_u, int axis_v) {
+        // Span along the two in-plane axes; offset rows by half-spacing
+        // (hex-close-packed) to give ~70% denser sampling than square grid.
+        float u_min = dmin[axis_u];
+        float u_max = dmax[axis_u];
+        float v_min = dmin[axis_v];
+        float v_max = dmax[axis_v];
+        int   n_v = std::max(1, int(std::ceil((v_max - v_min) / spacing)));
+        for (int j = 0; j <= n_v; ++j) {
+            float v = v_min + float(j) * spacing;
+            if (v > v_max + 1e-6f) break;
+            float offset = (j & 1) ? 0.5f * spacing : 0.0f;
+            int n_u = std::max(1, int(std::ceil((u_max - u_min) / spacing)));
+            for (int i = 0; i <= n_u; ++i) {
+                float u = u_min + offset + float(i) * spacing;
+                if (u > u_max + 1e-6f) break;
+                if (out_positions.size() >= BOUNDARY_PARTICLE_CAP) return;
+                glm::vec3 pos(0.0f);
+                pos[normal_axis] = plane_coord;
+                pos[axis_u]      = u;
+                pos[axis_v]      = v;
+                out_positions.emplace_back(pos, 0.0f);
+            }
+        }
+    };
+
+    // Floor + ceiling (Y faces).
+    sample_face(1, dmin.y, 0, 2);
+    sample_face(1, dmax.y, 0, 2);
+    // Left + right (X faces) — skip Y rows already covered by floor/ceiling rim
+    // would over-sample the corner ring. Keep simple: full coverage; minor
+    // duplication at corners is harmless to the volume kernel.
+    sample_face(0, dmin.x, 1, 2);
+    sample_face(0, dmax.x, 1, 2);
+    // Front + back (Z faces).
+    sample_face(2, dmin.z, 0, 1);
+    sample_face(2, dmax.z, 0, 1);
+
+    return std::uint32_t(out_positions.size());
+}
+
+// Morton encoding for boundary spatial hash (CPU-side; mirrors the GLSL
+// helper in compute_boundary_volume.comp.glsl). Boundary sorting is done on
+// CPU once at preset load, then uploaded — boundary positions are static.
+static inline std::uint32_t expand_bits_10_cpu(std::uint32_t v) {
+    v = (v * 0x00010001u) & 0xFF0000FFu;
+    v = (v * 0x00000101u) & 0x0F00F00Fu;
+    v = (v * 0x00000011u) & 0xC30C30C3u;
+    v = (v * 0x00000005u) & 0x49249249u;
+    return v;
+}
+static inline std::uint32_t morton_encode_3d_cpu(std::uint32_t x, std::uint32_t y, std::uint32_t z) {
+    return (expand_bits_10_cpu(x) << 2) | (expand_bits_10_cpu(y) << 1) | expand_bits_10_cpu(z);
+}
+
+// Counting-sort boundary particles into the boundary cell grid (CPU).
+// Inputs: positions in `boundary_positions`, the grid axes / domain / cell
+// size as seen by the fluid sort. Outputs: morton_codes, sorted_indices,
+// cell_starts (size MAX_CELLS), packed sentinel cell_starts[MAX_CELLS] is the
+// total count so the GLSL traversal can read [start, end) safely.
+static void buildBoundarySpatialHashCpu(const std::vector<glm::vec4>& positions,
+                                        const glm::vec3& domain_min,
+                                        float cell_size,
+                                        glm::uvec3 axes,
+                                        std::uint32_t max_cells,
+                                        std::vector<std::uint32_t>& out_morton,
+                                        std::vector<std::uint32_t>& out_sorted_index,
+                                        std::vector<std::uint32_t>& out_cell_starts) {
+    const std::uint32_t N = std::uint32_t(positions.size());
+    out_morton.assign(N, 0u);
+    out_sorted_index.assign(N, 0u);
+    out_cell_starts.assign(std::size_t(max_cells) + 1u, 0u);
+
+    if (N == 0) return;
+
+    std::vector<std::uint32_t> cell_counts(max_cells, 0u);
+    for (std::uint32_t i = 0; i < N; ++i) {
+        glm::vec3 rel = (glm::vec3(positions[i]) - domain_min) / cell_size;
+        std::uint32_t cx = std::min(std::uint32_t(std::max(rel.x, 0.0f)), axes.x - 1u);
+        std::uint32_t cy = std::min(std::uint32_t(std::max(rel.y, 0.0f)), axes.y - 1u);
+        std::uint32_t cz = std::min(std::uint32_t(std::max(rel.z, 0.0f)), axes.z - 1u);
+        std::uint32_t m  = morton_encode_3d_cpu(cx, cy, cz);
+        if (m >= max_cells) m = max_cells - 1u;  // clamp to valid range
+        out_morton[i] = m;
+        cell_counts[m]++;
+    }
+
+    // Exclusive prefix sum into out_cell_starts.
+    std::uint32_t running = 0;
+    for (std::uint32_t c = 0; c < max_cells; ++c) {
+        out_cell_starts[c] = running;
+        running += cell_counts[c];
+    }
+    out_cell_starts[max_cells] = running;  // sentinel
+
+    std::vector<std::uint32_t> write_cursor(out_cell_starts.begin(), out_cell_starts.begin() + max_cells);
+    for (std::uint32_t i = 0; i < N; ++i) {
+        std::uint32_t m   = out_morton[i];
+        std::uint32_t pos = write_cursor[m]++;
+        out_sorted_index[pos] = i;
+    }
+}
 
 // ============================================================================
 // main()
@@ -1278,7 +1542,8 @@ int main(int argc, char** argv) {
     auto pipe_morton_code      = make_compute("morton_code.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,U,1,CS}});
     auto pipe_density_alpha    = make_compute("density_alpha.comp.glsl",
-                                              {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+                                              {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS},
+                                               {5,B,1,CS},{6,B,1,CS},{7,B,1,CS},{8,B,1,CS}});
     auto pipe_divergence_solve = make_compute("divergence_solve.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS}});
     auto pipe_density_solve    = make_compute("density_solve.comp.glsl",
@@ -1292,16 +1557,23 @@ int main(int argc, char** argv) {
     // ----- Commit 2a: new DFSPH inner-loop kernels (wired but unused; commit 2b -----
     // rewires the substep dispatch chain to actually dispatch these).
     auto pipe_compute_density_adv    = make_compute("compute_density_adv.comp.glsl",
-                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS},
+                                                     {5,B,1,CS},{6,B,1,CS},{7,B,1,CS},{8,B,1,CS}});
     auto pipe_compute_density_change = make_compute("compute_density_change.comp.glsl",
-                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS},
+                                                     {5,B,1,CS},{6,B,1,CS},{7,B,1,CS},{8,B,1,CS}});
     auto pipe_compute_pressure_accel = make_compute("compute_pressure_accel.comp.glsl",
-                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS}});
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS},
+                                                     {7,B,1,CS},{8,B,1,CS},{9,B,1,CS},{10,B,1,CS}});
     auto pipe_compute_aij_pj         = make_compute("compute_aij_pj.comp.glsl",
-                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS}},
+                                                    {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,B,1,CS},{5,B,1,CS},{6,U,1,CS},
+                                                     {7,B,1,CS},{8,B,1,CS},{9,B,1,CS},{10,B,1,CS}},
                                                     sizeof(std::uint32_t));  // solver_mode push-const (0=density, 1=divergence)
     auto pipe_apply_velocity         = make_compute("apply_velocity.comp.glsl",
                                                     {{0,B,1,CS},{1,B,1,CS},{2,U,1,CS}});
+    // Akinci2012 boundary volume kernel — one-shot at preset load.
+    auto pipe_compute_boundary_volume = make_compute("compute_boundary_volume.comp.glsl",
+                                                     {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}});
     // Commit 2b: Jacobi-update kernels — consume aij_pj_scratch from
     // compute_aij_pj and write the next-iteration pressure.
     auto pipe_jacobi_update_density    = make_compute("jacobi_update_density.comp.glsl",
@@ -1402,6 +1674,7 @@ int main(int argc, char** argv) {
         pipe_compute_aij_pj.allocateDescriptorSet(),
     };
     VkDescriptorSet ds_apply_velocity          = pipe_apply_velocity.allocateDescriptorSet();
+    VkDescriptorSet ds_compute_boundary_volume = pipe_compute_boundary_volume.allocateDescriptorSet();
     // Commit 2b: Jacobi-update DS pairs — set[0] reads pressure_a / writes
     // pressure_b; set[1] swaps. Selected by (i % 2) in the inner solver loops.
     VkDescriptorSet ds_jacobi_update_density[2] = {
@@ -1478,7 +1751,9 @@ int main(int argc, char** argv) {
         writeDensityAlphaDescriptor(ctx.device(), ds_density_alpha,
             tier.particles.handle(), tier.cell_starts.handle(),
             tier.sorted_index.handle(), tier.density_alpha.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         // DFSPH solve: ds[0] reads pressure_a / writes pressure_b; ds[1] swaps.
         writeDfsphSolveDescriptor(ctx.device(), ds_divergence_solve[0],
             tier.particles.handle(), tier.density_alpha.handle(),
@@ -1512,24 +1787,32 @@ int main(int argc, char** argv) {
         writeComputeDensityAdvDescriptor(ctx.device(), ds_compute_density_adv,
             tier.particles.handle(), tier.density_alpha.handle(),
             tier.cell_starts.handle(), tier.sorted_index.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         writeComputeDensityChangeDescriptor(ctx.device(), ds_compute_density_change,
             tier.particles.handle(), tier.density_alpha.handle(),
             tier.cell_starts.handle(), tier.sorted_index.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         // pressure_accel: ds[0] reads p_read=pressure_a; ds[1] reads p_read=pressure_b.
         writeComputePressureAccelDescriptor(ctx.device(), ds_compute_pressure_accel[0],
             tier.particles.handle(), tier.density_alpha.handle(),
             tier.pressure_a.handle(),
             tier.cell_starts.handle(), tier.sorted_index.handle(),
             tier.pressure_accel.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         writeComputePressureAccelDescriptor(ctx.device(), ds_compute_pressure_accel[1],
             tier.particles.handle(), tier.density_alpha.handle(),
             tier.pressure_b.handle(),
             tier.cell_starts.handle(), tier.sorted_index.handle(),
             tier.pressure_accel.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         // aij_pj: bindings identical across both sets — pre-allocated for future
         // divergence/density split if either solve diverges in its read set.
         writeComputeAijPjDescriptor(ctx.device(), ds_compute_aij_pj[0],
@@ -1537,16 +1820,24 @@ int main(int argc, char** argv) {
             tier.cell_starts.handle(), tier.sorted_index.handle(),
             tier.pressure_accel.handle(),
             tier.aij_pj_scratch.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         writeComputeAijPjDescriptor(ctx.device(), ds_compute_aij_pj[1],
             tier.particles.handle(), tier.density_alpha.handle(),
             tier.cell_starts.handle(), tier.sorted_index.handle(),
             tier.pressure_accel.handle(),
             tier.aij_pj_scratch.handle(),
-            tier.uniform_dfsph.handle());
+            tier.uniform_dfsph.handle(),
+            tier.boundary_particles.handle(), tier.boundary_volumes.handle(),
+            tier.boundary_cell_starts.handle(), tier.boundary_sorted_index.handle());
         writeApplyVelocityDescriptor(ctx.device(), ds_apply_velocity,
             tier.particles.handle(), tier.pressure_accel.handle(),
             tier.uniform_dfsph.handle());
+        writeComputeBoundaryVolumeDescriptor(ctx.device(), ds_compute_boundary_volume,
+            tier.boundary_particles.handle(), tier.boundary_cell_starts.handle(),
+            tier.boundary_sorted_index.handle(), tier.boundary_volumes.handle(),
+            tier.uniform_sort_boundary.handle());
         // Commit 2b: Jacobi-update descriptor writes — ds[0] reads pressure_a /
         // writes pressure_b; ds[1] swaps. Identical pattern to ds_*_solve above.
         writeJacobiUpdateDensityDescriptor(ctx.device(), ds_jacobi_update_density[0],
@@ -1686,8 +1977,12 @@ int main(int argc, char** argv) {
             float gravity_pad[4];                 // 64
             float domainMin_cellSize[4];          // 80
             float domainMax_pad[4];               // 96
+            std::uint32_t boundaryParticleCount;  //112
+            std::uint32_t _bpad0;                 //116
+            std::uint32_t _bpad1;                 //120
+            std::uint32_t _bpad2;                 //124
         } u{};
-        static_assert(sizeof(Layout) == 112, "DFSPH canonical UBO size drift");
+        static_assert(sizeof(Layout) == 128, "DFSPH canonical UBO size drift");
         u.particleCount   = rt.particleCount;
         u.cellsPerAxisX   = axes.x;
         u.cellsPerAxisY   = axes.y;
@@ -1713,6 +2008,7 @@ int main(int argc, char** argv) {
         u.domainMax_pad[0] = rt.domainMax.x;
         u.domainMax_pad[1] = rt.domainMax.y;
         u.domainMax_pad[2] = rt.domainMax.z;
+        u.boundaryParticleCount = tier.boundary_particle_count;
         tier.uniform_dfsph.uploadDirect(&u, sizeof(u));
     };
 
@@ -1904,6 +2200,81 @@ int main(int argc, char** argv) {
         rt.presetParticleCount = total;
     };
     seedInitialFill();
+
+    // ------------------------------------------------------------------------
+    // Akinci2012 boundary preprocessing — once per preset load.
+    //
+    // Generates hex-packed boundary samples for the six AABB faces, runs the
+    // counting-sort on CPU (boundary is static and small), uploads to device,
+    // packs the boundary sort UBO, and dispatches compute_boundary_volume
+    // once. After this point the boundary cell grid + V_b values are read-only
+    // for the lifetime of the preset.
+    // Mirrors SPlisHSPlasH 2.16.1 SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-110.
+    // ------------------------------------------------------------------------
+    auto setupBoundarySpatialHash = [&]() {
+        std::vector<glm::vec4> bp;
+        std::uint32_t N = generateBoundaryParticles(rt.domainMin, rt.domainMax,
+                                                    rt.particleRadius, bp);
+        tier.boundary_particle_count = N;
+        if (N == 0) {
+            logWarn("[sph-water] Akinci2012: generated 0 boundary particles; falling back to AABB-clamp-only.");
+            return;
+        }
+        if (N >= BOUNDARY_PARTICLE_CAP) {
+            logWarn("[sph-water] Akinci2012: boundary particle count hit cap {} (preset domain may be too large).", BOUNDARY_PARTICLE_CAP);
+        }
+        logInfo("[sph-water] Akinci2012: {} boundary particles, ~{:.2f} MB",
+                N, double(N * (16 + 4)) / (1024.0 * 1024.0));
+
+        // CPU counting sort over the same cell grid as the fluid.
+        glm::uvec3 axes; std::uint32_t maxAxis;
+        compute_cells_per_axis(axes, maxAxis);
+        std::vector<std::uint32_t> morton, sorted_index, cell_starts;
+        buildBoundarySpatialHashCpu(bp, rt.domainMin, rt.cellSize, axes,
+                                    MAX_CELLS, morton, sorted_index, cell_starts);
+
+        tier.boundary_particles.uploadDirect(bp.data(), bp.size() * sizeof(glm::vec4));
+        tier.boundary_morton_codes.uploadDirect(morton.data(), morton.size() * sizeof(std::uint32_t));
+        tier.boundary_sorted_index.uploadDirect(sorted_index.data(), sorted_index.size() * sizeof(std::uint32_t));
+        tier.boundary_cell_starts.uploadDirect(cell_starts.data(), cell_starts.size() * sizeof(std::uint32_t));
+
+        // Pack uniform_sort_boundary (matches compute_boundary_volume.comp.glsl).
+        struct alignas(16) BoundaryVolU {
+            std::uint32_t boundaryParticleCount;
+            std::uint32_t cellsPerAxisX;
+            std::uint32_t cellsPerAxisY;
+            std::uint32_t cellsPerAxisZ;
+            float supportRadius;
+            float kernelNorm3D;
+            float gradKernelNorm3D;
+            float _pad0;
+            float domainMin_cellSize[4];
+            float domainMax_pad[4];
+        } u{};
+        u.boundaryParticleCount = N;
+        u.cellsPerAxisX = axes.x;
+        u.cellsPerAxisY = axes.y;
+        u.cellsPerAxisZ = axes.z;
+        u.supportRadius = rt.supportRadius;
+        u.kernelNorm3D  = kernel_norm_3d_value();
+        u.gradKernelNorm3D = grad_kernel_norm_3d_value();
+        u.domainMin_cellSize[0] = rt.domainMin.x;
+        u.domainMin_cellSize[1] = rt.domainMin.y;
+        u.domainMin_cellSize[2] = rt.domainMin.z;
+        u.domainMin_cellSize[3] = rt.cellSize;
+        u.domainMax_pad[0] = rt.domainMax.x;
+        u.domainMax_pad[1] = rt.domainMax.y;
+        u.domainMax_pad[2] = rt.domainMax.z;
+        tier.uniform_sort_boundary.uploadDirect(&u, sizeof(u));
+
+        // One-shot dispatch — boundary volumes are static for the preset's
+        // lifetime.
+        ctx.runOneShot([&](VkCommandBuffer cb) {
+            pipe_compute_boundary_volume.dispatch(cb, ds_compute_boundary_volume,
+                                                  (N + 255u) / 256u, 1u, 1u);
+        });
+    };
+    setupBoundarySpatialHash();
 
     // ------------------------------------------------------------------------
     // Hot-reload registration (§ 4.E). Each flag is set by the worker thread
@@ -2590,6 +2961,7 @@ int main(int argc, char** argv) {
                 apply_preset(rt, preset);
                 renderer.waitIdle();
                 seedInitialFill();
+                setupBoundarySpatialHash();
             }
 
             const char* tier_names[] = {"256k", "1M (default)", "2M", "4M (capture-mode)"};
@@ -2676,6 +3048,7 @@ int main(int argc, char** argv) {
             tier = createTierResources(ctx, window, rt.particleCapacity, MAX_CELLS);
             rewriteAllDescriptors();
             seedInitialFill();
+            setupBoundarySpatialHash();
             rt.iteration = 0;
             gpusims::ui::pushToast(
                 ("Tier changed to " + std::to_string(rt.particleCapacity) + " particles").c_str(),

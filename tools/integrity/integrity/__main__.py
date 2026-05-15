@@ -1,4 +1,4 @@
-"""Entry point: `python -m integrity`."""
+"""Entry point: `python3 -m integrity`."""
 
 from __future__ import annotations
 

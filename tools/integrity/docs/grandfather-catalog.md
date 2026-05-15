@@ -10,9 +10,22 @@ after this commit. Grandfathered findings are suppressed via inline
 <!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` annotations per spec § 3.2.
 
+## Updating counts
+
+The per-category counts in the headings below reflect the toolkit state
+at the time this catalog was last manually refreshed (commit `c3391f7`,
+2026-05-15). To refresh:
+
+```
+python3 -m integrity --grandfather-report --no-history-append
+```
+
+Then update each category heading's parenthetical with the count from
+the report. Auto-refresh from the history file is a v1.2 candidate.
+
 ## Categories
 
-### `audit-citation`
+### `audit-citation` (597)
 
 **Pattern:** `cat1.intra-repo` findings in files under `docs/diagnostics/_audits/`.
 
@@ -25,7 +38,7 @@ editing them would erase the historical record.
 v1 may reference paths-that-no-longer-exist; if so, those new citations get
 the same suppression at write-time.
 
-### `live-shader-1810`
+### `live-shader-1810` (3)
 
 **Pattern:** `cat1.upstream-citation` findings citing `SPlisHSPlasH 1.8.10`
 in live code under `particle-fluids/sph-water/shaders/` or
@@ -37,15 +50,14 @@ live citations in shaders and host code were copied from pre-setup-1 drafts
 and still use the old version label. Rewriting them to `2.16.1` is a real
 migration item but separate from the integrity toolkit's v1 landing.
 
-**Tracking:** This category has ~10 entries. They are the migration target;
-when sph-water's load-bearing-decisions.md and shader headers are next
-edited, the citations should be updated to `2.16.1` and the suppressions
-removed.
+**Tracking:** Entries are the migration target; when sph-water's
+load-bearing-decisions.md and shader headers are next edited, the
+citations should be updated to `2.16.1` and the suppressions removed.
 
 **Future treatment:** Remove suppression on each citation when the
 corresponding shader/source file is next modified for unrelated reasons.
 
-### `audit-doc-1810`
+### `audit-doc-1810` (15)
 
 **Pattern:** `cat1.upstream-citation` findings citing `SPlisHSPlasH 1.8.10`
 in any file NOT under `particle-fluids/sph-water/shaders/` or
@@ -58,7 +70,7 @@ record of what was wrong.
 
 **Future treatment:** Permanent suppression.
 
-### `spec-grammar-example`
+### `spec-grammar-example` (17)
 
 **Pattern:** `cat1.annotation-form` findings in `docs/integrity-toolkit-spec.md`
 or files under `tools/integrity/docs/`.
@@ -73,7 +85,7 @@ always fail the check.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `toolkit-own-source`
+### `toolkit-own-source` (22)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `tools/integrity/integrity/`.
@@ -86,7 +98,7 @@ These are not real annotations; they are the parser definition itself.
 
 **Future treatment:** Permanent suppression on these files.
 
-### `retro-grammar-example`
+### `retro-grammar-example` (2)
 
 **Pattern:** `cat1.annotation-form` findings in files under `docs/retro/`.
 
@@ -99,7 +111,7 @@ reason class as `spec-grammar-example`.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `audit-report-grammar-example`
+### `audit-report-grammar-example` (19)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `docs/diagnostics/_audits/`.
@@ -111,7 +123,7 @@ they quote `integrity-allow:` strings. Same reason class as
 
 **Future treatment:** Permanent suppression.
 
-### `other-cat1`
+### `other-cat1` (66)
 
 **Pattern:** Any other `cat1.*` finding not matched by the rules above.
 
@@ -121,7 +133,7 @@ and likely promoted to a more specific category.
 
 **Future treatment:** Per-entry review in v2.
 
-### `cat2-stack-d-unused`
+### `cat2-stack-d-unused` (17)
 
 **Pattern:** `cat2.public-symbol-used` findings against Stack D's public
 surface (commit 5).
@@ -153,7 +165,7 @@ sim/feature lands. Remove suppression as the consumer wires up.
 Permanent suppressions are NOT expected for this category — every
 entry has an intended consumer.
 
-### `cat2-stack-c-unused`
+### `cat2-stack-c-unused` (111)
 
 **Pattern:** `cat2.public-symbol-used-c` findings against Stack C's
 public surface (commit 6).
@@ -175,7 +187,7 @@ Stack C source. Includes the canonical spec § 12 defects:
 - `gpusims::vk::Buffer::deviceAddress` — declared in `vk/buffer.hpp`,
   no current consumer.
 
-The remaining ~108 entries are mostly `gpusims::vk::*` methods on
+The remaining entries are mostly `gpusims::vk::*` methods on
 `Window`, `Renderer`, `Image`, `ShaderCompiler`, etc. — pieces of the
 Vulkan abstraction layer that are exposed for v1.1 sim integration
 but not yet wired by any of the four landed sims (sph-water,
@@ -187,7 +199,7 @@ Suppressions should dissolve naturally; the canonical
 `writeVec3Grid` and `radii` instances are the migration markers
 flagged in spec § 12.
 
-### `cat2-stack-b-unused`
+### `cat2-stack-b-unused` (73)
 
 **Pattern:** `cat2.public-symbol-used-ts` findings against Stack B's
 public surface (commit 7).
@@ -216,7 +228,7 @@ does not apply. Detection is precise.
 **Future treatment:** Per-symbol review as sims consume the API.
 Suppressions should dissolve as sim code wires the abstraction.
 
-### `cat2-stub-label-stale`
+### `cat2-stub-label-stale` (2)
 
 **Pattern:** `cat2.stub-label-stale` findings -- `In Phase N, this is a stub:`
 labels where the corresponding implementation has more than 10 non-comment

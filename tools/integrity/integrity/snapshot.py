@@ -40,12 +40,29 @@ _KNOWN_CATEGORIES = (
 )
 
 
+_REASON_PATTERNS: tuple[tuple[str, str], ...] = (
+    # Reason substrings that uniquely identify a category for the
+    # entries whose classifier reason does not include the category name.
+    ("regex or docstring literal of the annotation grammar", "toolkit-own-source"),
+    ("audit-doc literal mention of the annotation grammar", "audit-report-grammar-example"),
+    ("documentation-only literal mention of the annotation grammar",
+     "spec-grammar-example"),
+    ("retrospective-doc literal mention of the annotation grammar",
+     "retro-grammar-example"),
+    ("historical 1.8.10 fabrication", "audit-doc-1810"),
+    ("stale phase-n stub label", "cat2-stub-label-stale"),
+)
+
+
 def _extract_category(reason: str) -> str:
     """Match the suppression_reason text to a known category."""
     lowered = (reason or "").lower()
     for cat in _KNOWN_CATEGORIES:
         if cat in lowered:
             return cat
+    for pattern, category in _REASON_PATTERNS:
+        if pattern in lowered:
+            return category
     return "other"
 
 

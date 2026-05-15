@@ -15,20 +15,20 @@ Cross-stack verification toolkit per `docs/integrity-toolkit-spec.md`.
 pip install -e tools/integrity[dev]
 
 # Run all checks (strict — honors HARD_FAIL):
-python -m integrity
+python3 -m integrity
 
 # Local-development mode (downgrades HARD_FAIL to warnings):
-python -m integrity --mode warn-only
+python3 -m integrity --mode warn-only
 
 # Run a single category or check:
-python -m integrity --cat 1
-python -m integrity --check cat1.upstream-anchor
+python3 -m integrity --cat 1
+python3 -m integrity --check cat1.upstream-anchor
 
 # JSON output:
-python -m integrity --output json
+python3 -m integrity --output json
 
 # GitHub Actions annotation output:
-python -m integrity --output github
+python3 -m integrity --output github
 ```
 
 ## Running the toolkit's own tests

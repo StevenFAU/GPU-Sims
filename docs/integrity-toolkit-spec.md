@@ -251,7 +251,7 @@ tools/
     ├── pyproject.toml                     # Toolkit's own deps + ruff/mypy/pytest config
     ├── integrity/                         # Top-level Python package
     │   ├── __init__.py
-    │   ├── __main__.py                    # `python -m integrity` entry
+    │   ├── __main__.py                    # `python3 -m integrity` entry
     │   ├── runner.py                      # Orchestrator + CLI surface
     │   ├── common/                        # Shared utilities
     │   │   ├── __init__.py
@@ -328,7 +328,7 @@ The toolkit is a single Python package + per-stack drivers for Cat 3. No JS pack
 ### 5.1 CLI
 
 ```
-python -m integrity [--cat <N>] [--check <id>] [--mode <strict|warn-only>] \
+python3 -m integrity [--cat <N>] [--check <id>] [--mode <strict|warn-only>] \
                     [--root <path>] [--output <format>] [--no-audit-log]
 ```
 
@@ -356,9 +356,9 @@ python -m integrity [--cat <N>] [--check <id>] [--mode <strict|warn-only>] \
 
 | Context | Command |
 |---------|---------|
-| CI: full run | `python -m integrity --output github` |
-| Local: pre-commit | `python -m integrity --mode warn-only` |
-| Local: debugging one check | `python -m integrity --check cat1.upstream-anchor` |
+| CI: full run | `python3 -m integrity --output github` |
+| Local: pre-commit | `python3 -m integrity --mode warn-only` |
+| Local: debugging one check | `python3 -m integrity --check cat1.upstream-anchor` |
 | Toolkit's own tests | `pytest tools/integrity/tests/ -v` |
 
 ### 5.4 JSON output schema
@@ -750,7 +750,7 @@ jobs:
         run: pytest tests/ -v --cov=integrity
 
       - name: Run integrity toolkit against repo
-        run: python -m integrity --output github
+        run: python3 -m integrity --output github
 
       - name: Upload audit log
         if: always()

@@ -1287,6 +1287,21 @@ constexpr std::uint32_t MAX_CELLS = 1u << 18;  // 262 144
 // BOUNDARY_PARTICLE_CAP). Mirrors the upstream sampling pattern at
 // SPlisHSPlasH 2.16.1 SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:77-110
 // (initModel — caller pre-generates positions and resizes m_x0/m_x/m_v/m_V).
+//
+// Commit 4 fix: two geometric defects from commit 3 corrected here.
+//
+// 1. Inset by particle_radius. Boundary samples sit one radius INSIDE each
+//    AABB plane, so a fluid particle that approaches the wall is at q ≈ 0.5
+//    from the nearest boundary sample (well into the kernel's monotonic
+//    region), not q ≈ 0 (kernel peak). Matches upstream Akinci2012
+//    convention: the "boundary surface" is a particle layer just inside the
+//    wall, not coincident with it.
+//
+// 2. Seam deduplication. Each AABB edge / corner gets exactly one boundary
+//    sample, not 2 or 3. Implementation: trim each face's hex grid by one
+//    spacing on every rim, then sample the 12 edges and 8 corners
+//    explicitly. Eliminates the 2-3× density contribution that caused the
+//    stratified-sheet artifact diagnosed post-commit-3.
 // ============================================================================
 static std::uint32_t generateBoundaryParticles(const glm::vec3& dmin,
                                                const glm::vec3& dmax,
@@ -1296,44 +1311,94 @@ static std::uint32_t generateBoundaryParticles(const glm::vec3& dmin,
     const float spacing = BOUNDARY_SPACING_RATIO * particle_radius;
     if (spacing <= 0.0f) return 0u;
 
+    // Inset plane coordinates (one particle_radius inside the AABB).
+    const glm::vec3 imin = dmin + glm::vec3(particle_radius);
+    const glm::vec3 imax = dmax - glm::vec3(particle_radius);
+
+    auto push = [&](const glm::vec3& pos) -> bool {
+        if (out_positions.size() >= BOUNDARY_PARTICLE_CAP) return false;
+        out_positions.emplace_back(pos, 0.0f);
+        return true;
+    };
+
+    // Hex-packed face interior, trimmed by one spacing on every rim so the
+    // edge / corner passes below own those bands without duplication.
     auto sample_face = [&](int normal_axis, float plane_coord,
                            int axis_u, int axis_v) {
-        // Span along the two in-plane axes; offset rows by half-spacing
-        // (hex-close-packed) to give ~70% denser sampling than square grid.
-        float u_min = dmin[axis_u];
-        float u_max = dmax[axis_u];
-        float v_min = dmin[axis_v];
-        float v_max = dmax[axis_v];
-        int   n_v = std::max(1, int(std::ceil((v_max - v_min) / spacing)));
+        float u_lo = imin[axis_u] + spacing;
+        float u_hi = imax[axis_u] - spacing;
+        float v_lo = imin[axis_v] + spacing;
+        float v_hi = imax[axis_v] - spacing;
+        if (u_lo > u_hi || v_lo > v_hi) return;  // face too thin for interior
+        int n_v = int(std::floor((v_hi - v_lo) / spacing));
         for (int j = 0; j <= n_v; ++j) {
-            float v = v_min + float(j) * spacing;
-            if (v > v_max + 1e-6f) break;
+            float v = v_lo + float(j) * spacing;
+            if (v > v_hi + 1e-6f) break;
             float offset = (j & 1) ? 0.5f * spacing : 0.0f;
-            int n_u = std::max(1, int(std::ceil((u_max - u_min) / spacing)));
+            int n_u = int(std::floor((u_hi - u_lo - offset) / spacing));
             for (int i = 0; i <= n_u; ++i) {
-                float u = u_min + offset + float(i) * spacing;
-                if (u > u_max + 1e-6f) break;
-                if (out_positions.size() >= BOUNDARY_PARTICLE_CAP) return;
+                float u = u_lo + offset + float(i) * spacing;
+                if (u > u_hi + 1e-6f) break;
                 glm::vec3 pos(0.0f);
                 pos[normal_axis] = plane_coord;
                 pos[axis_u]      = u;
                 pos[axis_v]      = v;
-                out_positions.emplace_back(pos, 0.0f);
+                if (!push(pos)) return;
             }
         }
     };
 
-    // Floor + ceiling (Y faces).
-    sample_face(1, dmin.y, 0, 2);
-    sample_face(1, dmax.y, 0, 2);
-    // Left + right (X faces) — skip Y rows already covered by floor/ceiling rim
-    // would over-sample the corner ring. Keep simple: full coverage; minor
-    // duplication at corners is harmless to the volume kernel.
-    sample_face(0, dmin.x, 1, 2);
-    sample_face(0, dmax.x, 1, 2);
-    // Front + back (Z faces).
-    sample_face(2, dmin.z, 0, 1);
-    sample_face(2, dmax.z, 0, 1);
+    // 6 face interiors at the inset planes.
+    sample_face(1, imin.y, 0, 2);   // floor
+    sample_face(1, imax.y, 0, 2);   // ceiling
+    sample_face(0, imin.x, 1, 2);   // left
+    sample_face(0, imax.x, 1, 2);   // right
+    sample_face(2, imin.z, 0, 1);   // front
+    sample_face(2, imax.z, 0, 1);   // back
+
+    // 12 AABB edges. Each edge varies along `free_axis`; the other two axes
+    // are pinned to imin/imax (inset corners). Single line of samples
+    // through the seam's centerline; ends trimmed by one spacing so the
+    // corner passes below own those points.
+    auto sample_edge = [&](int free_axis, glm::vec3 pinned) {
+        float t_lo = imin[free_axis] + spacing;
+        float t_hi = imax[free_axis] - spacing;
+        if (t_lo > t_hi) return;
+        int n = int(std::floor((t_hi - t_lo) / spacing));
+        for (int i = 0; i <= n; ++i) {
+            float t = t_lo + float(i) * spacing;
+            if (t > t_hi + 1e-6f) break;
+            glm::vec3 pos = pinned;
+            pos[free_axis] = t;
+            if (!push(pos)) return;
+        }
+    };
+
+    // 4 edges along x  (free axis = 0; y, z pinned to corners).
+    sample_edge(0, glm::vec3(0.0f, imin.y, imin.z));
+    sample_edge(0, glm::vec3(0.0f, imin.y, imax.z));
+    sample_edge(0, glm::vec3(0.0f, imax.y, imin.z));
+    sample_edge(0, glm::vec3(0.0f, imax.y, imax.z));
+    // 4 edges along y.
+    sample_edge(1, glm::vec3(imin.x, 0.0f, imin.z));
+    sample_edge(1, glm::vec3(imin.x, 0.0f, imax.z));
+    sample_edge(1, glm::vec3(imax.x, 0.0f, imin.z));
+    sample_edge(1, glm::vec3(imax.x, 0.0f, imax.z));
+    // 4 edges along z.
+    sample_edge(2, glm::vec3(imin.x, imin.y, 0.0f));
+    sample_edge(2, glm::vec3(imin.x, imax.y, 0.0f));
+    sample_edge(2, glm::vec3(imax.x, imin.y, 0.0f));
+    sample_edge(2, glm::vec3(imax.x, imax.y, 0.0f));
+
+    // 8 corners (single sample each).
+    push(glm::vec3(imin.x, imin.y, imin.z));
+    push(glm::vec3(imax.x, imin.y, imin.z));
+    push(glm::vec3(imin.x, imax.y, imin.z));
+    push(glm::vec3(imax.x, imax.y, imin.z));
+    push(glm::vec3(imin.x, imin.y, imax.z));
+    push(glm::vec3(imax.x, imin.y, imax.z));
+    push(glm::vec3(imin.x, imax.y, imax.z));
+    push(glm::vec3(imax.x, imax.y, imax.z));
 
     return std::uint32_t(out_positions.size());
 }

@@ -36,6 +36,9 @@ class CliArgs:
     root: Path
     output: str
     no_audit_log: bool
+    grandfather_report: bool
+    no_history_append: bool
+    state_snapshot: bool
 
 
 def parse_args(argv: list[str]) -> CliArgs:
@@ -55,6 +58,12 @@ def parse_args(argv: list[str]) -> CliArgs:
                         help="Output format")
     parser.add_argument("--no-audit-log", action="store_true",
                         help="Skip writing to integrity_failures_<date>.md")
+    parser.add_argument("--grandfather-report", action="store_true",
+                        help="Emit per-category grandfather counts and append a timestamped entry to .grandfather-history.json")
+    parser.add_argument("--no-history-append", action="store_true",
+                        help="With --grandfather-report, skip the history-file append (read-only mode)")
+    parser.add_argument("--state-snapshot", action="store_true",
+                        help="Emit a full toolkit-state JSON snapshot to stdout and exit")
 
     ns = parser.parse_args(argv)
     return CliArgs(
@@ -64,6 +73,9 @@ def parse_args(argv: list[str]) -> CliArgs:
         root=ns.root if ns.root else find_repo_root(),
         output=ns.output,
         no_audit_log=ns.no_audit_log,
+        grandfather_report=ns.grandfather_report,
+        no_history_append=ns.no_history_append,
+        state_snapshot=ns.state_snapshot,
     )
 
 
@@ -147,6 +159,19 @@ def main(argv: list[str]) -> int:
         args = parse_args(argv)
     except SystemExit as e:
         return EXIT_BAD_CLI if e.code != 0 else EXIT_OK
+
+    if args.state_snapshot:
+        from integrity.snapshot import emit_state_snapshot
+        emit_state_snapshot(args.root, sys.stdout)
+        return EXIT_OK
+
+    if args.grandfather_report:
+        from integrity.snapshot import emit_grandfather_report
+        emit_grandfather_report(
+            args.root, sys.stdout,
+            append_history=not args.no_history_append,
+        )
+        return EXIT_OK
 
     try:
         checks = discover_checks(args)

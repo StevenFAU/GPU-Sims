@@ -245,3 +245,58 @@ follows the probe recommendation.
 When future categories acquire their own context docs (e.g.,
 `docs/category-contexts/hybrid-particle-grid.md`), no toolkit or
 convention change is needed — the directory is already general-shape.
+
+---
+
+## F.1 Resolution — 2026-05-15
+
+Fix-forward landed as commit `95cf161`
+(`docs: fix F.1 misreference in Quantum category-context`). The
+single-sentence rewrite in `docs/category-contexts/quantum.md` § 0
+now reads:
+
+> This doc is **not** load-bearing in the same sense as the per-sim
+> `docs/load-bearing-decisions.md` files that ship with each
+> implemented sim (one under each `<category>/<sim>/docs/`). [...]
+
+The diff is exactly one line; no other content changed.
+
+### Verification
+
+```
+$ git diff 149fc93..95cf161 -- docs/category-contexts/quantum.md | grep -c '^[+-][^+-]'
+2
+
+$ python3 -m integrity --mode strict --no-audit-log
+integrity: 2 pass, 0 soft-warn, 13 hard-fail, 944 suppressed
+Exit: 1
+```
+
+The post-fix summary line is **byte-identical** to the post-149fc93
+baseline observed once the audit file itself was tracked
+(see correction below). The fix introduces zero new findings.
+
+### Baseline correction
+
+The original § C.3 of this audit reported the pre/post counts as
+`11 hard-fail / 944 suppressed`. That measurement was taken **before**
+the audit file was committed; at that time the audit was untracked
+and therefore not scanned by the toolkit (`_list_scannable_files`
+uses `git ls-files` when `.git` is present). Once the audit file
+landed as part of commit `149fc93`, it became tracked and contributed
+2 additional findings (one cat1.intra-repo at line 80 from the bare
+`grammar.py:49-52` reference inside a prose explanation, and one
+cat1.annotation-form at line 139 from the literal "`integrity-allow:`"
+token inside a backtick-fenced phrase). Both are self-referential
+to the toolkit grammar — the audit doc describes the grammar and
+quotes it, so the grammar's own parser picks up the quotes.
+
+The true post-149fc93 baseline is therefore **13 hard-fail / 944
+suppressed**, not 11. The byte-identical property held by the F.1
+fix-forward is against this true baseline.
+
+The two audit-self-references are within the audit's own prose and
+out-of-scope for this fix-forward; if they merit cleanup they would
+be in scope for an audit-doc revision (suppression annotations,
+backtick adjustments, or a paraphrase). Not pursued here per the
+fix-forward's stated scope.

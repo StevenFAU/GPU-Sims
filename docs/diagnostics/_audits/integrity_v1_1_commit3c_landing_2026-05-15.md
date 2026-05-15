@@ -8,7 +8,11 @@ a snapshot-classifier refinement that unblocks A.8 accuracy.
 Companion to:
 
 - Batch-1 execution spec: `docs/diagnostics/_audits/integrity_v1_1_batch1_spec_2026-05-15_architect1.md`
-- Prior sub-commits: `integrity_v1_1_commit3a_landing_2026-05-15.md`, `integrity_v1_1_commit3b_landing_2026-05-15.md`
+- Commit 1 (A.1 stub-label): `af248cf` -- `integrity_v1_1_commit1_landing_2026-05-15.md`
+- Commit 2 (A.5 fence-block): `f661ec4` -- `integrity_v1_1_commit2_landing_2026-05-15.md`
+- Commit 3a (snapshot module): `dbac051` -- `integrity_v1_1_commit3a_landing_2026-05-15.md`
+- Commit 3b (CLI flags): `a71594a` -- `integrity_v1_1_commit3b_landing_2026-05-15.md`
+- This commit's SHA: `a28e1d7`
 
 ---
 

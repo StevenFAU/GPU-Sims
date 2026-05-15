@@ -12,7 +12,11 @@ Companion to:
 - v1.1 spec draft probe: `docs/diagnostics/_audits/integrity_v1_1_probe_2026-05-15_architect1.md`
 - v1.1 spec draft apispec: `docs/diagnostics/_audits/integrity_v1_1_apispec_2026-05-15_architect1.md`
 - Prior commit's audit: `integrity_build_8_landing_2026-05-14.md`
-- Next commit's audit: `integrity_v1_1_commit2_landing_2026-05-15.md` (SHA back-filled separately)
+- This commit's SHA: `af248cf`
+- Commit 2 (A.5): `f661ec4` -- `integrity_v1_1_commit2_landing_2026-05-15.md`
+- Commit 3a (snapshot module): `dbac051` -- `integrity_v1_1_commit3a_landing_2026-05-15.md`
+- Commit 3b (CLI flags): `a71594a` -- `integrity_v1_1_commit3b_landing_2026-05-15.md`
+- Commit 3c (catalog + python3 sweep): `a28e1d7` -- `integrity_v1_1_commit3c_landing_2026-05-15.md`
 
 ---
 

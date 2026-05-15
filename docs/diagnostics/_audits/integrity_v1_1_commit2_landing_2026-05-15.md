@@ -9,8 +9,11 @@ markdown-scanning cat1 check.
 Companion to:
 
 - Batch-1 execution spec: `docs/diagnostics/_audits/integrity_v1_1_batch1_spec_2026-05-15_architect1.md`
-- Prior commit's audit: `integrity_v1_1_commit1_landing_2026-05-15.md`
-- Next commit's audit: `integrity_v1_1_commit3_landing_2026-05-15.md` (SHA back-filled separately)
+- Commit 1 (A.1 stub-label): `af248cf` -- `integrity_v1_1_commit1_landing_2026-05-15.md`
+- This commit's SHA: `f661ec4`
+- Commit 3a (snapshot module): `dbac051` -- `integrity_v1_1_commit3a_landing_2026-05-15.md`
+- Commit 3b (CLI flags): `a71594a` -- `integrity_v1_1_commit3b_landing_2026-05-15.md`
+- Commit 3c (catalog + python3 sweep): `a28e1d7` -- `integrity_v1_1_commit3c_landing_2026-05-15.md`
 
 ---
 

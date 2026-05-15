@@ -50,6 +50,7 @@ used_by_checks = ["cat3.d3q19-velocity-set", "cat3.d3q19-weights", "cat3.d3q19-e
   `docs/diagnostics/_audits/phase11_5_setup1_2026-05-14_setup1.md`.
 - **Krueger:** Vendored at Phase 12 setup-1. The repository is D2Q9 only;
   the citation in Phase 12 shader doc-blocks references the chapter13 CPU
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
   equilibrium pattern at `chapter13/cpu/LBM.cpp:97` and `chapter13/cpu_intro/main.cpp:271`,
   and the halfway bounce-back pattern at `chapter5/poiseuille_BB.m:123`.
   The 3D specifics (D3Q19 velocity set, ω_i weights) are NOT in this

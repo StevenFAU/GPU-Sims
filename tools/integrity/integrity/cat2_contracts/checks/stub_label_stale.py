@@ -12,10 +12,12 @@ Detection scope (batch-1-spec Decision 3):
   - C++ headers under common/common-cpp/include/**/*.{hpp,h}
   - Python modules under common/common-py/gpusims_common/**/*.py
 
-Sibling-impl resolution (batch-1-spec Decision 2):
-  - `.hpp`/`.h` in `common-cpp/include/<sub>/<base>.hpp` ->
-    `common-cpp/src/<sub>/<base>.cpp` (relative path mirror)
-  - `.py`: impl is the same file
+Sibling-impl resolution (corrected post-batch-1 per commit-1 landing audit section E.1):
+  - `.hpp`/`.h` in `common-cpp/include/<namespace>/<rest>.hpp` ->
+    `common-cpp/src/<rest>.cpp` (first directory component after
+    `include/` is the project namespace and is stripped)
+  - `.py`: impl is the same file (Python does not separate
+    declaration from implementation)
 
 False-positive guard for Stack D:
   Skip Stack D files whose top 40 lines contain `permanent stub` or

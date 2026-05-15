@@ -75,6 +75,7 @@ There is no version-numeric "closest" since the `1.4`–`1.9` range was never ta
 ### A.4 Implications for the SHA in `load-bearing-decisions.md`
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The doc claims SHA `c254caf2705ebf5271408dd37a091aa379258a38`. None of the 22 tags listed above match. The doc author flagged this SHA as suspicious in the brief (matches the Alembic SHA elsewhere in the same file). Combined with the non-existent tag, **both the tag and the SHA in `load-bearing-decisions.md:8-9` are unverifiable against the upstream remote.** This does not invalidate the formula-citation work — the line-numbered citations in the DFSPH shaders point at whatever upstream commit was actually consulted by their author; we just do not yet know which commit that was.
 
 ## Section B: What was NOT done
@@ -98,6 +99,7 @@ Candidate substitute tags, with the tradeoff for each:
 4. **A specific commit SHA** — if the original consultation commit can be recovered from elsewhere (git history, earlier audit, author memory), pin to that exact SHA instead of a tag.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Recommend the user inspect `particle-fluids/sph-water/docs/phase11_sph_water.md` § 2 (which `load-bearing-decisions.md:3-4` defers to) and any commit-history surrounding the shader docblock authorship — that material may reveal which upstream snapshot the line-number citations actually came from. Until then, Step 2 of Setup-1 cannot proceed deterministically.
 
 ## Section D: Resumption

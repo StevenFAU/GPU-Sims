@@ -9,6 +9,7 @@ are single-peak (b="1") + kn=1 (quad4 kernel) + gn=1 (Gaussian growth) —
 the only combination compatible with the spec's single-kernel Lenia
 implementation. Polyring (multi-peak via b-string) creatures are banked
 # integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
+# integrity-allow: cat1.bare-path; deferred-upstream-bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md); n/a
 v1.1 with the formula documented at LeniaNDK.py:329-335; see
 docs/load-bearing-decisions.md "Polyring kernel extension banking."
 
@@ -78,6 +79,7 @@ class LeniaPreset:
 # (commit pinned at extraction time; see Phase 10 polish-1 notes).
 # Each entry is a 2D list[list[float]] of cell values in [0, 1].
 # integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
+# integrity-allow: cat1.bare-path; deferred-upstream-bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md); n/a
 # Decoded via 2D port of LeniaNDK.Board.rle2arr (LeniaNDK.py:184-206).
 # Phase 10 polish-1: replaces random-blob seeds for canonical visual
 # verification (each preset shows ONE recognizable creature that

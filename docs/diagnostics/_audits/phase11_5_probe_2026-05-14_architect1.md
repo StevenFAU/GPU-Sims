@@ -16,58 +16,82 @@ The substep loop is at `particle-fluids/sph-water/src/main.cpp:1908`.
 Frame-scope work that runs **once per frame, outside the substep loop**:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `pack_sort_uniform`, `pack_dfsph_uniform(substep_dt)`, `pack_render_view_uniform`, `pack_composite_uniform`, `pack_apply_emitter_uniform(substep_dt)` (`main.cpp:1888-1894`). These are host-mapped UBO writes (no GPU dispatch).
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - After the substep loop closes: depth pass (graphics, `vkCmdDraw`), N bilateral_smooth compute dispatches (`main.cpp:2144-2167`), thickness graphics pass, composite graphics pass to swapchain. Discussed in Sections M/N/O.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **In-substep-loop dispatch order** (from `main.cpp:1908` through `main.cpp:2038`), with site, pipeline name, push constants, and barrier following each dispatch:
 
 | # | Site | Pipeline | Push constants | Barrier following |
 |---|------|----------|----------------|-------------------|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 1 (cond) | `main.cpp:1913` | `pipe_apply_emitter` | none | `cs_barrier()` (`:1914`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | pre-2 | `main.cpp:1918-1919` | `vkCmdFillBuffer` zeroing `tier.cell_counts` + `tier.cell_counts_atomic` | — | TRANSFER->COMPUTE barrier (`:1920-1922`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 2 | `main.cpp:1926` | `pipe_morton_code` | none | `cs_barrier()` (`:1928`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 3 | `main.cpp:1931` | `pipe_cell_count` | none | `cs_barrier()` (`:1933`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 4 | `main.cpp:1936` | `pipe_prefix_sum_local` | none | `cs_barrier()` (`:1938`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 5 | `main.cpp:1943` | `pipe_prefix_sum_block` (mode=0 SCAN_ONLY) | `uint32_t mode = 0u` | `cs_barrier()` (`:1946`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 6 | `main.cpp:1949` | `pipe_prefix_sum_block_l2` | none | `cs_barrier()` (`:1951`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 7 | `main.cpp:1956` | `pipe_prefix_sum_block` (mode=1 ADDBACK_L2) | `uint32_t mode = 1u` | `cs_barrier()` (`:1959`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 8 | `main.cpp:1962` | `pipe_prefix_sum_addback` | none | `cs_barrier()` (`:1964`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 9 | `main.cpp:1967` | `pipe_scatter` | none | `cs_barrier()` (`:1969`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 10 | `main.cpp:1974` | `pipe_density_alpha` | none | `cs_barrier()` (`:1976`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | pre-11 (cond) | `main.cpp:1981-1982` | `vkCmdFillBuffer` zero `pressure_a` and `pressure_b` | — | TRANSFER->COMPUTE barrier (`:1983-1985`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 11.k (cond loop) | `main.cpp:1989` | `pipe_divergence_solve` × `max(rt.minIterDivergence, 1)` | none | `cs_barrier()` between each iter (`:1990`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 12 (cond) | `main.cpp:1994` | `pipe_pressure_apply` (after divergence) | none | `cs_barrier()` (`:1996`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 13 | `main.cpp:2003` | `pipe_integrate_forces` (mode=0 FORCES) | `uint32_t mode = 0u` | `cs_barrier()` (`:2006`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | pre-14 | `main.cpp:2009-2010` | `vkCmdFillBuffer` zero `pressure_a` and `pressure_b` | — | TRANSFER->COMPUTE barrier (`:2011-2013`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 14.k (loop) | `main.cpp:2018` | `pipe_density_solve` × `max(rt.minIterDensity, 1)` | none | `cs_barrier()` between each iter (`:2019`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 15 | `main.cpp:2024` | `pipe_pressure_apply` (after density) | none | `cs_barrier()` (`:2026`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 16 | `main.cpp:2033` | `pipe_integrate_forces` (mode=1 POSITION) | `uint32_t mode = 1u` | `cs_barrier()` (`:2036`) |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `cs_barrier()` is defined at `main.cpp:1902-1906`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```glsl:main.cpp:1902-1906
         auto cs_barrier = [&]() {
             gv::memoryBarrier(cmd,
@@ -87,14 +111,17 @@ This is a **single global VkMemoryBarrier2** (not per-buffer); see `common-cpp/i
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The loop runs from `main.cpp:1908` to the closing `}` at `main.cpp:2039`. **The entire spatial-hash pipeline (`vkCmdFillBuffer` → morton_code → cell_count → prefix-sum chain → scatter) is nested inside this loop.** So neighbor search and Morton sort are dispatched **per substep**, not per frame. Per-frame UBO packing at `main.cpp:1888-1894` runs once with `substep_dt = clamp(frame_dt / max(substeps, 1), DT_MIN, DT_MAX)` — `pack_dfsph_uniform` is called once and `dt` does not change between substeps.
 
 ## Section B: `density_solve` iteration loop
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Quoted verbatim from `main.cpp:2008-2026`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:2008-2026
             // Density-constancy Jacobi inner loop.
             vkCmdFillBuffer(cmd, tier.pressure_a.handle(), 0, VK_WHOLE_SIZE, 0u);
@@ -159,16 +186,21 @@ Quoted verbatim from `main.cpp:1978-1997`:
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Iteration cap variable:** `iters = std::max(rt.minIterDivergence, 1)` (`main.cpp:1986`). Declared as `int rt.minIterDivergence = 1` at `main.cpp:243`. ImGui slider at `main.cpp:2253` exposes range 1..16.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`Runtime::maxIterDivergence`** declared at `main.cpp:241` (= `DFSPH_MAX_ITER_DIV = 100`, `main.cpp:118`). **Never referenced anywhere.**
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Tolerance variable:** `rt.maxErrorDivPercent = DFSPH_MAX_ERROR_DIV = 0.1f` at `main.cpp:245` (constant at `main.cpp:119`). **Never referenced anywhere.**
 - **Break condition:** none — fixed iteration count `max(rt.minIterDivergence, 1)` = 1 by default.
 - **Divergence error measurement:** **none** (same posture as Section B).
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Synchronization between iterations:** `cs_barrier()` at `main.cpp:1990`, same global barrier as Section B.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - The loop is gated by `if (rt.divSolverEnabled)` (`main.cpp:1980`), default `true` per `DFSPH_DIV_SOLVER_DEFAULT` at `main.cpp:120`.
 
 ## Section D: `kMaxPasses`
@@ -822,9 +854,11 @@ vec3 kernel_gradW(vec3 r_ij, float r_mag, float q, float grad_kernel_norm) {
 
 - This is the **SPlisHSPlasH "CubicKernel" form** — the M4 cubic spline B-spline expressed in `q = r/h`.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Normalization constants come from host code** at `main.cpp:1343-1350`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:1343-1350
     auto kernel_norm_3d_value = [&]() {
         float h = rt.supportRadius;
@@ -870,6 +904,7 @@ constexpr float CELL_SIZE_RATIO_TO_SUPPORT   = 2.0f;
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:251-253
     float     particleRadius     = PARTICLE_RADIUS_DEFAULT;
     float     supportRadius      = PARTICLE_RADIUS_DEFAULT * SUPPORT_RADIUS_RATIO;
@@ -899,6 +934,7 @@ Per-axis cell count is rounded to next power of two and capped at `MAX_CELLS_PER
 ### G.2 Hash function
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Morton/Z-order (3D bit interleave, 10 bits per axis, 30 bits total). Verbatim from `morton_code.comp.glsl:24-36`:
 
 ```glsl:particle-fluids/sph-water/shaders/morton_code.comp.glsl:24-36
@@ -942,11 +978,13 @@ void main() {
 **Counting sort** (not bitonic, not radix-byte, not VkRadixSort). Pipeline: `cell_count` (`scatter.comp.glsl`-pattern atomic count) → two-level Blelloch exclusive prefix scan → `scatter` claims output slot via atomicAdd on a separate counter.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Dispatch sites at `main.cpp:1924-1968` (Section A table rows 3-9). Counting-sort kernel quoted at Section E (cell_count, scatter, prefix_sum_*).
 
 ### G.4 Cell start / end array
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `cell_starts[m]` = exclusive prefix sum of `cell_counts[]`. Constructed by `prefix_sum_local` → `prefix_sum_block` (mode 0) → `prefix_sum_block_l2` (only if `num_blocks > WG_SIZE`) → `prefix_sum_block` (mode 1, addback L2) → `prefix_sum_addback`. Final `cell_starts` write at `prefix_sum_addback.comp.glsl:23-28`:
 
 ```glsl:particle-fluids/sph-water/shaders/prefix_sum_addback.comp.glsl:23-28
@@ -974,14 +1012,17 @@ void main() {
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Inner neighbor walk uses `cell_starts[nmorton]` and `cell_starts[nmorton + 1u]` (`density_alpha.comp.glsl:101-102`). Note that `nmorton + 1u` lookup requires `cell_starts` be sized `totalCells + 1`, which is what `_struct_layouts.txt` claims at line 88 — but `main.cpp:881-882` allocates `r.cell_starts = max_cells * 4`, i.e., **NOT** sized for the +1 sentinel. This is a finding (Section P).
 
 ### G.6 Self-exclusion
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 All solver shaders except `density_alpha` explicitly skip self with `if (j == gid) continue;` near the top of the inner neighbor loop (e.g., `density_solve.comp.glsl:99`, `divergence_solve.comp.glsl:97`, `integrate_forces.comp.glsl:108`, `pressure_apply.comp.glsl:93`).
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `density_alpha.comp.glsl:104` does NOT skip self for the density sum (this is correct — `density_i` must include `W(0)`), but it does skip self for the alpha-gradient terms inside the conditional at `density_alpha.comp.glsl:113`:
 
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:113
@@ -1004,6 +1045,7 @@ constexpr float CELL_SIZE_RATIO_TO_SUPPORT   = 2.0f;
 Host-side derived:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:251-253
     float     particleRadius     = PARTICLE_RADIUS_DEFAULT;
     float     supportRadius      = PARTICLE_RADIUS_DEFAULT * SUPPORT_RADIUS_RATIO;
@@ -1035,9 +1077,11 @@ Sources:
 | `supportRadius` | derived `radius · 4` | 0.04 |
 | `cellSize` | derived `radius · 4 · 2` | 0.08 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `gravity` | hardcoded literal `-9.81f` at `pack_dfsph_uniform` `main.cpp:1419-1422`; `GRAVITY_Y` constant is **unused** | -9.81 |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Host vs device consistency:** all device-side values flow through `pack_dfsph_uniform` (`main.cpp:1380-1431`), which writes them into `tier.uniform_dfsph`. The shaders read them as UBO fields (`supportRadius`, `particleMass`, `density0`). **No GLSL-side hardcoded copies exist** for these quantities — every solver shader treats them as UBO inputs. So host/device cannot disagree.
 
 **However** the SPlisHSPlasH convention for the DFSPH rest-density particle (the "consistent" mass when initial spacing is `2r`) actually uses the **rest-density volume estimate** with the cubic-spline self-density sum, not a naive `ρ₀ · (2r)³`. This is a **minor finding** — discussed in Section P.
@@ -1056,9 +1100,11 @@ Sources:
 `dmin = domainMin_cellSize.xyz`, `dmax = domainMax_pad.xyz`. The clamp also zero-clips the normal velocity component (no restitution).
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Dam-break preset:** `SPH_PRESETS[0]` at `main.cpp:181-188`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:181-188
     {
         "Dam-Break",
@@ -1095,6 +1141,7 @@ Per-frame substep dt derivation (`main.cpp:1888-1889`):
 Constants:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:124-126
 constexpr float CFL_FACTOR    = 0.5f;
 constexpr float DT_MIN        = 1.0e-4f;
@@ -1142,6 +1189,7 @@ Host-side `Layout` struct, verbatim from `main.cpp:1383-1404`:
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `static_assert(sizeof(Layout) == 112)` **is present** at `main.cpp:1404`. **Confirmed.**
 
 **Comparison across all five DFSPH shaders.** Each shader's `layout(std140) uniform U {...}` block (binding numbers vary per shader, but field order/types/offsets are identical):
@@ -1172,14 +1220,17 @@ Host-side `Layout` struct, verbatim from `main.cpp:1383-1404`:
 **All five shaders match the host layout byte-for-byte and field-for-field.** Phase 11 fix-forward #1 is intact.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (Cross-check anchors: `density_alpha.comp.glsl:25-53`, `divergence_solve.comp.glsl:22-50`, `density_solve.comp.glsl:24-52`, `integrate_forces.comp.glsl:15-43`, `pressure_apply.comp.glsl:19-47`.)
 
 ## Section L: Post-fix verification — `integrate_forces` push constant
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **`pack_dfsph_uniform` signature and body** — `main.cpp:1380-1431`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:1380-1431
     auto pack_dfsph_uniform = [&](float dt) {
         glm::uvec3 axes; std::uint32_t maxAxis;
@@ -1247,9 +1298,11 @@ layout(push_constant) uniform PC {
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Pipeline creation reserves `sizeof(std::uint32_t)` for the push constant at `main.cpp:1101-1103`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ```cpp:main.cpp:1101-1103
     auto pipe_integrate_forces = make_compute("integrate_forces.comp.glsl",
                                               {{0,B,1,CS},{1,B,1,CS},{2,B,1,CS},{3,B,1,CS},{4,U,1,CS}},
@@ -1301,6 +1354,7 @@ Pipeline creation reserves `sizeof(std::uint32_t)` for the push constant at `mai
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Mode passed via push constant on both calls.** First call `mode = 0u` (FORCES, `main.cpp:2002-2004`); second call `mode = 1u` (POSITION, `main.cpp:2032-2034`).
 
 **`pack_dfsph_uniform` call sites** — grep of `main.cpp`:
@@ -1313,14 +1367,17 @@ main.cpp:1891       pack_dfsph_uniform(substep_dt);
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Only **one call** to `pack_dfsph_uniform`, at `main.cpp:1891`, **outside the substep loop**. **No mid-substep UBO write between the two `pipe_integrate_forces` dispatches.** Phase 11 fix-forward #2 is intact.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (Side note: the shader's UBO still declares `gravity_pad.w` and a code comment at `integrate_forces.comp.glsl:3-4` still describes the field as encoding the mode — see Section P. Behaviourally correct, the comment is stale.)
 
 ## Section M: Resource barriers within the substep loop
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Full barrier inventory of the substep loop body (`main.cpp:1908-2039`). Every barrier is either `gv::memoryBarrier(...)` (calls `vkCmdPipelineBarrier2`) or expanded inside `cs_barrier()` at `main.cpp:1902-1906`. All are **global** (single VkMemoryBarrier2, no buffer range).
 
 | # | Site | srcStage / srcAccess | dstStage / dstAccess | Between |
@@ -1346,12 +1403,15 @@ Full barrier inventory of the substep loop body (`main.cpp:1908-2039`). Every ba
 | 19 | `cs_barrier` `:2036` | as #3 | as #3 | after `integrate_forces` (POSITION) |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Solver-loop barrier coverage:** every iteration of `density_solve` and `divergence_solve` has a `cs_barrier()` immediately after it (`main.cpp:1990` and `main.cpp:2019`). This is correct — no missing inter-iteration barrier.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **`VK_WHOLE_SIZE` concern:** the descriptor writes (see `writeDfsphSolveDescriptor` at `main.cpp:557-590`) all use `range = VK_WHOLE_SIZE`. The same `pressure_a` / `pressure_b` buffers are bound to **both** `ds_divergence_solve` and `ds_density_solve` descriptor sets, but they ping-pong (`p_read = pressure_a`, `p_write = pressure_b` on even iters; swapped on odd). Two-back-to-back dispatches of the **same** pipeline on the same iteration index would be a hazard, but the loop alternates the descriptor set, so the read-buffer / write-buffer pair flips every iteration. The cs_barrier between iters resolves the hazard.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Hot finding:** `cs_barrier()`'s `srcAccess` is **only** `SHADER_WRITE_BIT` and `dstAccess` is `SHADER_READ_BIT | SHADER_WRITE_BIT` (`main.cpp:1903-1905`). It does **not** include `SHADER_SAMPLED_READ_BIT` or `UNIFORM_READ_BIT`. None of the DFSPH-substep dispatches do sampled reads on storage images, so this is fine. The bilateral pass (outside the substep loop) uses a separate barrier (`main.cpp:2161-2163`) with `SHADER_WRITE_BIT → SHADER_READ_BIT` — also fine.
 
 ## Section N: Per-substep resource scaling (substep>=4 crash recon)
@@ -1359,6 +1419,7 @@ Full barrier inventory of the substep loop body (`main.cpp:1908-2039`). Every ba
 Search for `n_substeps`-scaling allocations across `main.cpp`:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **All `gv::Buffer::create` calls happen in `createTierResources(...)` at `main.cpp:847-940`. None of the sizes mention `rt.substeps` or any substep count. Resource scaling is per-particle and per-cell only.**
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Command buffer count:** `renderer.framesInFlight() == kMaxFramesInFlight == 2` (`common-cpp/include/gpusims/gpu_profiler.hpp:16`). Independent of substeps.
@@ -1372,11 +1433,13 @@ Search for `n_substeps`-scaling allocations across `main.cpp`:
   - However, if the user raises `minIterDensity` to its UI max of 16, per substep that's `8 + 1 + 16 + 1 + 1 + 16 + 1 + 1 = ~45` profiler scopes — × substeps=8 = **360 scopes**, **exceeds kMaxPasses=256** and triggers the `if (f.pass_count >= kMaxPasses) { logWarn(...); return UINT32_MAX; }` path at `common-cpp/src/gpu_profiler.cpp:57-60`. **This is a soft-fail (no crash).** Still — flag.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`MAX_CELLS = 1u << 18 = 262144`** (`main.cpp:952`). Independent of substep count. cell_starts buffer is sized `262144 * 4 = 1 MiB`. Independent.
 
 - **Particle/density_alpha/pressure_a/b buffers** sized by tier capacity, not substeps. Independent.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`vkCmdFillBuffer` calls inside the loop** at `main.cpp:1918-1919, 1981-1982, 2009-2010` — 6 `vkCmdFillBuffer` per substep. At `substeps=8` that's 48 fill commands per frame, recorded into a single command buffer. Should be fine.
 
 - **Command-buffer recording cost:** the substep loop records all dispatches into the single per-frame command buffer. At `substeps=8` with `minIter*=16`, each frame records ~80 `vkCmdDispatch` + ~50 barriers + 6 fills × 8 = ~48 fills → ~580 commands per frame. Vulkan command buffers easily handle this.

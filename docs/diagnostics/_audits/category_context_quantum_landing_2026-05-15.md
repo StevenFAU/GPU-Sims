@@ -78,6 +78,7 @@ parser does not match them.
 The file contains many plain-path references (no `file:line` suffix)
 used as prose mentions of repo locations. The cat1.intra-repo check
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 does not match bare paths (per `grammar.py:49-52`), so these are not
 mechanically verified by the toolkit. Manual spot-check of the
 non-forward-referenced paths:
@@ -288,6 +289,7 @@ uses `git ls-files` when `.git` is present). Once the audit file
 landed as part of commit `149fc93`, it became tracked and contributed
 2 additional findings (one cat1.intra-repo at line 80 from the bare
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `grammar.py:49-52` reference inside a prose explanation, and one
 <!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 cat1.annotation-form at line 139 from the literal "`integrity-allow:`"

@@ -112,8 +112,10 @@ is still numpy-in/numpy-out for API consistency.
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The `main.py:226` docstring says the real-space backend "skips the
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 numpy round-trip internally." The `fft_backend.py:18` comment correctly
 states that real-space "additionally does its own from_numpy + to_numpy
 inside step()." These describe the same code differently and the second
@@ -177,6 +179,7 @@ between spec and ship. The lighter touch is the latter. See commit 2.
 **Evidence:** Probe-1 Section G analyzes `cursor_to_field_cell` and
 `cursor_in_any_panel` (both in `main.py`) called from the same brush
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 call site at `main.py:498`. Both consume `cur = window.get_cursor_pos()`.
 The first treats cy=0 as TOP; the second treats cy=0 as BOTTOM (and
 flips via `cy_top = 1.0 - cy_bottom`).
@@ -222,6 +225,7 @@ common-py flag.
 ships single-peak only (b="1" via the quad4 path)" — implying b is a
 value in the data model that happens to be constrained to "1". The
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 actual `LeniaPreset` dataclass at `presets.py:57` has no `b` field, no
 `kn` field. The four shipped presets are hard-coded to single-shell
 quad4 via direct kernel-radius-only parameterization.
@@ -347,6 +351,7 @@ kernel, reads back via to_numpy). The pattern is acceptable for
 backend-agnostic dispatch but is the obvious perf-tuning opportunity
 when the real-space path is the bottleneck — see
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 fft_backend.py:18-23 for the cross-reference.
 ```
 
@@ -420,6 +425,7 @@ polyring banking note:
 
 ```
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The current LeniaPreset dataclass (presets.py:57) carries no b or kn
 field; v1 ships single-peak via a hard-wired single-shell quad4 kernel,
 not via a constrained b="1" parameter. The v1.1 polyring extension

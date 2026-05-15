@@ -94,6 +94,7 @@ require pause-and-surface, not silent adaptation.
 **Decision 1 — A.1 detection anchors on the exact phrase `In Phase \d+, this is a stub:`.**
 This is the phrasing actually present in both stale cases
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (`alembic_writer.hpp:11` and `vdb_writer.hpp:12`, probe § G.1, G.2).
 Anchoring on this specific phrase rather than `\bstub\b` avoids firing
 on intentional `permanent stub for Phase 9` (Stack D, intentional) and

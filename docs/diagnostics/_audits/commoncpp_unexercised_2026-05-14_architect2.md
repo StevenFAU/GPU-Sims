@@ -27,22 +27,31 @@ Total findings: 8 unexercised paths + 1 verified invariant. Ranked by impact and
 | # | Risk | Surface | What's unexercised | Where | Detail § |
 |---|---|---|---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 1 | **HIGH (defect)** | `abc::ParticleFrame::radii` field | Declared in public struct; **never read** by `RealParticleWriter::writeFrame`. Consumer-set radii data is silently dropped. | `alembic_writer.hpp:24` declared; `alembic_writer.cpp:51-82` never reads it | § B.3 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 2 | **HIGH** | `vdb::writeVec3Grid(...)` | 50+ line public function (Vec3SGrid + manual voxel-by-voxel loop) never called by any sim. eulerian-smoke uses `writeFloatFrame` only. | `vdb_writer.cpp:97-145` | § C.2 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 3 | **MEDIUM** | `RealParticleWriter::writeFrame` velocity branch | Conditional `if (frame.velocities) { ... }` block. Exercised iff sph-water sets `fr.velocities`; not visible in probe data. | `alembic_writer.cpp:66-75` | § B.4 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 4 | **MEDIUM** | `Buffer::deviceAddress(VkDevice)` | Public method; no consumer call sites across rd-3d, es, sph-water. | `buffer.hpp:62`; impl in `buffer.cpp` | § E.1 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 5 | **MEDIUM** | `Buffer::stage(...)` | Single-consumer (sph-water only). Same risk shape as alembic_writer pre-Phase-11. | `buffer.hpp:52`; impl in `buffer.cpp` | § E.2 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 6 | **LOW** | `ContextCreateInfo::require_discrete_gpu = true` | Short-circuit `return 0` branch in `scoreDevice`; no sim sets the flag. | `context.cpp:368` | § D.1 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 7 | **LOW** | `ContextCreateInfo::enable_swapchain = false` | Headless-sim path; no headless sim exists. | `context.cpp:245, 282` (and `defaultDeviceExtensions`) | § D.2 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 8 | **LOW** | `extra_instance_extensions` / `extra_device_extensions` non-empty | No sim populates either vector. | `context.cpp:190, 246, 283` | § D.3 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | ✓ | **CONFIRMED** | `compute_pipeline.cpp` pNext-chain invariant | Implementation matches the load-bearing comment block at `compute_pipeline.hpp:40-50`. Both `create()` and `reload()` paths verified. | `compute_pipeline.cpp:102-120, 193-207` | § F |
 
 ### A.1 What's notably absent from this list
@@ -65,22 +74,27 @@ Full source quoted at phase 7a (lines 6-117 of the probe output map to alembic_w
 | Path | Lines | Exercised? | By |
 |---|---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `logUnavailableOnce()` (stub-mode warning) | `alembic_writer.cpp:17-24` | Conditionally exercised (only when `GPU_SIMS_HAVE_ALEMBIC=0`) | CI default Debug job (per phase 7g; OPENVDB=ON, ALEMBIC=ON sometimes off) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `abc::isAvailable()` | `:28-34` | **Exercised** | sph-water `main.cpp:1214, 2408, 2631` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `RealParticleWriter::RealParticleWriter(path, fps)` constructor | `:40-49` | **Exercised** | sph-water creates one at `main.cpp:1215` |
 | `RealParticleWriter::writeFrame` — positions/ids/count handling | `:51-65, 76-77` | **Exercised** | sph-water calls `writeFrame` per phase 7e context |
 | `RealParticleWriter::writeFrame` — velocity branch | `:66-75` | **UNVERIFIABLE** (Layer 1) | depends on whether sph-water sets `fr.velocities`; see § B.4 |
 | `RealParticleWriter::writeFrame` — exception path | `:78-81` | **UNVERIFIED** | hits if Alembic library throws; not observed in CI |
 | `StubParticleWriter` class | `:92-96` | Conditionally exercised (only when `GPU_SIMS_HAVE_ALEMBIC=0`) | CI default jobs running with ALEMBIC=OFF |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `ParticleWriter::create(path, fps)` factory | `:100-113` | **Exercised** (real path) | sph-water `main.cpp:1215` |
 | `ParticleWriter::~ParticleWriter()` | `:115` | **Exercised** | RAII destruction at sph-water scope exit |
 
 ### B.2 `frame.ids ? frame.ids[i] : i` ternary
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 At `alembic_writer.cpp:61`:
 
 ```cpp
@@ -93,6 +107,7 @@ The ternary covers two paths:
 - **FALSE branch** (`frame.ids == nullptr`): use loop index as the ID.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Exercise status of each depends on whether sph-water sets `fr.ids` when populating its `ParticleFrame`. The phase 7e grep on sph-water `main.cpp` showed `abc::ParticleFrame fr{};` at line 2423 (zero-initialized) but did not capture subsequent field-population lines. **UNVERIFIABLE** without reading sph-water main.cpp:2423-2430 specifically; Layer 1 scope rule excludes that read.
 
 Verdict: at least one of the two branches is exercised (the consumer code reaches this line), but which one cannot be determined from Layer 2 data alone.
@@ -100,12 +115,14 @@ Verdict: at least one of the two branches is exercised (the consumer code reache
 ### B.3 **DEFECT: `ParticleFrame::radii` is dead in the public struct**
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 > **CLAIM:** `abc::ParticleFrame` declares a public `radii` field at `alembic_writer.hpp:24`, but `RealParticleWriter::writeFrame` never reads it. Consumer-set radii data is silently dropped.
 > **VERDICT: CONFIRMED.**
 
 Evidence:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `alembic_writer.hpp:21-27` (struct declaration, from inventory § B.1):
 
 ```cpp
@@ -119,6 +136,7 @@ struct ParticleFrame {
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `alembic_writer.cpp:51-82` (entire `writeFrame` body, phase 7a):
 
 ```cpp
@@ -167,6 +185,7 @@ This matches the named structural pattern from Phase 11 retro category 7 ("unexe
 **Cross-workstream impact** (`cross_workstream: layer-1`):
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 If sph-water sets `fr.radii = <particle_radii_ptr>` somewhere in `main.cpp:2424-2430`, that data is being silently lost during Alembic export — and the produced .abc files have constant-zero or absent radius attribute, which would surface only when the downstream pipeline (Blender import, per repo context) renders particles without their per-particle radius. If sph-water doesn't set `fr.radii`, the bug is latent (no current data loss) but still ships in the public surface.
 
 Architect-1 should be informed so Layer 1 can either:
@@ -179,6 +198,7 @@ Layer 2 does NOT recommend a fix here — that's outside audit scope. The audit'
 ### B.4 `RealParticleWriter::writeFrame` — velocities branch exercise status UNVERIFIABLE
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The conditional at `alembic_writer.cpp:66`:
 
 ```cpp
@@ -193,11 +213,13 @@ Same exercise-status question as B.2 (the ids ternary): depends on whether sph-w
 ### B.5 Compile-time gating
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The `#if GPU_SIMS_HAVE_ALEMBIC` block spans `alembic_writer.cpp:36-88` (the `RealParticleWriter` class) and the create()-path branch at `:102-108`. The `#else` branch (`StubParticleWriter`) spans `:90-96` and the create()-path stub branch at `:109-112`.
 
 Per phase 7g, CI exercises both:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `build-native.yml:62` and `:110`: `-DGPU_SIMS_USE_ALEMBIC=ON` (real-impl compiled and linked)
 - Other CI jobs default to OFF: stub path compiled and linked
 
@@ -212,16 +234,19 @@ Full source quoted at phase 7b (lines 127-284 of the probe output map to vdb_wri
 | Path | Lines | Exercised? | By |
 |---|---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `logUnavailableOnce()` | `vdb_writer.cpp:19-26` | Conditionally exercised (OPENVDB=0) | CI Debug jobs without OPENVDB |
 | `initOpenVdbOnce()` | `:28-32` (real-impl only) | **Exercised** (via writeFloatGrid call chain) | eulerian-smoke `writeFloatFrame` → `writeFloatGrid` → `initOpenVdbOnce` |
 | `frameSequencePath(base, frame)` helper | `:35-41` | **Exercised** (via writeFloatFrame) | eulerian-smoke |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `vdb::isAvailable()` | `:45-51` | **Exercised** | eulerian-smoke `main.cpp:2128, 2204` |
 | `vdb::writeFloatGrid(...)` real-impl body | `:59-94` | **Exercised indirectly** | eulerian-smoke calls `writeFloatFrame` which calls `writeFloatGrid` |
 | `vdb::writeFloatGrid(...)` stub branch | `:91-93` | Conditionally exercised | CI OPENVDB=0 jobs |
 | **`vdb::writeVec3Grid(...)` real-impl body** | **`:103-139`** | **NEVER EXERCISED** | no consumer calls it; see § C.2 |
 | `vdb::writeVec3Grid(...)` stub branch | `:141-143` | Conditionally exercised | CI OPENVDB=0 jobs |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `vdb::writeFloatFrame(...)` | `:147-156` | **Exercised** | eulerian-smoke `main.cpp:2148, 2211` |
 
 ### C.2 **`vdb::writeVec3Grid(...)` is the largest unexercised real-impl body in common-cpp**
@@ -230,6 +255,7 @@ Full source quoted at phase 7b (lines 127-284 of the probe output map to vdb_wri
 > **VERDICT: CONFIRMED** — grep for `vdb::` across the probe output (phase 7e for sph-water; eulerian-smoke main.cpp included in phase 7d at lines 701-2940). Calls found: `vdb::isAvailable()`, `vdb::writeFloatFrame(...)`. **No `vdb::writeVec3Grid` call anywhere.**
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The real-impl body at `vdb_writer.cpp:103-139` (full quote from phase 7b):
 
 ```cpp
@@ -271,6 +297,7 @@ bool writeVec3Grid(const std::filesystem::path& path,
 **Notable risks in this unexercised body:**
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 1. **The manual voxel-by-voxel fill loop** (the comment explicitly justifies it: "openvdb::tools::copyFromDense doesn't have a Vec3 specialization we can rely on across versions"). Manual loops are the classic site for off-by-one indexing errors. The `x + dims.x * (y + dims.y * z) * 3` index expression depends on operator precedence — `*` binds tighter than `+`, so it parses as `x + (dims.x * (y + dims.y * z)) * 3` which means `x` is unmultiplied. Is that the intended linearization order? **Yes**, assuming x-fastest convention per the header docblock at `vdb_writer.hpp:18` ("3D grids are linearized x-fastest, then y, then z"). But:
    - The `* 3` multiplier converts a voxel index to a float offset (3 floats per voxel). Applied to the *inner* expression but **not** to `x`. That means: `voxel(x, y, z)` reads `data[x + dims.x*(y + dims.y*z) * 3 + {0, 1, 2}]` — which **is wrong**. The intended formula is `data[(x + dims.x*(y + dims.y*z)) * 3 + {0, 1, 2}]` — the `* 3` should be on the whole voxel-index, not on the sub-expression.
 
@@ -284,9 +311,11 @@ bool writeVec3Grid(const std::filesystem::path& path,
    I almost flagged this as a bug; on careful re-reading, the `* 3` is outside the cast and applies to the entire voxel-index. **No defect.** But the code is hard to read; a future maintainer could easily mis-parenthesize this if refactored. Worth noting as a readability hazard.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 2. **The origin-translate branch** at `vdb_writer.cpp:126-128` differs subtly from the writeFloatGrid version at `:75-78`. The float version *re-sets* the transform inside the branch (line 76: `grid->setTransform(...)` then `:77 grid->transform().postTranslate(...)`). The Vec3 version only post-translates without resetting (`:127 grid->transform().postTranslate(...)`). Inconsistent. If the original intent was to ensure a clean voxel-size transform before applying the origin offset, the Vec3 path may produce a different transform than the float path. **Flag for future per-class deep audit.**
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 3. **GRID_STAGGERED grid class** (`:110`) — this is the OpenVDB grid class for staggered (MAC-grid) velocity data. Semantically correct for fluid velocity export, but the consumer-side interface gives the data as a packed float* with the x-fastest convention. If a consumer interprets their velocity buffer as cell-centered rather than staggered, the export would be semantically incorrect. The docblock at `vdb_writer.hpp:32` ("Write a single dense vec3 grid to a .vdb file (interleaved xyz floats)") doesn't mention staggered semantics. Possible documentation gap.
 
 The body is sufficiently complex that "compile-tested but never run" is real risk. When consumer #2 of vdb_writer comes along (or eulerian-smoke decides to export velocity for a future render-pipeline change), this code path is the highest-risk place in common-cpp.
@@ -294,6 +323,7 @@ The body is sufficiently complex that "compile-tested but never run" is real ris
 ### C.3 `writeFloatGrid` is reached only indirectly
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 eulerian-smoke calls `vdb::writeFloatFrame(...)` directly (per phase 7d, lines 2148 and 2211). `writeFloatFrame` is a 3-line wrapper that calls `writeFloatGrid` internally (`vdb_writer.cpp:147-156`). So `writeFloatGrid` is **execution-reachable but not directly invoked**. Future maintainers refactoring `writeFloatFrame` should know that they're the only call site for `writeFloatGrid`.
 
 ## Section D: ContextCreateInfo flag-gated branches
@@ -317,11 +347,13 @@ Default values from `ContextCreateInfo` (inventory § B.12):
 | `extra_device_extensions` | `{}` | none |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per phase 7c grep results, the only `ContextCreateInfo` consumer-side line outside context.cpp itself is `sph-water main.cpp:1164`: `cdesc.enable_subgroup_size_control = true;`. Neither rd-3d nor eulerian-smoke uses an explicit `ContextCreateInfo` — they use the default constructor `Context()` (which calls `Context(ContextCreateInfo{})`).
 
 ### D.1 `require_discrete_gpu = true` path
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `context.cpp:368`:
 
 ```cpp
@@ -335,6 +367,7 @@ A single-line short-circuit that returns 0 (= not selectable) when the device is
 ### D.2 `enable_swapchain = false` path
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `context.cpp:245` and `:282`:
 
 ```cpp
@@ -364,6 +397,7 @@ The `with_swapchain == false` branch is unexercised — no headless sim exists. 
 ### D.3 `extra_instance_extensions` / `extra_device_extensions` non-empty
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `context.cpp:190, 246, 283`:
 
 ```cpp
@@ -377,6 +411,7 @@ for (auto e : info.extra_device_extensions) exts.push_back(e);
 Three loops, all iterate zero times for current consumers. Loop bodies are single-line `push_back`. **Risk is essentially zero;** flagging only for completeness.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The presence of both fields in `ContextCreateInfo` (header at `context.hpp:29, 32`) suggests they were added speculatively for future sims requesting non-default Vulkan capabilities. No banked decision visible from inventory data for when consumer #1 of these might appear.
 
 ## Section E: Other unexercised public APIs
@@ -384,9 +419,11 @@ The presence of both fields in `ContextCreateInfo` (header at `context.hpp:29, 3
 ### E.1 `Buffer::deviceAddress(VkDevice)` — unexercised
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per phase 7f, no consumer in rd-3d or eulerian-smoke calls `.deviceAddress(`. Per phase 7e, no sph-water call either. The method at `buffer.hpp:62` is declared public but exercised by zero sims.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Implementation is presumably a thin wrapper around `vkGetBufferDeviceAddress` (visible in `buffer.cpp` per the inventory line counts; not read in detail this round — per-class deep-audit scope). The dependency exists: VMA is created with `VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT` at `context.cpp:350`, and Vulkan 1.2 `bufferDeviceAddress` feature is enabled at `:323`. So the infrastructure for buffer-device-address is present and active in every Context construction, but no sim exercises the surface that retrieves the address.
 
 Risk: low (thin wrapper presumed). Surface presence suggests planned use, perhaps for ray-tracing-style sims (BLAS/TLAS construction uses `VkBufferDeviceAddress`). No banked-design context visible from inventory; flagged for the per-class deep audit.
@@ -394,6 +431,7 @@ Risk: low (thin wrapper presumed). Surface presence suggests planned use, perhap
 ### E.2 `Buffer::stage(...)` — single-consumer (sph-water only)
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per phase 7e, sph-water calls `.stage(ctx, ...)` at `main.cpp:2062-2073` (7 distinct call sites). Per phase 7f, neither rd-3d nor eulerian-smoke calls `.stage(`.
 
 `Buffer::stage` is the host→device counterpart to `Buffer::readback`. rd-3d and es don't use DeviceLocal staging buffers; they use `Image::upload(...)` for texture data and likely host-visible buffers for any uniform/SSBO data, so the absence of `Buffer::stage` calls is structurally expected.
@@ -401,16 +439,19 @@ Per phase 7e, sph-water calls `.stage(ctx, ...)` at `main.cpp:2062-2073` (7 dist
 But: this means `Buffer::stage` is currently in the same risk shape as alembic_writer was pre-Phase-11 — single-consumer, defects survive until consumer #2.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Risk: medium. Implementation at `buffer.cpp:108-145` (per inventory line counts; not fully audited this round) is the most complex non-trivial implementation in `buffer.cpp` — stage-and-copy via `runOneShot`. Possible defects: race conditions if multiple stages overlap (unlikely; one-shot is fence-synchronous); incorrect VMA-flag combinations for host-visible-sequential staging buffers. Flagged for per-class deep audit.
 
 ### E.3 Inferences corrected during the probe
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per § A.1, I went looking for unexercised `Image::readback` (2-arg form) but the rd-3d call at `main.cpp:706-707` and the es calls at `:1432-1435, 2147, 2210` are 2-arg signatures — matching `Image::readback(void* dst, size_t bytes)` not `Buffer::readback(Context&, void* dst, size_t, size_t)`. So `Image::readback` is exercised by both rd-3d and eulerian-smoke. **Recording the near-miss** because it almost made it into the report as an unexercised finding; Convention #8 caught it on re-read.
 
 ## Section F: pNext-chain invariant verification
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 > **CLAIM:** The `compute_pipeline.cpp` implementation correctly satisfies the load-bearing invariant documented at `compute_pipeline.hpp:40-50`.
 > **VERDICT: CONFIRMED** via phase 7h side-by-side comparison.
 
@@ -426,6 +467,7 @@ INVARIANT (must be preserved by all future maintainers):
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The actual code at `compute_pipeline.cpp:107-120` (create path, from phase 7h):
 
 ```cpp
@@ -457,6 +499,7 @@ The "and/or" phrasing in the documented invariant could be misread as "always bu
 ### F.2 Stack-lifetime correctness
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The author's comment at `compute_pipeline.cpp:104-106` (visible in phase 7h):
 
 ```cpp
@@ -483,6 +526,7 @@ Per phase 7g, `.github/workflows/build-native.yml` contains:
 So CI exercises both real-impl compile paths in `alembic_writer.cpp` and `vdb_writer.cpp`. The post-Phase-11 CI state is **comprehensive at compile time** — the unexercised-real-impl defects this probe finds are about *execution* paths through compiled-in code, not about uncompiled code paths.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The pre-Phase-11 CI state was different: per commit `0243278` ("§ 5 cross-cutting edits for sph-water"), `libimath-dev + USE_ALEMBIC=ON` were added to both jobs at Phase 11. Before Phase 11, ALEMBIC=OFF was the CI default, which is why the most-vexing-parse bug at `alembic_writer.cpp:63-65` survived 10 phases of CI without failing.
 
 **Forward CI risk surface:** CI now compiles every code path inside `#if GPU_SIMS_HAVE_*` blocks. New optional-feature code shipping Phase-12+ inside another `#if`-gated path won't have the same blind spot, *provided* the corresponding `-D...=ON` flag is added to CI when the path lands. The lesson from Phase 11 retro category 7 holds: optional-feature CI coverage must be added in the same commit as the consumer code that motivates the feature.
@@ -490,6 +534,7 @@ The pre-Phase-11 CI state was different: per commit `0243278` ("§ 5 cross-cutti
 ### G.1 Stub path CI coverage
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The `#else` branches in `alembic_writer.cpp:90-96` (StubParticleWriter) and `vdb_writer.cpp:91-93, :141-143` (return-false stubs) compile when `GPU_SIMS_USE_*=OFF`. Phase 7g shows two CI jobs (per `build-native.yml`): one with both flags ON, the other with `USE_OPENVDB` toggled differently (CI yaml not fully cross-quoted; the eulerian-smoke CMakeLists comment at `:5-9` describes the "Stub mode compiles and runs fine" expectation, implying CI exercises stub mode at least sometimes). **Stub-mode compile coverage is plausible but not authoritatively confirmed in this probe**; flagged as a follow-up question if the answer matters for a future audit.
 
 ## Section P: Incidental findings and cross-workstream flags
@@ -497,6 +542,7 @@ The `#else` branches in `alembic_writer.cpp:90-96` (StubParticleWriter) and `vdb
 ### P.1 **Cross-workstream: ParticleFrame::radii defect** (`cross_workstream: layer-1`)
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per § B.3. The defect is in common-cpp's public surface but its current real-world impact depends on sph-water's `ParticleFrame fr{};` field-population behavior at `main.cpp:2424-2430` (not visible in Layer 2 probe scope). Architect-1 should be notified to:
 
 1. Determine whether sph-water sets `fr.radii` (one grep at the relevant line block).
@@ -508,11 +554,13 @@ Layer 2 audit does not recommend a specific fix; just surfacing.
 ### P.2 vdb_writer's `writeFloatGrid` vs `writeVec3Grid` transform-handling divergence
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per § C.2 item 2. The float-grid path resets the transform inside the origin-translate branch (`vdb_writer.cpp:75-78`); the Vec3 path only post-translates without resetting (`:126-128`). Inconsistent. Could be a deliberate distinction or a copy-paste oversight. Flagged for per-class deep audit when that probe runs.
 
 ### P.3 `setObjectName` continues to be an orphan
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Per consumer-mapping report § E.1, `gpusims/vk/debug.hpp` has zero header-include consumers. This probe confirms by extension that `setObjectName(VkDevice, VkObjectType, uint64_t, const char*)` — declared at `debug.hpp:36` — has zero call sites across all 3 Stack C sims. No new finding here; cross-referencing the prior report's open question.
 
 ### P.4 Probe-data utilization discipline (`cross_workstream: layer-1`)

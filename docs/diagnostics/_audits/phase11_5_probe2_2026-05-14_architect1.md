@@ -16,6 +16,7 @@ scope: read-only
 Tokens grepped: `SPlisHSPlasH`, `splishsplash`, `Bender`, `Koschier`, `DFSPH`, `divergence-free SPH`. Search restricted to `--include` `*.md`, `*.cpp`, `*.hpp`, `*.h`, `*.glsl`, `*.txt`. Every hit reported.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Citations are textual references inside source files. **No vendored SPlisHSPlasH source tree exists in this repo.** The shaders cite specific SPlisHSPlasH 1.8.10 line numbers (`TimeStepDFSPH.cpp:285`, `:442`, `:514-515`, `:582`, `:590`, `:606`, `:656`, `:662`, `:692`, `:758-760`, `:813-822`, `:1175-1188`, `SPHKernels.h:43-78`, `TimeStepDFSPH.h:28`), but those files are not present on disk.
 
 DFSPH-method shader citations:
@@ -27,18 +28,23 @@ DFSPH-method shader citations:
 //   Pass 1: rho_adv = density_i + dt · Σ m (v_i − v_j) · ∇W
 //           s_i = (1 - rho_adv / density0), clamped ≤ 0 (only correct over-density)
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 //   Pass 2: aij_pj scales by h² (not h) per TimeStepDFSPH.cpp:582
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 //   factor scales by 1/h² (not 1/h) per TimeStepDFSPH.cpp:285
 //
 // References:
 <!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 //   Source s_i = 1 - ρ_adv/ρ₀:   SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:590
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 //   aij_pj *= h²:                 TimeStepDFSPH.cpp:582
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 //   Pressure update:              TimeStepDFSPH.cpp:606
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 //   factor scales 1/h²:           TimeStepDFSPH.cpp:285
 ```
 
@@ -110,7 +116,9 @@ constexpr float DFSPH_JACOBI_RELAX       = 0.5f;       // SPlisHSPlasH TimeStepD
 ```
 
 Other matches surface in:
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `CHANGELOG.md:13` and `:17` (DFSPH per Bender-Koschier 2015+2017; anchored to SPlisHSPlasH 1.8.10)
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `project-state.md:77`, `:194`, `:584`, `:592`, `:855`
 - `particle-fluids/sph-water/README.md:3`, `:10`, `:90`
 - `docs/retro/phase11.md:140`, `:151`, `:178`, `:198`, `:297`, `:349`, `:372`, `:388`
@@ -372,6 +380,7 @@ Full file (127 lines), verbatim.
 ```glsl:particle-fluids/sph-water/shaders/density_alpha.comp.glsl:1-127
 // density_alpha.comp.glsl — DFSPH per-particle density ρ_i and α-factor (stored
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 // as α/ρ² in the multiphase-compatible form per SPlisHSPlasH TimeStepDFSPH.cpp:758-760).
 //
 // References:
@@ -884,6 +893,7 @@ Type aliases used above (`main.cpp:1079-1087`):
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `make_compute` lambda (`main.cpp:1058-1066`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1058-1066
@@ -940,6 +950,7 @@ static void writeDensityAlphaDescriptor(VkDevice device,
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **`writeDfsphSolveDescriptor`** (shared by `divergence_solve` and `density_solve`, `main.cpp:555-590`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:555-590
@@ -1014,6 +1025,7 @@ static void writeIntegrateForcesDescriptor(VkDevice device,
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **`writePressureApplyDescriptor`** (`main.cpp:619-648`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:619-648
@@ -1070,6 +1082,7 @@ VkDescriptorSet ComputePipeline::allocateDescriptorSet() {
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The pool itself is built in `ComputePipeline::create` via `buildDescriptorPool(...)` at `compute_pipeline.cpp:37-59` with `max_sets = 16` (passed at `:130`):
 
 ```cpp:common/common-cpp/src/vk/compute_pipeline.cpp:130
@@ -1152,6 +1165,7 @@ void Buffer::readback(Context& ctx, void* dst, std::size_t bytes, std::size_t of
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The dual host→device path is `Buffer::stage` (`buffer.cpp:119-133`):
 
 ```cpp:common/common-cpp/src/vk/buffer.cpp:119-133
@@ -1186,6 +1200,7 @@ Header declaration (`common/common-cpp/include/gpusims/vk/buffer.hpp:54-59`):
 ### F.4 Consumers of `Buffer::readback` in sph-water
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Two call sites in `main.cpp`. F5-capture-save batch (`main.cpp:1684-1689`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1684-1689
@@ -1217,6 +1232,7 @@ Grep returns **zero direct uses** of the `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` e
 ### F.7 Direct answer to caller's question
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **`tier.uniform_dfsph.uploadDirect` is host→device only** (mapping is `VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT`; the destination is the host-mapped UBO, GPU reads it). `Buffer::stage` is also host→device. **The only device→host path is `Buffer::readback`** (`buffer.cpp:135`) and **`Image::readback`** (`image.cpp:202`); both are **synchronous, submit-and-wait** via `ctx.runOneShot`. There is **no asynchronous device→host helper**, no persistent-mirror pattern, and no `gv::downloadBuffer` / equivalent free function. The class-level helper `Buffer::readback(Context&, void*, std::size_t, std::size_t)` is the only thing available.
 
 ## Section G: Atomic operations in existing shaders
@@ -1305,34 +1321,49 @@ All 16 compute shaders' headers (verbatim):
 | Shader | `#version` line | `#extension` line(s) |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `apply_emitter.comp.glsl:3` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `bilateral_smooth.comp.glsl:5` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `cell_count.comp.glsl:3` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `density_alpha.comp.glsl:8` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `density_solve.comp.glsl:14` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `divergence_solve.comp.glsl:12` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `initial_fill.comp.glsl:3` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `integrate_forces.comp.glsl:7` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `morton_code.comp.glsl:3-4` | `#version 460` | `#extension GL_GOOGLE_include_directive : enable` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `prefix_sum_addback.comp.glsl:4` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `prefix_sum_block.comp.glsl:10` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `prefix_sum_block_l2.comp.glsl:4` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `prefix_sum_local.comp.glsl:3` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `pressure_apply.comp.glsl:10` | `#version 460` | (none) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `scatter.comp.glsl:4` | `#version 460` | (none) |
 
 **No `GL_KHR_shader_subgroup_arithmetic` or `_basic` extension declared in any shader.** No subgroup intrinsics in any DFSPH shader. (The subgroup-size *pin* applies to the 7 sort kernels + bilateral kernel via the pipeline-creation pNext chain, but the GLSL itself does not use subgroup ops.)
@@ -1340,6 +1371,7 @@ All 16 compute shaders' headers (verbatim):
 ## Section H: Full `pack_dfsph_uniform` body and call site
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ### H.1 Function body (`main.cpp:1380-1431`)
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1380-1431
@@ -1418,6 +1450,7 @@ Probe-1 referenced `main.cpp:1891`. **Verified.** The call is at line 1891. Five
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `pack_dfsph_uniform` is called **once per frame, outside the substep loop**. Probe-1 Section A confirms this position (frame-scope uniform write, before the substep loop opens at `main.cpp:1908`).
 
 ## Section I: Usage of `da[].z`, `da[].w`, `predicted_density`, `density_advect`
@@ -1429,25 +1462,34 @@ Probe-1 referenced `main.cpp:1891`. **Verified.** The call is at line 1891. Five
 | Shader | Buffer qualifier | Access site | Component | Read/Write |
 |---|---|---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `density_alpha.comp.glsl:21-24` | `restrict writeonly buffer DensityAlpha { vec4 da[]; }` | `:126` `da[gid] = vec4(density, alpha_stored, 0.0, 0.0);` | full `.xyzw` | **WRITE** (only writer of `da`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `divergence_solve.comp.glsl:17` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:75` `da[gid].x` | `.x` | READ |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `divergence_solve.comp.glsl:17` | (same) | `:76` `da[gid].y` | `.y` | READ |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `density_solve.comp.glsl:19` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:77` `da[gid].x` | `.x` | READ |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `density_solve.comp.glsl:19` | (same) | `:78` `da[gid].y` | `.y` | READ |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `integrate_forces.comp.glsl:12` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:111` `max(da[j].x, 1e-3)` | `.x` (neighbor) | READ |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `pressure_apply.comp.glsl:15` | `restrict readonly buffer DensityAlpha { vec4 da[]; }` | `:72` `da[gid].x` | `.x` | READ |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `pressure_apply.comp.glsl:15` | (same) | `:95` `da[j].x` | `.x` (neighbor) | READ |
 
 ### I.2 Direct answer to caller's question
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **No kernel writes `da[gid].z` or `da[gid].w`.** The only writer of `da` is `density_alpha.comp.glsl:126`, which writes `vec4(density, alpha_stored, 0.0, 0.0)` — the `.z` and `.w` slots are unconditionally zeroed every dispatch. No kernel reads `da[].z` or `da[].w` either.
 
 The struct-layout doc reserves these slots:
@@ -1675,6 +1717,7 @@ bool ComputePipeline::reload(Context&        ctx,
 ### J.5 Push-constant range wiring
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 A single `VkPushConstantRange` is built at `compute_pipeline.cpp:87-94`:
 
 ```cpp:common/common-cpp/src/vk/compute_pipeline.cpp:87-94
@@ -1957,6 +2000,7 @@ The five named-but-missing DFSPH helpers (`density_predict`, `density_advance`, 
 ## Section M: Hot-reload and shader compilation surface
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 ### M.1 Watch-list (`main.cpp:1623-1661`)
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1623-1661
@@ -2045,6 +2089,7 @@ The five named-but-missing DFSPH helpers (`density_predict`, `density_advance`, 
 The actual recompile happens inside `ComputePipeline::reload(...)` (`common/common-cpp/src/vk/compute_pipeline.cpp:174-236`, quoted in **Section J.4**). It calls `compiler.compileFile(desc_.shader_path, ShaderStage::Compute)`, builds a new `VkShaderModule`, builds a new `VkComputePipeline`, and defers the old pipeline + module destruction onto the current frame's `deletion_queue`.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The actual SPIR-V compilation lives at `common/common-cpp/src/vk/shader_compiler.cpp:117` — `ShaderCompiler::compileFile(...)`. Not quoted in full here; signature reference at `compute_pipeline.cpp:70` and `:178`.
 
 ## Section N: Existing convergence-check or error-measurement code
@@ -2105,6 +2150,7 @@ the main pipeline).
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 > Probe-2 note: the load-bearing doc claims "Panel exposes the `maxIter*` sliders too" — but the actual ImGui exposure at `main.cpp:2252-2253` covers only the `minIter*` sliders. The `maxIter*` sliders are not shown in the panel. (Banked to Section P.)
 
 ### N.5 No kernel-side measurement
@@ -2141,6 +2187,7 @@ The struct-layout doc at `particle-fluids/sph-water/shaders/_struct_layouts.txt:
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 …claims `density_solve Pass 1` writes `rho_adv_i` to `.z`, and `divergence_solve Pass 1` writes `rho_dot_i` to `.w`. **Neither write happens in the actual shader source.** The doc describes an intended-but-unimplemented design. `density_alpha.comp.glsl:126` is the only writer of `da[]` and unconditionally writes `vec4(density, alpha_stored, 0.0, 0.0)`.
 
 ### P.3 `load-bearing-decisions.md` claims a panel feature that doesn't exist
@@ -2166,16 +2213,19 @@ ImGui code at `main.cpp:2252-2253` exposes only `minIter*` sliders. The `maxIter
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `tier.cell_block_prefixes.handle()` is passed for both the first and second buffer slot. May be intentional (per-block scan results being read as both `PerBlock` and `BlockPrefixes`, given the shader bindings at `prefix_sum_addback.comp.glsl:8-14`) but the two arguments having the same buffer is a smell worth a second look. Out of scope for the SPH solver but flagging.
 
 ### P.5 Bilateral pass uses `r32f writeonly image2D` rather than separate read/write paths
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `bilateral_smooth.comp.glsl:9-12` (from grep at L.2). The bilateral pass uses `texture2D inputDepth` + separate `r32f writeonly image2D outputDepth` rather than image-ping-pong with read+write image bindings. Standard for bilateral-style filters; recording only for completeness, no concern.
 
 ### P.6 No `gravity_pad.w` writer (still — mode field is dead)
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The DFSPH UBO `gravity_pad.w` is set to `0.0f` in `pack_dfsph_uniform` (`main.cpp:1422`):
 
 ```cpp:particle-fluids/sph-water/src/main.cpp:1422

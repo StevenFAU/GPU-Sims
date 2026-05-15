@@ -154,6 +154,7 @@ Compared to commit 2 (`810 + 22 = 832`), the totals shifted as follows:
   the cause: the bulk of the 810 were not `references/`-prefixed
   vendor-tree citations but rather bare-basename common-cpp citations
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   in the architect audit reports (e.g. `alembic_writer.hpp:31`).
 - `cat1.annotation-form` rose from 22 → 34 (+12). Commit 2's audit
   used a count derived from a snapshot before the smoke-only audit
@@ -210,6 +211,7 @@ Chakazul/Lenia citations from
 `continuous-ca/lenia-fft/python/lenia_fft/presets.py` would surface
 here. They don't, because the live citations look like
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `LeniaNDK.py:329-335` (bare path) rather than
 `Chakazul/Lenia LeniaNDK ...` (upstream-form). See § F.2.
 
@@ -251,6 +253,7 @@ opt-out.
 <!-- integrity-allow: cat1.unregistered-upstream; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
   `SyntheticUpstream 1.0.0 foo.cpp:1` would otherwise yield a
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   failing `cat1.intra-repo` finding for the bare `foo.cpp:1`.
 
 ## F. Incidentals — surprises and deferred work
@@ -262,6 +265,7 @@ once `cat1.upstream-citation` claimed the vendor-tree paths. The
 actual drop is 810 → 785 (−25). The 785 residual is dominated by
 audit-report citations that use the bare common-cpp basename
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (`alembic_writer.hpp:31`, `camera.hpp:33`, etc.) — not vendor-tree
 paths. The misprediction came from sampling top-of-list citations
 without checking the long tail. The commit 4 grandfather sweep
@@ -270,6 +274,7 @@ needs to budget for ~785 intra-repo suppressions, not ~50.
 ### F.2. Chakazul/Lenia citations don't use upstream-form grammar
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The Lenia codebase cites the upstream as `LeniaNDK.py:329-335`
 (bare path) rather than `LeniaNDK 1.0.0 file:line` or
 `Chakazul/Lenia LeniaNDK ...`. The grammar requires

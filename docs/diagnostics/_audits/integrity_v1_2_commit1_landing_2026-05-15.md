@@ -186,6 +186,7 @@ hard-fail bucket is unchanged by P1.8 because:
   catch-all on a LIVE-SOURCE path". **Bank as v1.3 candidate.**
 - **Sweep groups multiple same-line findings into stacked annotations.**
   Observed during the rejected broader-scope sweep attempt: 10
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
   identical `# integrity-allow: cat1.annotation-form` annotations
   stacked sequentially above a single target line in `grandfather.py`
   (separate findings on the same line, each adding its own annotation

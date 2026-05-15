@@ -753,6 +753,7 @@ def cursor_in_any_panel(cur: tuple[float, float], rects: list[tuple[float, float
     convention). We convert cursor y to top-origin before testing.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
     Inherited verbatim from MPM main.py:306-318. Documented in
     docs/load-bearing-decisions.md as a STRONG promotion candidate for
     consumer #3 (see § "Promotion-review for common-py").
@@ -947,6 +948,7 @@ continuous-ca/lenia-fft/python/`:
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/presets.py:10` — `…all four 2D presets…Polyring (multi-peak via b-string) creatures are banked`
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `python/lenia_fft/presets.py:11` — `v1.1 with the formula documented at LeniaNDK.py:329-335; see`
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `python/lenia_fft/presets.py:279` — `# v1.1 will land Chan's 3D creatures after visual verification on user`
@@ -1106,6 +1108,7 @@ sim-local copies of all patterns identified here.
    manually maintain GUI_PANEL_RECTS lists.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 2. **Capture-mode confirmation modal** (MPM `main.py:608–618`)
    **— STRONG PROMOTE at #3.** Tier-dependent capture-mode appears in
    Phase 8 smoke (384³), Phase 9 MPM (500k tier), Phase 10 Lenia (2048²
@@ -1118,6 +1121,7 @@ sim-local copies of all patterns identified here.
 
 3. **Tier dropdown + deferred-change-after-`window.show()`** (MPM
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    `main.py:560–567 + 624–642`)
    **— STRONG PROMOTE at #3.** The deferred-after-show idiom is a
    non-obvious UX subtlety: re-allocate Taichi fields BEFORE the next
@@ -1128,6 +1132,7 @@ sim-local copies of all patterns identified here.
    tuples and defers the `on_select` callback to after `window.show()`.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 4. **F5/F9 save-load buttons UX pattern** (MPM `main.py:599–605`)
    **— MODERATE candidate.** The buttons live in each sim's GUI block
    (sim-specific labels, sim-specific side-effects) so the call sites
@@ -1144,8 +1149,10 @@ sim-local copies of all patterns identified here.
    The abstraction doesn't generalize to a continuous-CA sim.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 6. **Reserve-tail emitter allocation** (MPM `main.py:466–472` +
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    `EMITTER_RESERVE_SIZE` `main.py:96–100`)
    **— KEEP SIM-LOCAL.** MPM-specific physics-faithfulness move (preserve
    preset particles while LMB-place claims from a reserved tail region).
@@ -1153,6 +1160,7 @@ sim-local copies of all patterns identified here.
    needed. The abstraction doesn't generalize.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 7. **`cursor_to_ground` 3D ray-plane unproject** (MPM `main.py:187+`)
    **— KEEP SIM-LOCAL.** Lenia 2D uses `cursor_to_field_cell` (2D pan-zoom
    inverse). Lenia 3D-slice uses an implicit `cursor_to_slice_cell` (2D-

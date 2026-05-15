@@ -37,11 +37,13 @@ about the Chakazul/Lenia upstream that this probe verifies:
    `kernel_core` registry = quad4)".
 3. **Spec line 4135 (verification provenance):** "Round 3 (architect-2 +
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    Claude Code): ... polyring formula anchor at LeniaNDK.py:329-335".
 
 The Phase 10 spec is shipped at commit `7065d32` (per `project-state.md` § 3
 phase ledger). **The spec pins no SHA or tag for the Chakazul upstream** —
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 the citation is bare `LeniaNDK.py:329-335`. The natural anchor for this probe
 is therefore upstream master HEAD as of audit time.
 
@@ -56,6 +58,7 @@ May 2026, per Phase 10 spec preamble). The function structure verified
 below (`kernel_shell` dispatching through a `kernel_core` registry) is
 canonical Lenia-by-Chan and structurally mature (it is referenced from
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 the GUI code at `LeniaNDK.py:2176` as a stable internal API); a recent
 restructure of these lines is unlikely but not externally falsified.
 
@@ -110,10 +113,12 @@ $ wc -l LeniaNDK.py
 | # | Spec claim | Source | Upstream evidence | Verdict |
 |---|---|---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 1 | "polyring kernel extension at LeniaNDK.py:329-335" | spec line 6 (banking) | `kernel_shell` method at 329-335 implements polyring assembly via b-string | **CONFIRMED** |
 | 2 | "kernel_core[0] = quad4 = (4r(1-r))^4" | spec line 6 (correction) | `kernel_core` registry at 289-294, key 0 is `lambda r: (4 * r * (1-r))**4` | **CONFIRMED** |
 | 3 | "off-by-one kn=1 → dict-key 0" | spec line 6 (correction) | `kernel_shell:334` reads `Automaton.kernel_core[params.get('kn') - 1]` | **CONFIRMED** |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 4 | "polyring formula anchor at LeniaNDK.py:329-335" | spec line 4135 (provenance) | same as #1 | **CONFIRMED** |
 
 ### D.2 Verbatim evidence

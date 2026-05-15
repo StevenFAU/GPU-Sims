@@ -43,6 +43,7 @@ Modified files:
 - `tools/integrity/tests/fixtures/good_citations/example.md` —
   rewrote citations to use full repo-relative paths:
   `tools/integrity/docs/ground-truth-sources.md:1` and
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
   `common/sibling.cpp:1`.
 - `tools/integrity/tests/fixtures/good_citations/sibling.cpp` →
   `tools/integrity/tests/fixtures/good_citations/common/sibling.cpp`
@@ -93,6 +94,7 @@ double-firing (cat1.intra-repo + cat1.bare-path on the same
 basename).
 
 The fixture migration in `good_citations/` was unavoidable: the
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 fixture cited `example.md:1` (self-reference) and `sibling.cpp:1`
 (sibling-relative), both bare-basenames. Under cat1.bare-path's new
 strictness, these became INTRA-REPO findings and broke

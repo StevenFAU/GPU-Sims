@@ -100,6 +100,7 @@ Both Stack C sims consume effectively the entire `common-cpp` public surface. **
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **Stack B sims (WGSL):** zero `TODO`/`FIXME` markers across all five sims' WGSL files. v1.1 references in source occur only in `physarum/web/src/main.ts:139, 445` and `eulerian-smoke/shaders/raymarch.frag.glsl:208` (a "real blue noise" v1.1 swap-candidate comment). No skeletal shader docblocks detected.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Stack C sims (GLSL):** zero `TODO`/`FIXME`/`placeholder`/`skeleton` markers. eulerian-smoke has 2 `v1.1` references in source (the noise comment above + a "split into two uniform buffers" follow-up at `main.cpp:1789`).
 - **Stack D sims (Taichi `@ti.kernel`):** mpm-multimaterial's `kernels.py` and lenia-fft's `kernels.py` contain zero TODO markers. v1.1 references in source: 1 in mpm, 7 in lenia (mostly in `fft_backend.py` re: round-trip optimizations).
 

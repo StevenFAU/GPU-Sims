@@ -189,10 +189,10 @@ def classify(finding: Finding) -> Classification:
             issue_ref="n/a",
         )
 
-    if cid == "cat1.bare-path" and "LeniaNDK" in msg and "Chakazul" in msg:
+    if cid == "cat1.bare-path" and "LeniaNDK.py" in msg:
         return Classification(
             category="deferred-upstream-bare-path",
-            reason="deferred-upstream bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md)",
+            reason="deferred-upstream-bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md)",
             issue_ref="n/a",
         )
 

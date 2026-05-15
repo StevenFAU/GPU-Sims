@@ -107,8 +107,10 @@ Within the spec § 1.3 per-check 2-minute budget; well within CI's
 | Spec § 12 row | Detection |
 |---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `vdb::writeVec3Grid` unexercised real impl | HIT — `vdb_writer.hpp:33`, "no non-self consumer site" |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `ParticleFrame::radii` silent data-loss | HIT — `alembic_writer.hpp:24`, class_field with no consumer |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `Buffer::deviceAddress` (Layer 2 audit defect) | HIT — `vk/buffer.hpp:62`, public method, no consumer |

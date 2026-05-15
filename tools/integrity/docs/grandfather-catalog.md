@@ -253,7 +253,7 @@ GPU_SIMS_HAVE_ALEMBIC`).
 **Future treatment:** Remove suppression on each header when the
 header is next modified. Permanent suppressions are not expected.
 
-### `audit-bare-path` (?)
+### `audit-bare-path` (635)
 
 **Pattern:** `cat1.bare-path` findings in files under
 `docs/diagnostics/_audits/`.
@@ -270,7 +270,7 @@ with `integrity-allow:` annotations applied via the grandfather sweep.
 **Future treatment:** Permanent suppression on audit-doc paths. The
 v1.3 may revisit whether new audit reports should use full paths.
 
-### `retro-bare-path` (?)
+### `retro-bare-path` (11)
 <!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 
 **Pattern:** `cat1.bare-path` findings in files under `docs/retro/`.
@@ -281,7 +281,7 @@ cite files by bare basename to keep prose readable. Same rationale as
 
 **Future treatment:** Permanent suppression on retro paths.
 
-### `toolkit-doc-bare-path` (?)
+### `toolkit-doc-bare-path` (7)
 
 **Pattern:** `cat1.bare-path` findings in `docs/integrity-toolkit-spec.md`,
 `tools/integrity/docs/**`, or `tools/integrity/README.md`.
@@ -292,10 +292,10 @@ implementation. Same rationale as `spec-grammar-example`.
 
 **Future treatment:** Permanent suppression on toolkit-doc paths.
 
-### `deferred-upstream-bare-path` (?)
+### `deferred-upstream-bare-path` (5)
 
-**Pattern:** `cat1.bare-path` findings whose message text contains
-both `LeniaNDK` and `Chakazul`.
+**Pattern:** `cat1.bare-path` findings whose message text references
+`LeniaNDK.py`.
 
 **Why grandfathered:** The Chakazul/Lenia upstream is not yet vendored
 per `tools/integrity/docs/ground-truth-sources.md` "Not yet registered"
@@ -307,7 +307,7 @@ keeps the category-pool drain measurable.
 **Future treatment:** Remove suppression on each citation when the
 Chakazul upstream is registered.
 
-### `other-cat1-bare-path` (?)
+### `other-cat1-bare-path` (0 swept; 44 live-source skipped)
 
 **Pattern:** `cat1.bare-path` findings not matching any of the four
 specific rules above.

@@ -98,6 +98,7 @@ $ wc -l references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp \
 Sanity check: `TimeStepDFSPH.cpp` is 1423 lines, so the deepest citation (`:1175`) is safely within range. All cited line numbers (max 1175 for `.cpp`, max 43 for `SPHKernels.h`, max 28 for `.h`) fall within the corresponding file length.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Top-of-file (`TimeStepDFSPH.cpp:1-40`):
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1
@@ -158,6 +159,7 @@ namespace SPH
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Top-of-file (`SPHKernels.h:1-12`):
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/SPHKernels.h:1
@@ -272,6 +274,7 @@ The five citations most load-bearing for Phase 11.5 commit 2 (the a_ij coupling 
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Note on citation #3 (`density_solve.comp.glsl:12` ↔ line 590): the upstream comment at lines 585-587 explicitly says "*the multiplier rho0 is missing here*". This is consistent with the shader docblock claim "s_i = 1 - ρ_adv/ρ₀" once you understand that `densityAdv` in the upstream code is already the normalized form (ρ_adv/ρ₀). The verdict stays PLAUSIBLE_MATCH; the apparent unit mismatch is reconciled by the multiphase convention.
 
 ```cpp:references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:648

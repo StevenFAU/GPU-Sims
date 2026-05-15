@@ -432,14 +432,17 @@ UPSTREAM_CITATION:
 - Time-of-day strings (`14:30`) — excluded by requiring a `.<ext>` prefix
 - URL fragments (`example.com/path:42`) — excluded by checking the path resolves on-disk before declaring it a citation
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 - `_template.md` placeholder tokens (`{{path:line}}`) — explicitly skipped per the probe's Section P note on `markdown.yml:46`
 - Code blocks fenced with `~~~` or triple-backtick — content inside is excluded except when the surrounding doc explicitly tags the block as a citation list
 
 **Known false-negative classes (named, defended in tests):**
 
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 - Citations split across line breaks (e.g., `SPlisHSPlasH 1.8.10\nTimeStepDFSPH.cpp:1370`) — NOT supported in v1; v2 may add multi-line citation support
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 - Bracketed citations (`[file.cpp:42]`) — NOT supported in v1 (no precedent in repo per probe Section E)
 
 ### 6.3 Resolution rules
@@ -485,6 +488,7 @@ UPSTREAM_CITATION:
 ### 6.4.1 Bare-path citation limitation
 
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 The upstream-citation grammar requires the `<UpstreamName> <version>` prefix. Bare-path citations to known-upstream basenames — e.g., `LeniaNDK.py:329-335` written as a Python comment, where the human reader understands the implicit reference to Chakazul/Lenia — do NOT match `UPSTREAM_RE`. These currently fall through to `cat1.intra-repo`, which flags them when the path doesn't resolve locally.
 
 This is a v1 limitation, not a defect. It is correct behavior given the v1 grammar. Bare-path-to-upstream-basename detection is enumerated as a v2 candidate in § 13.
@@ -850,6 +854,7 @@ Each row is a concrete v1 acceptance test. The toolkit must catch every one of t
 - **Per-sim numerical checks beyond common-*** — sim-local algorithms (boids flocking rules, RD parameter regimes, etc.)
 - **Spec-vs-implementation reconciliation** — verifying phase spec claims against the actual landed code
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 - **Bare-path-to-upstream-basename detection** — extend Cat 1 to detect bare-path citations like `LeniaNDK.py:329-335` (no version prefix) when the basename matches a registered upstream's known files. Requires a per-upstream alias list or basename index. Surfaces fabrication-shape citations that the v1 upstream grammar misses.
 - **GLSL/WGSL shader-level kernel verification** — v1 Cat 3 verifies the C++ transcription of the cubic kernel against analytical expected values. A shader-level harness that loads the actual GLSL/WGSL source, dispatches it to a compute pipeline, reads back values, and compares against expected — would catch drift between shader source and the host-side C++ driver port. Requires Vulkan/WebGPU runtime setup; significantly heavier than v1's host-only driver.
 

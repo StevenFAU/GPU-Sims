@@ -102,6 +102,7 @@ The 15 unsuppressed findings are **all** pre-existing at the moving HEAD
 (see § E.2 below) — `category_context_quantum_landing_2026-05-15.md`,
 `phase11_5_commit3_landing_2026-05-15.md`, `algebraic/d3q19.md`,
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `ground-truth-sources.md:53`, `compute_boundary_volume.comp.glsl:7`.
 None of them are introduced by A.5. Verified by running the integrity
 tool with A.5 stashed: the same baseline files surface as hard-fails,

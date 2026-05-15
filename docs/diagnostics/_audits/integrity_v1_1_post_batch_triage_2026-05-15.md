@@ -48,6 +48,7 @@ captured 2026-05-15 ~17:00 UTC against HEAD `a28e1d7`:
 **Count delta:** baseline at end of batch-1 was 29 hard-fails. At triage
 time HEAD had advanced to `a28e1d7` (my own commit 3c landing report
 introduced one additional cat1.annotation-form finding at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `integrity_v1_1_commit3c_landing_2026-05-15.md:171`), bringing the total
 to 30. Same-class-of-finding as the original 29; included in the
 audit-doc sweep below.
@@ -113,6 +114,7 @@ Sweep applied as commit **`9f85c7f`**
 (`grandfather(integrity): sweep toolkit-doc findings from concurrent
 commits 0db9c73..66daf9f`). 3 annotations added across 2 files (one
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 covers two citations on the same line in `ground-truth-sources.md:53`).
 All 4 findings classified as **`other-cat1`** by fallthrough.
 
@@ -168,6 +170,7 @@ defeat the gate's purpose** and is out of scope per directive § 6.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 26 | docs/phase12_lattice_boltzmann.md:351 (`chapter13/cpu/LBM.cpp:97`) | `c5955d3` setup(phase12): land architect-1 spec | Steven Cohen |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 27 | docs/phase12_lattice_boltzmann.md:1276 (`main.cpp:1168-1279`) | `c5955d3` setup(phase12): land architect-1 spec | Steven Cohen |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 28 | particle-fluids/sph-water/shaders/compute_boundary_volume.comp.glsl:7 (`SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-75`) | `f9f2cb9` feat(sph-water): Akinci2012 boundary handling (commit 3) | Steven Cohen |
@@ -211,6 +214,7 @@ gate remains red on the 6 LIVE-SOURCE findings:
      justifiable — registered citation is preferred).
 2. `docs/phase12_lattice_boltzmann.md:351` — same shape as #1.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 3. `docs/phase12_lattice_boltzmann.md:1276` — bare `main.cpp:1168-1279`.
    "ES's pattern from main.cpp" is too ambiguous to be a citation
    under spec § 3 grammar. Either disambiguate ("eulerian-smoke's

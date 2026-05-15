@@ -90,6 +90,7 @@ common/common-cpp/
 ### A.2 Line counts (header surface)
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 19 public headers, 1,432 lines total. **`include/gpusims/` is fully PUBLIC** per `CMakeLists.txt:213-215` — there is no public/internal header distinction.
 
 | Header | Lines |
@@ -159,10 +160,13 @@ Namespace `gpusims::abc`. Optional feature gated on `GPU_SIMS_HAVE_ALEMBIC` at c
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `ParticleFrame` (5 fields: positions, velocities, radii, ids, count) | `alembic_writer.hpp:21` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `ParticleWriter` (abstract base; `create()` factory, virtual `writeFrame()`) | `alembic_writer.hpp:31` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool isAvailable()` | `alembic_writer.hpp:44` |
 
 Header docblock at lines 11-16 still describes this as a Phase-1 stub. **Description is stale**; see Section H.1.
@@ -174,30 +178,43 @@ Namespace `gpusims`. No optional gating.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `CameraInputState` (14 fields: keys, mouse buttons, deltas, scroll) | `camera.hpp:12` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | enum | `Camera::Mode { FreeFly, Arcball, Orbit }` | `camera.hpp:35` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `Camera` (mode, transforms, lens params, free-fly/arcball/orbit tuning, ImGui inspector, JSON serialization) | `camera.hpp:33` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void setMode(Mode)` | `camera.hpp:46` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void update(float dt, const CameraInputState&)` | `camera.hpp:50` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `glm::mat4 view() / projection() / viewProjection()` | `camera.hpp:55-57` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `glm::vec3 position() / forward() / right() / up()` | `camera.hpp:59-62` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void setFovDeg / setAspect / setNearFar / fovDeg / aspect` | `camera.hpp:67-71` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void setMoveSpeed / setLookSpeed / setBoostMultiplier` | `camera.hpp:76-78` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void setTarget / setOrbitDistance / setOrbitSpeed / resetArcball` | `camera.hpp:83-86` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void setPosition / setOrientation` | `camera.hpp:91-92` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void drawImGui(const char* label = "Camera")` | `camera.hpp:97` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void toJson(nlohmann::json&) const / fromJson(...)` | `camera.hpp:102-103` |
 
 ### B.3 `gpusims/gpu_profiler.hpp` (120 lines)
@@ -207,18 +224,25 @@ Namespace `gpusims`. Has uncommitted modification (see Section F.1).
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constant | `inline constexpr std::uint32_t kMaxFramesInFlight = 2` | `gpu_profiler.hpp:16` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | forward decl | `namespace vk { class Context; }` | `gpu_profiler.hpp:18-20` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constant | `static constexpr std::uint32_t GpuProfiler::kMaxPasses = 256` (working tree; HEAD has 64 — see F.1) | `gpu_profiler.hpp:47` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `GpuProfiler` (RAII scopes, ring-buffered timestamp queries, ImGui overlay, CSV dump) | `gpu_profiler.hpp:45` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | inner class | `GpuProfiler::Scope` (RAII pass timing) | `gpu_profiler.hpp:60` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `GpuProfiler::PassResult` (name, cpu_ms, gpu_ms) | `gpu_profiler.hpp:78` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `beginFrame / endFrame / scope / lastResults / drawImGui / appendCsv` | `gpu_profiler.hpp:56-92` |
 
 ### B.4 `gpusims/hot_reload.hpp` (100 lines)
@@ -228,12 +252,16 @@ Namespace `gpusims`. No optional gating.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `HotReloader` (file-watcher with include-graph awareness, save-during-write retry) | `hot_reload.hpp:33` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | type alias | `using Callback = std::function<void(const std::filesystem::path&)>` | `hot_reload.hpp:35` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | inner struct | `HotReloader::Event` (path, ok, message, time_point) | `hot_reload.hpp:62` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `watch / unwatch / poll / watchCount / recentEvents / reportSuccess / reportFailure` | `hot_reload.hpp:48-73` |
 
 ### B.5 `gpusims/imgui_setup.hpp` (72 lines)
@@ -243,20 +271,28 @@ Namespace `gpusims::ui`. Uses forward-declared `GLFWwindow*` to avoid pulling GL
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `ImGuiInit` (10 fields: GLFW window + Vulkan handles + image counts) | `imgui_setup.hpp:30` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool initImGui(const ImGuiInit&)` | `imgui_setup.hpp:47` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void newImGuiFrame()` | `imgui_setup.hpp:51` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void renderImGui(VkCommandBuffer)` | `imgui_setup.hpp:55` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void shutdownImGui()` | `imgui_setup.hpp:58` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `VkDescriptorPool createImGuiDescriptorPool(VkDevice)` | `imgui_setup.hpp:62` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void pushToast(const char* text, bool success, float lifetime_seconds = 3.0f)` | `imgui_setup.hpp:66` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void drawToasts()` | `imgui_setup.hpp:69` |
 
 Ownership semantics of `ImGuiInit::descriptor_pool` documented inconsistently across struct-field and function-doc comments — see Section H.2.
@@ -268,16 +304,22 @@ Namespace `gpusims`. Thin templated wrapper around spdlog.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void initLogger()` | `log.hpp:13` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | template fn | `logTrace<Args...>(spdlog::format_string_t<Args...>, Args&&...)` | `log.hpp:17` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | template fn | `logDebug<Args...>(...)` | `log.hpp:21` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | template fn | `logInfo<Args...>(...)` | `log.hpp:25` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | template fn | `logWarn<Args...>(...)` | `log.hpp:29` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | template fn | `logError<Args...>(...)` (does not abort or throw — routes to `spdlog::error` only) | `log.hpp:33` |
 
 ### B.7 `gpusims/state_reader.hpp` (54 lines)
@@ -287,12 +329,16 @@ Namespace `gpusims`. Load side of the capture format.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `StateReader` (open existing capture, query meta/buffer, find latest by NNNN suffix) | `state_reader.hpp:23` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `std::optional<StateReader> open(const path&)` | `state_reader.hpp:25` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `std::optional<path> findLatest(const path&)` | `state_reader.hpp:30` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `meta / bufferMeta / buffer / frameIndex / dir` | `state_reader.hpp:34-44` |
 
 ### B.8 `gpusims/state_writer.hpp` (58 lines)
@@ -302,13 +348,17 @@ Namespace `gpusims`. Write side; pairs with `StateReader`.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `StateWriter` (capture-directory-per-frame; JSON meta + binary blobs) | `state_writer.hpp:24` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `StateWriter(path root_dir)` constructor | `state_writer.hpp:26` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `beginFrame / setMeta / saveBuffer / endFrame / currentDir` | `state_writer.hpp:29-49` |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The format docblock at `state_writer.hpp:17-23` documents Python-side compatibility — JSON + `.bin` blobs readable via `numpy.fromfile`.
 
 ### B.9 `gpusims/vdb_writer.hpp` (53 lines)
@@ -318,12 +368,16 @@ Namespace `gpusims::vdb`. Optional feature gated on `GPU_SIMS_HAVE_OPENVDB`.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool writeFloatGrid(path, const float*, glm::ivec3 dims, voxel_size, origin, grid_name)` | `vdb_writer.hpp:25` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool writeVec3Grid(path, const float*, glm::ivec3 dims, voxel_size, origin, grid_name)` | `vdb_writer.hpp:33` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool writeFloatFrame(base, frame_idx, ...)` (sequence helper) | `vdb_writer.hpp:41` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool isAvailable()` | `vdb_writer.hpp:50` |
 
 Header docblock at lines 11-15 describes this as a Phase-1 stub. **Description is stale** — VDB writer was first-exercised in Phase 8 (eulerian-smoke); see Section H.1.
@@ -335,20 +389,28 @@ Namespace `gpusims::vk`. Forward-declares VMA: `typedef struct VmaAllocation_T* 
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | enum | `MemoryUsage { DeviceLocal, HostVisibleSequential, HostVisibleRandom }` | `buffer.hpp:15` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `Buffer` (RAII; move-only) | `buffer.hpp:21` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `Buffer::create(Context&, size, VkBufferUsageFlags, MemoryUsage, debug_name)` | `buffer.hpp:23` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `handle / allocation / sizeBytes / mapped` (accessors) | `buffer.hpp:38-43` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void uploadDirect(const void* src, size, offset)` (host-visible only) | `buffer.hpp:47` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void stage(Context&, const void* src, size, offset)` (synchronous host→device for DeviceLocal) | `buffer.hpp:52` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void readback(Context&, void* dst, size, offset)` (synchronous device→host; **Phase 11 in-flight addition — see Section E.2**) | `buffer.hpp:59` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `VkDeviceAddress deviceAddress(VkDevice)` | `buffer.hpp:62` |
 
 ### B.11 `gpusims/vk/compute_pipeline.hpp` (111 lines)
@@ -358,27 +420,38 @@ Namespace `gpusims::vk`. Includes the load-bearing subgroup-size-control INVARIA
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `DescriptorBinding` (binding, type, count, stages) | `compute_pipeline.hpp:24` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `ComputePipelineDesc` (shader_path, bindings, push_constant_size, +Phase-11 fields) | `compute_pipeline.hpp:31` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `ComputePipelineDesc::required_subgroup_size` (default 0 = unconstrained; **Phase 11 in-flight addition**) | `compute_pipeline.hpp:51` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `ComputePipelineDesc::require_full_subgroups` (default false; **Phase 11**) | `compute_pipeline.hpp:52` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `ComputePipeline` (move-only, RAII) | `compute_pipeline.hpp:55` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `ComputePipeline::create(Context&, ShaderCompiler&, const ComputePipelineDesc&)` | `compute_pipeline.hpp:57` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `bool reload(Context&, ShaderCompiler&, Frame& current_frame, std::string* out_error)` | `compute_pipeline.hpp:75` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `VkDescriptorSet allocateDescriptorSet()` | `compute_pipeline.hpp:81` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void dispatch(cmd, ds, gx, gy, gz, push_constants, push_size)` (combined bind+dispatch) | `compute_pipeline.hpp:85` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `handle / pipelineLayout / descriptorSetLayout / shaderPath / includes` | `compute_pipeline.hpp:94-98` |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Load-bearing invariant** documented at `compute_pipeline.hpp:40-50`:
 
 ```
@@ -404,24 +477,34 @@ Namespace `gpusims::vk`. Forward-declares VMA allocator. Has uncommitted modific
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `ContextCreateInfo` (application_name, version, extra extensions, require_discrete_gpu, enable_swapchain, +Phase-11 subgroup field) | `context.hpp:24` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `ContextCreateInfo::enable_subgroup_size_control` (default false; **Phase 11 in-flight addition — see E.1**) | `context.hpp:46` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `Context` (instance + debug messenger + physical device + device + queues + VmaAllocator) | `context.hpp:49` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constructor | `Context()` (zero-config) | `context.hpp:51` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constructor | `explicit Context(const ContextCreateInfo&)` | `context.hpp:52` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `instance / physicalDevice / device / graphicsQueue / computeQueue / graphicsQueueFamily / computeQueueFamily / allocator` | `context.hpp:61-68` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `deviceProperties / memoryProperties` | `context.hpp:72-73` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `subgroupSizeMin / subgroupSizeMax / requiredSubgroupSizeStages / subgroupSizeControlEnabled` (**Phase 11**) | `context.hpp:84-87` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void waitIdle() const` | `context.hpp:91` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void runOneShot(const std::function<void(VkCommandBuffer)>&)` (transient command buffer; underpins synchronous helpers) | `context.hpp:95` |
 
 ### B.13 `gpusims/vk/debug.hpp` (38 lines)
@@ -431,18 +514,25 @@ Namespace `gpusims::vk`. Compile-time-gated by `GPU_SIMS_VALIDATION_LAYERS`; all
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constant | `constexpr const char* kValidationLayerName = "VK_LAYER_KHRONOS_validation"` | `debug.hpp:15` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `bool checkValidationLayerSupport()` | `debug.hpp:18` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `const char* const* requiredDebugExtensions(uint32_t* out_count)` | `debug.hpp:22` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT&)` | `debug.hpp:25` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `VkResult createDebugMessenger(VkInstance, const VkDebugUtilsMessengerCreateInfoEXT&, VkDebugUtilsMessengerEXT*)` | `debug.hpp:28` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void destroyDebugMessenger(VkInstance, VkDebugUtilsMessengerEXT)` | `debug.hpp:32` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void setObjectName(VkDevice, VkObjectType, uint64_t handle, const char* name)` | `debug.hpp:36` |
 
 ### B.14 `gpusims/vk/frame.hpp` (60 lines)
@@ -452,17 +542,23 @@ Namespace `gpusims::vk`. Unusual in that it exposes a `struct` with public data 
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `Frame` (per-in-flight-frame state: indices, fence, semaphores, command pool/buffer, deletion queue) | `frame.hpp:15` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | inline method | `Frame::flushDeletions()` (called by Renderer at frame begin once fence has signaled) | `frame.hpp:35-40` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void initFrame(Context&, Frame&, uint32_t in_flight_index)` | `frame.hpp:44` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void destroyFrame(Context&, Frame&)` | `frame.hpp:47` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | free fn | `void memoryBarrier(VkCommandBuffer, VkPipelineStageFlags2 src_stage, VkAccessFlags2 src_access, VkPipelineStageFlags2 dst_stage, VkAccessFlags2 dst_access)` | `frame.hpp:54` |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The `memoryBarrier` free function is the foundation of `cs_barrier` and equivalent helpers across the sim portfolio — single global `VkMemoryBarrier2` via `vkCmdPipelineBarrier2`. Documented at `frame.hpp:49-53` as "Global rather than per-image is correct when all of the application's resources move together; the over-broad scope costs nothing in practice for typical per-sim workloads."
 
 ### B.15 `gpusims/vk/graphics_pipeline.hpp` (106 lines)
@@ -472,35 +568,50 @@ Namespace `gpusims::vk`. Uses dynamic rendering (`VK_KHR_dynamic_rendering`; cor
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `GraphicsPipelineDesc` (vertex+fragment shader paths, bindings, push constant size, color/depth formats, topology, polygon, cull, front-face, depth test/write, blend) | `graphics_pipeline.hpp:23` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `src_color_blend_factor` (default `VK_BLEND_FACTOR_SRC_ALPHA`; **Phase 11 in-flight addition — see E.2**) | `graphics_pipeline.hpp:48` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `dst_color_blend_factor` (default `VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA`; **Phase 11**) | `graphics_pipeline.hpp:49` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `color_blend_op` (default `VK_BLEND_OP_ADD`; **Phase 11**) | `graphics_pipeline.hpp:50` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `src_alpha_blend_factor` (default `VK_BLEND_FACTOR_ONE`; **Phase 11**) | `graphics_pipeline.hpp:51` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `dst_alpha_blend_factor` (default `VK_BLEND_FACTOR_ZERO`; **Phase 11**) | `graphics_pipeline.hpp:52` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `alpha_blend_op` (default `VK_BLEND_OP_ADD`; **Phase 11**) | `graphics_pipeline.hpp:53` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct field | `vertex_bindings / vertex_attributes` (default empty) | `graphics_pipeline.hpp:57-58` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `GraphicsPipeline` (move-only, RAII) | `graphics_pipeline.hpp:61` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `GraphicsPipeline::create(Context&, ShaderCompiler&, const GraphicsPipelineDesc&)` | `graphics_pipeline.hpp:63` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `bool reload(Context&, ShaderCompiler&, Frame&, std::string*)` | `graphics_pipeline.hpp:76` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `VkDescriptorSet allocateDescriptorSet()` | `graphics_pipeline.hpp:81` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void bind(cmd, ds, push_constants, push_size)` (separate from draw) | `graphics_pipeline.hpp:84` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `handle / pipelineLayout / descriptorSetLayout / includes` | `graphics_pipeline.hpp:89-92` |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Comment at `graphics_pipeline.hpp:43-47` documents the additive-blend opt-in path for Phase 11's thickness pass.
 
 ### B.16 `gpusims/vk/image.hpp` (83 lines)
@@ -510,20 +621,28 @@ Namespace `gpusims::vk`. Forward-declares VMA allocation.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | enum | `ImageType { e2D, e3D }` | `image.hpp:15` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `ImageCreateInfo` (type, extent, format, mip_levels, array_layers, samples, usage, initial_layout, debug_name) | `image.hpp:20` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `Image` (RAII, move-only) | `image.hpp:32` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `Image::create(Context&, const ImageCreateInfo&)` | `image.hpp:34` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `handle / view / allocation / extent / format / type` | `image.hpp:45-50` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `Image::transitionLayout(cmd, image, aspect, old_layout, new_layout, mip_levels, array_layers)` (explicit; no automatic layout tracking) | `image.hpp:55` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void upload(const void* src, size)` (synchronous host→device) | `image.hpp:67` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void readback(void* dst, size)` (synchronous device→host; not flagged as Phase-11 addition in commit log — needs blame-check) | `image.hpp:73` |
 
 ### B.17 `gpusims/vk/renderer.hpp` (70 lines)
@@ -533,25 +652,35 @@ Namespace `gpusims::vk`. Owns the per-in-flight-frame Frame slots.
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `Renderer` (frame orchestration: acquire / record / submit / present) | `renderer.hpp:31` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constructor | `Renderer(Context&, Window&)` | `renderer.hpp:33` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `Frame* beginFrame()` (returns nullptr if swapchain out-of-date) | `renderer.hpp:42` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void beginRendering(Frame&, VkClearColorValue)` (dynamic-rendering pass; defaults to dark blue-grey clear) | `renderer.hpp:46` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void endRendering(Frame&)` | `renderer.hpp:47` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void endFrame(Frame&)` | `renderer.hpp:50` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void waitIdle()` | `renderer.hpp:53` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `ctx / window / frame(i) / framesInFlight` | `renderer.hpp:56-61` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | private field | `Frame frames_[kMaxFramesInFlight]` (fixed at 2) | `renderer.hpp:66` |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Includes `gpu_profiler.hpp` solely for `kMaxFramesInFlight` (`renderer.hpp:8`) — coupling between profiler and renderer headers via the shared constant.
 
 ### B.18 `gpusims/vk/shader_compiler.hpp` (66 lines)
@@ -561,22 +690,31 @@ Namespace `gpusims::vk`. Uses pImpl idiom to keep shaderc out of public headers 
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | enum | `ShaderStage { Compute, Vertex, Fragment }` | `shader_compiler.hpp:21` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | struct | `CompileResult` (ok flag, spirv vector, error string, includes for hot-reload graph) | `shader_compiler.hpp:27` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `ShaderCompiler` (pImpl) | `shader_compiler.hpp:35` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constructor | `explicit ShaderCompiler(Context&)` | `shader_compiler.hpp:37` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void addIncludeDir(path)` | `shader_compiler.hpp:44` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `CompileResult compileFile(path, ShaderStage)` | `shader_compiler.hpp:49` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `CompileResult compileSource(const std::string&, ShaderStage, path nominal)` | `shader_compiler.hpp:53` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | static fn | `VkShaderModule createShaderModule(VkDevice, const std::vector<uint32_t>& spirv)` | `shader_compiler.hpp:58` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | private | `struct Impl; Impl* impl_;` (pImpl) | `shader_compiler.hpp:62-63` |
 
 ### B.19 `gpusims/vk/window.hpp` (83 lines)
@@ -586,20 +724,28 @@ Namespace `gpusims::vk`. Forward-declares `GLFWwindow*`. Wraps `VkSurfaceKHR` an
 | Kind | Symbol | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | class | `Window` (GLFW window + surface + swapchain; transparent recreation on resize) | `window.hpp:20` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | constructor | `Window(Context&, width, height, title)` | `window.hpp:22` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `bool shouldClose() const` | `window.hpp:30` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void pollEvents() / waitEvents()` | `window.hpp:31-32` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `std::optional<uint32_t> acquireNextImage(VkSemaphore)` (nullopt = swapchain recreated; skip frame) | `window.hpp:38` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `bool present(uint32_t image_index, VkSemaphore wait)` (false = out-of-date) | `window.hpp:43` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | method | `void recreateSwapchain()` | `window.hpp:46` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | accessor | `glfwWindow / surface / swapchain / colorFormat / extent / imageCount / image(i) / imageView(i) / aspect` | `window.hpp:49-62` |
 
 ## Section C: Build configuration
@@ -607,19 +753,24 @@ Namespace `gpusims::vk`. Forward-declares `GLFWwindow*`. Wraps `VkSurfaceKHR` an
 ### C.1 Library target
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Defined at `CMakeLists.txt:187-210`:
 
 - **Target name:** `gpu_sims_common_cpp` (STATIC)
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Alias:** `gpusims::common_cpp` (`CMakeLists.txt:268`)
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Public include:** `${CMAKE_CURRENT_SOURCE_DIR}/include` via `BUILD_INTERFACE` generator expression (`CMakeLists.txt:213-215`). **All 19 headers under `include/gpusims/` are public.** No `INSTALL_INTERFACE` is declared — common-cpp can only be consumed as a CMake subdirectory, not installed as a standalone package.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Private include:** `${CMAKE_CURRENT_SOURCE_DIR}/src` (`CMakeLists.txt:218-220`) — internal `.cpp` cross-references.
 
 ### C.2 Link surface
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Public link deps (consumers inherit) at `CMakeLists.txt:225-234`:
 
 | Target | Source |
@@ -634,6 +785,7 @@ Public link deps (consumers inherit) at `CMakeLists.txt:225-234`:
 | `Threads::Threads` | system |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Private link deps at `CMakeLists.txt:237-240`:
 
 | Target | Source |
@@ -646,11 +798,14 @@ Private link deps at `CMakeLists.txt:237-240`:
 | Option | Default | Compile-time define when enabled |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `GPU_SIMS_USE_OPENVDB` | OFF | `GPU_SIMS_HAVE_OPENVDB=1` (PUBLIC; `CMakeLists.txt:246-248`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `GPU_SIMS_USE_ALEMBIC` | OFF | `GPU_SIMS_HAVE_ALEMBIC=1` (PUBLIC; `CMakeLists.txt:250-253`) |
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Both gates check for the corresponding CMake target's presence; absent target raises a `FATAL_ERROR` with installation hint (`optional_deps.cmake:23-30` for OpenVDB, `:55-103` for Alembic). When OFF, the corresponding `.cpp` files compile to stubs that log a once-only warning and return `false` from `isAvailable()` (verified at B.1, B.9 and Section H.1).
 
 ### C.4 Other compile-time defines
@@ -658,8 +813,10 @@ Both gates check for the corresponding CMake target's presence; absent target ra
 | Define | Value | Set at |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `GPU_SIMS_VALIDATION_LAYERS` | 1 in Debug, 0 in Release | `CMakeLists.txt:256-259` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `GPU_SIMS_VULKAN_API_VERSION` | `VK_API_VERSION_1_3` | `CMakeLists.txt:262-264` |
 
 ### C.5 Vendored dependency anchors
@@ -669,20 +826,28 @@ All FetchContent declarations in `cmake/deps.cmake` and `cmake/optional_deps.cma
 | Dep | Pin | Location |
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | glfw | tag 3.4, GIT_SHALLOW | `deps.cmake:521-527` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | glm | tag 1.0.1, GIT_SHALLOW | `deps.cmake:535-540` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | spdlog | tag v1.14.1, GIT_SHALLOW | `deps.cmake:549-554` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | nlohmann_json | tag v3.11.3, GIT_SHALLOW | `deps.cmake:562-567` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | vma | tag v3.1.0, GIT_SHALLOW | `deps.cmake:572-577` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | shaderc | tag v2024.3, GIT_SHALLOW (special handling: `git-sync-deps` invocation, generator-expression patching of `third_party/CMakeLists.txt`) | `deps.cmake:594-672` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | imgui | tag v1.91.5-docking, GIT_SHALLOW | `deps.cmake:606-611` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | Alembic | SHA `c254caf2705ebf5271408dd37a091aa379258a38` (v1.8.10), GIT_SHALLOW | `optional_deps.cmake:463-467` |
 
 The Alembic SHA `c254caf2...` is real and legitimately attached to Alembic v1.8.10 in this file. **See Section P.2 for a cross-workstream note about how this same SHA appears erroneously attached to a different upstream project (SPlisHSPlasH) elsewhere in the repo.**
@@ -690,13 +855,17 @@ The Alembic SHA `c254caf2...` is real and legitimately attached to Alembic v1.8.
 ## Section D: Vulkan API commitment
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `GPU_SIMS_VULKAN_API_VERSION=VK_API_VERSION_1_3` is set PUBLIC at `CMakeLists.txt:262-264`. The Vulkan 1.3 commitment surfaces in several places consumers should know about:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Dynamic rendering used directly (no `-KHR` suffix on `vkCmdBeginRendering`) — `renderer.hpp:46-47` documentation refers to core API.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Synchronization 2 used directly — `frame.hpp:54-58` `memoryBarrier` takes `VkPipelineStageFlags2` / `VkAccessFlags2`.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Vulkan 1.3 device feature gating via `VkPhysicalDeviceVulkan13Features` — confirmed in the Phase-11 subgroup-size-control addition at `context.cpp:289+` (see Section E.1).
 
 No `1.4` / future-version code paths visible. Sims requiring features beyond 1.3 would need new surface.
@@ -715,24 +884,34 @@ Surface added:
 | Where | Symbol |
 |---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `context.hpp:46` | `ContextCreateInfo::enable_subgroup_size_control` (default false) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `context.hpp:84-87` | `Context::subgroupSizeMin/Max/requiredSubgroupSizeStages/Enabled` accessors |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `context.hpp:124-127` | Backing private fields `subgroup_size_min_`, `_max_`, `_stages_`, `_control_enabled_` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `compute_pipeline.hpp:51` | `ComputePipelineDesc::required_subgroup_size` (default 0) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `compute_pipeline.hpp:52` | `ComputePipelineDesc::require_full_subgroups` (default false) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `compute_pipeline.hpp:40-50` | The load-bearing INVARIANT comment (catalogued at B.11) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `compute_pipeline.cpp:102-120` | pNext-chain assembly in `ComputePipeline::create` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `compute_pipeline.cpp:193-207` | pNext-chain assembly in `ComputePipeline::reload` (paired; both paths) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `context.cpp:289-315` | Pre-flight feature-support check inside `createDevice` (fail-loud if device lacks `VkPhysicalDeviceVulkan13Features::subgroupSizeControl`) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `context.cpp:116-138` | `VkPhysicalDeviceSubgroupSizeControlProperties` query and caching in `Context::Context` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `examples/hello/main.cpp:143-228` | `runSubgroupSizeControlSmokeTest()` reachable via `--test-subgroup-size` flag (~88 new lines) |
@@ -752,12 +931,16 @@ Common-cpp surface added (diff confined to 4 files, +46 lines / −6 lines):
 | Where | Symbol |
 |---|---|
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `buffer.hpp:54-59` | `Buffer::readback(Context&, void* dst, size_t bytes, size_t offset = 0)` declaration |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `buffer.cpp:135-155` | `Buffer::readback` implementation: allocates `HostVisibleRandom` staging buffer, `vkCmdCopyBuffer` via `ctx.runOneShot`, `vmaInvalidateAllocation`, `std::memcpy` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `graphics_pipeline.hpp:43-53` | Six new `GraphicsPipelineDesc` fields: `src_color_blend_factor`, `dst_color_blend_factor`, `color_blend_op`, `src_alpha_blend_factor`, `dst_alpha_blend_factor`, `alpha_blend_op` (defaults preserve historical hardcoded behavior) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `graphics_pipeline.cpp:131-141` | The hardcoded blend assignments inside `buildPipeline()` rewritten to read from `desc` |
 
 The commit message explicitly catalogues these as "In-flight common-cpp surface additions (authorized per Phase 11 spec § 0 hard rule 6)." Both follow the **sentinel-default backward-compatibility pattern** banked at `9e0ca2f`'s commit message item 2: new fields with defaults that preserve existing behavior; conditional construction fires only when non-default values are requested.
@@ -768,6 +951,7 @@ The commit message explicitly catalogues these as "In-flight common-cpp surface 
 > **VERDICT: CONFIRMED** — diff confined entirely to `common/common-cpp/cmake/optional_deps.cmake` (+56/−9).
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Build-config change: Alembic block reworked from `find_package(Alembic CONFIG)` against a system install to FetchContent against a pinned SHA. Driving factor documented in the commit message and embedded comment at `optional_deps.cmake:435-453`: "`libalembic-dev` was dropped from Ubuntu 24.04 noble after Ubuntu 22.04 jammy."
 
 ### E.4 Commit `596550d` — Alembic build hardening (Wed May 13 17:30:32 2026)
@@ -776,6 +960,7 @@ Build-config change: Alembic block reworked from `find_package(Alembic CONFIG)` 
 > **VERDICT: CONFIRMED** — diff confined to `optional_deps.cmake` (+13) and `alembic_writer.cpp` (+2/−2).
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Source fix: `alembic_writer.cpp:63-65` had a most-vexing-parse where `OPointsSchema::Sample sample(T1(...), T2(...))` parsed as a function declaration. Fixed by switching to brace-init. **The commit message attaches a structural-debt diagnosis worth quoting directly:**
 
 > This bug shipped in Phase 1 ("real impl" code) but went undetected for 10 phases because GPU_SIMS_USE_ALEMBIC=OFF was the default and no sim had enabled it. Phase 11 sph-water is the first consumer; the bug surfaces in c478ccd's CI.
@@ -798,6 +983,7 @@ Single-line diff:
 Quadruples the per-frame profiler scope capacity. Cited at probe 1 (Layer 1) Section D — Layer 1 already noticed the file was in the modified set but did not diff it.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Consumer impact:** `kMaxPasses` is `static constexpr` and used internally (`gpu_profiler.cpp:14` for `kQueriesPerFrame = 2 * kMaxPasses`; per-frame allocation size). The constant is not part of the consumer-facing API surface — sims do not index against it — but a sim that calls `profiler.scope(...)` more than 64 times in a frame would have hit the overflow guard at `gpu_profiler.cpp:57` (`if (f.pass_count >= kMaxPasses)` → `logWarn` and ignored pass). The bump to 256 raises that ceiling.
 
 ### F.2 `src/gpu_profiler.cpp` — `readBackResults` frame-index fix
@@ -810,6 +996,7 @@ Single-line diff inside `GpuProfiler::beginFrame`:
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The original called `readBackResults(current_frame_idx_)` immediately before the same frame's query pool was about to be reset (next-line `vkCmdResetQueryPool` at `gpu_profiler.cpp:42-44`), which means it read either uninitialized queries (first invocation) or queries from the same frame that was about to be reset (subsequent invocations) — neither yields valid timestamps. The new code reads the *next* in-flight frame's index modulo `kMaxFramesInFlight=2`, which selects the OLDEST in-flight frame — the one whose GPU work most plausibly completed by now.
 
 **This is a correctness fix to behavior that landed in Phase 1.** `gpu_profiler.cpp` has been emitting wrong timestamps since the initial commit `3a64055`. Any sim that consumed `GpuProfiler::lastResults()` for performance characterization was operating on bad data.
@@ -827,6 +1014,7 @@ Single-line diff inside `Context::createDevice`, immediately after the `f13.subg
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 This completes the subgroup-size-control feature shipped in `9e0ca2f`. Without `computeFullSubgroups` enabled in the Vulkan 1.3 features chain, the `VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT` flag (which `compute_pipeline.cpp` sets when `desc.require_full_subgroups = true` — see `compute_pipeline.cpp:115-117` and `:205-207`) can be rejected by some Vulkan drivers as feature-not-enabled.
 
 **The original `9e0ca2f` commit shipped incomplete.** A consumer requesting `require_full_subgroups=true` would either succeed (if the driver was lenient) or fail with a generic Vulkan error (if strict). With the uncommitted fix landed, the feature pairing is correct.
@@ -842,11 +1030,14 @@ This completes the subgroup-size-control feature shipped in `9e0ca2f`. Without `
 Two parallel synchronous-readback paths are exposed:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `Buffer::readback(Context&, void* dst, size_t bytes, size_t offset = 0)` at `buffer.hpp:59` — landed in `1f02fc1` (Section E.2). Implementation at `buffer.cpp:135-155`: allocates a `HostVisibleRandom` staging buffer, does `vkCmdCopyBuffer` inside `ctx.runOneShot`, `vmaInvalidateAllocation`, `std::memcpy` to dst.
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `Image::readback(void* dst, size_t bytes)` at `image.hpp:73` — older; commit-blame not attributed by phase-5b's commit window. Header docblock states image must currently be in `VK_IMAGE_LAYOUT_GENERAL`; uses transient staging buffer; synchronous via implicit waitIdle.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Both rely on `Context::runOneShot` (`context.hpp:95`), which the header documents as "Convenience: allocate a transient command buffer, run callback, submit, **wait**, and free." The synchronous-blocking semantics flow from `runOneShot`'s wait.
 
 ### G.2 Existing precedent for async-equivalent readback
@@ -854,9 +1045,11 @@ Both rely on `Context::runOneShot` (`context.hpp:95`), which the header document
 `GpuProfiler` already implements asynchronous query readback for timestamp queries. The pattern:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Two `VkQueryPool` slots, indexed by `frame_in_flight_idx % kMaxFramesInFlight` (`gpu_profiler.hpp:102`).
 - Each frame's `beginFrame` calls `readBackResults` for *a different* in-flight slot — specifically the slot most likely to have completed (after F.2's fix, the `(current + 1) % kMaxFramesInFlight` slot).
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Results "lag by `kMaxFramesInFlight` frames" (gpu_profiler.hpp:41-43 docblock) — that lag is invisible at 60fps and avoids pipeline stalls.
 
 **This is a proven async-readback template.** Convergence-check infrastructure could mirror the same ring-buffered pattern: per-frame staging buffers (sized for the convergence-scalar reads), per-frame fence checks, results consumed N frames after submission. The GpuProfiler implementation in `gpu_profiler.cpp` (190 lines) is the canonical reference and is well-contained.
@@ -870,6 +1063,7 @@ What async-readback surface for `Buffer` would look like (Layer 2 sketches the s
 - Or a polling-handle pattern: `auto handle = buffer.readbackAsync(...)`; consumer calls `handle.poll()` each frame until the data is ready.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 These are sketches — not API proposals. The point for the inventory: **the building blocks already exist** in `Frame` (deletion queue for fence-deferred work, `gpu_profiler.hpp:42-43` already documents the lag semantics consumers must accept). Async readback is a natural extension of the existing pattern, not an architectural break.
 
 ### G.4 What this implies for the audit-baseline-before-commit-8 goal
@@ -883,6 +1077,7 @@ When Layer 1 proposes the convergence-check infrastructure's common-cpp surface 
 ### H.1 Two "stub" labels that no longer match implementation
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Both `alembic_writer.hpp:13-16` and `vdb_writer.hpp:11-15` describe themselves as Phase-1 stubs. Per phase-5c probe (head of `.cpp` files + grep for `#if GPU_SIMS_HAVE_*`):
 
 - `alembic_writer.cpp` defines a `RealParticleWriter : public ParticleWriter` class (line 102) behind `#if GPU_SIMS_HAVE_ALEMBIC`. First consumed by Phase 11 sph-water.
@@ -893,6 +1088,7 @@ Both implementations have been "real" since they were written. The "stub" labels
 ### H.2 `ImGuiInit::descriptor_pool` ownership inconsistency
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 At `imgui_setup.hpp:37`, the field comment reads:
 
 ```
@@ -900,6 +1096,7 @@ VkDescriptorPool  descriptor_pool;   // common-cpp creates and owns this
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 At `imgui_setup.hpp:44-46`, the `initImGui` function comment reads:
 
 ```
@@ -908,6 +1105,7 @@ At `imgui_setup.hpp:44-46`, the `initImGui` function comment reads:
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 At `imgui_setup.hpp:60-62`, the `createImGuiDescriptorPool` free function reads:
 
 ```
@@ -962,6 +1160,7 @@ When Layer 1's commit 8 (convergence-check infrastructure) needs new common-cpp 
 ### P.4 No `INSTALL_INTERFACE` declared in CMake
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `CMakeLists.txt:213-215` uses only `BUILD_INTERFACE`:
 
 ```
@@ -975,11 +1174,13 @@ Means: common-cpp is consumable as a CMake subdirectory (which is how every Stac
 ### P.5 `gpu_profiler.hpp` couples Renderer to the profiler header
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `renderer.hpp:8` includes `gpusims/gpu_profiler.hpp` solely for `kMaxFramesInFlight`. The `Frame frames_[kMaxFramesInFlight]` array (`renderer.hpp:66`) and the `framesInFlight()` accessor (`renderer.hpp:61`) both depend on this. This is a tight cross-header coupling that could be refactored by hoisting `kMaxFramesInFlight` to a smaller dedicated header — but the convention "Renderer and GpuProfiler must agree on `kMaxFramesInFlight` exactly" (`gpu_profiler.hpp:15-16` comment) is structurally correct, and the present include is the simplest way to enforce it. Worth noting; not flagged as debt.
 
 ### P.6 `kMaxFramesInFlight` is fixed at 2 with no path to runtime configuration
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `gpu_profiler.hpp:16`: `inline constexpr std::uint32_t kMaxFramesInFlight = 2;` — not a CMake option, not a template parameter. Any sim that wants 3-deep pipelining would require changing this constant repo-wide. Likely intentional (single-source-of-truth) but worth catalogueing.
 
 ### P.7 Hello-world example exercises most of the public surface

@@ -36,6 +36,13 @@ _KNOWN_CATEGORIES = (
     "cat2-stack-c-unused",
     "cat2-stack-b-unused",
     "cat2-stub-label-stale",
+    # v1.2 A.3 bare-path categories (longer names first so they match
+    # before "other-cat1" which is a substring of "other-cat1-bare-path").
+    "audit-bare-path",
+    "retro-bare-path",
+    "toolkit-doc-bare-path",
+    "deferred-upstream-bare-path",
+    "other-cat1-bare-path",
     "other-cat1",
 )
 

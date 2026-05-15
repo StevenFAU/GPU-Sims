@@ -155,6 +155,7 @@ their introducing authors:
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
   bare paths `chapter13/cpu/LBM.cpp:97`, `chapter13/cpu/LBM.cpp:97`,
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `main.cpp:1168-1279`. Owner: Phase 12 LBM author
   (`c5955d3 setup(phase12): land architect-1 spec`).
 - 1 in
@@ -182,18 +183,22 @@ lines sit inside accumulated cross-phase reflection prose covering:
 - Line 559-560: narrative about a Phase 10 polish-4 episode (Taichi
   GGUI cursor-y origin issue in Lenia/MPM), with a bare-path
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   citation `main.py:306-318` missing the `hybrid-particle-grid/mpm-multimaterial/python/`
   prefix.
 - Line 592-593: narrative about a Phase 11 sph-water mid-revision
   probe (StateWriter .bin auto-append convention), with a bare-path
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   citation `state_writer.cpp:57` missing the
   `common/common-cpp/src/` prefix.
 - Line 660 (×3): narrative about a Phase 8.5.1 Stack C episode
   (createDebugMessenger name-collision in the Vulkan Debug-job CI),
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   with bare-path citations `context.hpp:78`, `context.cpp:116`,
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `context.cpp:202` missing the `common/common-cpp/include/gpusims/vk/`
   and `common/common-cpp/src/vk/` prefixes.
 

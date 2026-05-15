@@ -3,6 +3,7 @@
 Mode: HARD_FAIL.
 
 # integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
+# integrity-allow: cat1.bare-path; deferred-upstream-bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md); n/a
 Catches citations like `LeniaNDK.py:329-335` against the unvendored
 Chakazul/Lenia upstream. The fix is either (a) vendor and register the
 upstream, or (b) rewrite the citation to remove the upstream-version

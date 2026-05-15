@@ -137,12 +137,15 @@ The user's visual smoke results will tell us which of these is most urgently nee
 Trace:
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `compute_aij_pj.comp.glsl:121-123` applies `aij_pj_sum *= V_i; if (solver_mode == 0) aij_pj_sum *= dt*dt; else aij_pj_sum *= dt;` before writing `aij_pj_scratch[gid]`. This matches upstream `aij_pj *= h * h` (density-pass at `TimeStepDFSPH.cpp:582`) and `aij_pj *= h` (divergence-pass at `:656`).
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `jacobi_update_density.comp.glsl:55` reads `aij_pj_scratch[gid]` as-is, computes `s_i = 1.0 - density_adv`, then `p_new = max(p_i - jacobiRelax * (s_i - aij_pj) * alpha_over_rho2_i, 0.0)`. Matches upstream `:603-606`.
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `jacobi_update_divergence.comp.glsl:55` reads `aij_pj_scratch[gid]` as-is, computes `s_i = -density_change`, same Jacobi update structure. Matches upstream `:674-692`.
 
 No double-scaling defect. The commit-2b audit scrutiny item is resolved.
@@ -150,6 +153,7 @@ No double-scaling defect. The commit-2b audit scrutiny item is resolved.
 ### F.2 — Upstream line-range correction
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The original prompt listed `TimeStepDFSPH.cpp:1335-1349` for `compute_aij_pj`'s Akinci branch and `:1401-1412` for `compute_pressure_accel`'s — these are **swapped** in the actual upstream:
 
 - `:1335-1344` is the Akinci branch of **`computePressureAccel`** (`a = p_rho2_i * grad_p_j` pattern).

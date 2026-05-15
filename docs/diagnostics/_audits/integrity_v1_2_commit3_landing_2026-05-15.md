@@ -18,6 +18,7 @@ Adds the same `if f.suppressed: continue` guard the github-output
 branch carries (line 134) to the default human-output `else` branch
 (now lines 147-148) in `tools/integrity/integrity/runner.py`. Pre-fix,
 suppressed findings rendered as `HARD_FAIL:` stanzas even though they
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 were intentionally silenced by `integrity-allow:` annotations — the
 asymmetry was original to commit `fc20ef7` which added the
 suppressed-filter only to the github branch.
@@ -81,6 +82,7 @@ post-A.3 reality is a separate follow-up (bank as v1.3 candidate).**
 
 ## § D. Cross-references
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Probe § D.2 — verbatim `runner.py:141-145` pre-fix content.
 - Probe § D.5 — asymmetry origin in commit `fc20ef7`.
 - Probe § A.2 / § D.4 — original summary/stanza-mismatch observation.

@@ -204,6 +204,7 @@ named classifier rule.
 #### Decision 6 — P1.6 fix shape
 
 Per probe § D.2 verbatim, the human-output `else` branch is at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `runner.py:141-145`. The fix is to insert the same
 `if f.suppressed: continue` guard the github branch uses at line 134.
 Three lines added: a one-line comment explaining the asymmetry origin
@@ -215,6 +216,7 @@ to avoid bloating `test_runner.py`.
 #### Decision 7 — P1.7 fix shape
 
 Per probe § E.3. Replace exactly 4 lines of the module docstring
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (`stub_label_stale.py:15-18`) with text matching the in-function
 docstring at lines 96-105. No code changes. No test changes (no
 behavior change; the in-function docstring already correctly
@@ -327,6 +329,7 @@ def is_live_source_path(file_path: str) -> bool:
 ```
 
 **Modification B — extend `apply_annotations` signature and gate
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 findings.** The function currently lives at `grandfather.py:265-330`
 (probe § F.3). Modify the signature and add a filter step.
 

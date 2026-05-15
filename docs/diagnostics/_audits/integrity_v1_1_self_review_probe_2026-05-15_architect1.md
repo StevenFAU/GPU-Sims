@@ -61,14 +61,17 @@ integrity: 2 pass, 0 soft-warn, 4 hard-fail, 1007 suppressed
 1007 suppressed", which matches the post-retro audit's expected state. But the
 HARD_FAIL stanzas printed below the summary include findings that are in fact
 <!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 *suppressed* (e.g. `CHANGELOG.md:92` carries an `integrity-allow:` annotation
 per the grandfather sweep; `common/common-py/examples/hello/hello/main.py:31`
 is in `cat2-stack-d-unused`/`other-cat1` etc.). The strict-mode human-readable
 renderer in `runner.py:_emit_human_summary` appears to iterate all findings
 and emit each as a HARD_FAIL stanza regardless of `f.suppressed` (see
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `runner.py:141-145` — the `else` branch has no suppression filter, in
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 contrast with the `github` branch at `runner.py:133-139` which checks
 `if f.suppressed: continue`).
 
@@ -152,6 +155,7 @@ Classification:
 - `c1a257d` — **TOUCHED-CAT1-SCANNABLE**: edits a `.glsl` shader, a `.cpp`
   source, and an audit-doc under `docs/diagnostics/_audits/`. All three are
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   cat1-scannable per `intra_repo.py:34` SCAN_EXTENSIONS and exclusion rules.
 - `cdad2e2` — **TOUCHED-CAT1-SCANNABLE**: edits a `.cpp` source and an
   audit-doc.
@@ -1615,6 +1619,7 @@ described as "seed history" never actually seeded the file; it created an
 empty-array file. Subsequent CLI invocations with `--no-history-append`
 correctly don't append; CLI invocations *without* `--no-history-append`
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 should append (per `runner.py:170-173`), but no such invocation has landed
 a commit modifying the file.
 
@@ -1968,6 +1973,7 @@ Retro § 5.1 lists 4 outstanding live-source findings as of retro time:
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 26 | (LBM doc) | `chapter13/cpu/LBM.cpp:97` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 27 | (LBM doc) | `main.cpp:1168-1279` |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 28 | (sph-water shader) | `SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-75` |
@@ -1975,6 +1981,7 @@ Retro § 5.1 lists 4 outstanding live-source findings as of retro time:
 Current outstanding (§ A.2) lists exactly the same 4 (line numbers in
 `phase12_lattice_boltzmann.md` are 203, 351, 1276 for rows 25-27;
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `compute_boundary_volume.comp.glsl:7` for row 28). **CONFIRMED unchanged.**
 
 #### A.3 leverage on outstanding findings (INFERENCE)
@@ -1998,6 +2005,7 @@ against the registry (§ B.11 source) and `references/` tree:
   exists at `references/SPlisHSPlasH/SPlisHSPlasH/BoundaryModel_Akinci2012.cpp`.
   **CATCHABLE by A.3.**
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Row 27: `main.cpp:1168-1279` — basename `main.cpp` is **ambiguous**:
   appears in `references/lbm-principles-practice/chapter13/cpu/main.cpp`,
   `references/lbm-principles-practice/chapter13/cpu_intro/main.cpp`,
@@ -2020,6 +2028,7 @@ highest-leverage **still holds**, but with a precise figure of 3/4 not 4/4.
 ### E.5 — § 3.4 / § 5.3 own-source findings — CONFIRMED
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `test_suppression_fence.py:3` and `:23` were annotated in commit
 `a42085a`. The file at probe time has annotations at lines 3 and 23 — see
 the earlier verbatim dump in § D.3 (lines 3 + 23 each carry the inline
@@ -2110,8 +2119,10 @@ is 1 : 9.
 | docs/phase12_lattice_boltzmann.md:203 | `chapter13/cpu/LBM.cpp:97` | HYBRID-leaning-DISCIPLINE | Real upstream file, real upstream is registered, citation lacks `Krueger book-companion-code-2016` prefix. Author knew of the upstream — discipline. Not invented. |
 | docs/phase12_lattice_boltzmann.md:351 | (same) | HYBRID-leaning-DISCIPLINE | Same. |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | docs/phase12_lattice_boltzmann.md:1276 | `main.cpp:1168-1279` | DISCIPLINE-DRIFT-CLASS | Author elided context. Not fabricated — under-specified. |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | compute_boundary_volume.comp.glsl:7 | `SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-75` | DISCIPLINE-DRIFT-CLASS | Real upstream + registered; missing `SPlisHSPlasH 2.16.1` prefix. Discipline. |
 
 **4 of 4 outstanding hard-fails are DISCIPLINE-DRIFT or HYBRID-leaning. Zero
@@ -2275,6 +2286,7 @@ moved, and would need careful grandfather treatment.
 
 - **Live-source hard-fail prevention:** A.3 catches 3 of 4 current
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   outstanding hard-fails directly. The 4th (`main.cpp:1168-1279`) requires
   a more elaborate disambiguation pass.
 - **Backlog cost:** 164 upstream-bare + 290 intra-repo-bare = 454 matches
@@ -2290,9 +2302,11 @@ moved, and would need careful grandfather treatment.
 - **Line-range-only citations without colons.** Rare.
 - **Line-spanning citations** where the path is wrapped onto a separate
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   line (`SPlisHSPlasH\nBoundaryModel.cpp:42`). Already a v2 deferral per
   spec § 13 ("multi-line citation grammar").
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Citations to deleted files.** Bare path `gone.cpp:42` where no
   matching basename exists. Would fall into UNRESOLVABLE (currently 244
   matches). A.3 cannot rescue these without per-basename historical
@@ -2547,6 +2561,7 @@ Re-reading the retro for mechanically-checkable claims:
   entries). Already surfaced.
 - **§ 2.3 "appends per run unless `--no-history-append`":** Code at
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `snapshot.py:178-181` does append on every run when invoked without
   `--no-history-append`. But the file is git-tracked, so appends
   remain uncommitted until an author commits them. **INFERENCE:** the
@@ -2567,6 +2582,7 @@ Re-reading the retro for mechanically-checkable claims:
 ### L.2 — Toolkit behavior not discussed in retro
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **CLI flag `--no-history-append`** is documented in `runner.py:63-64`
   but appears only briefly in retro § 2.3. Coverage is adequate.
 - **`--state-snapshot` flag** is discussed in retro § 2.3; coverage
@@ -2670,6 +2686,7 @@ unsuppressed findings.
    mismatch surfaced in § L.2. Modest scope.
 5. **Strict-mode human-renderer fix** — emit HARD_FAIL stanzas only for
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    unsuppressed findings (§ A.1). One-line fix in `runner.py:141-145`.
 6. **History file seeding** — either remove the "seed" framing from the
    retro/docs, OR have `dbac051`-equivalent commit actually seed one

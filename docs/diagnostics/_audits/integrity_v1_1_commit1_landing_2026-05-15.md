@@ -131,6 +131,7 @@ integrity: 1 pass, 0 soft-warn, 0 hard-fail, 2 suppressed
 ```
 
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Both findings on `alembic_writer.hpp:13` and `vdb_writer.hpp:12` are
 suppressed by the grandfather annotations inserted by the sweep.
 

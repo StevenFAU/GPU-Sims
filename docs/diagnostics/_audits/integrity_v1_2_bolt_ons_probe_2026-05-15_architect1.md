@@ -49,6 +49,7 @@ output captured to `/tmp/integrity_full.txt`. FACT:
 - **Total stanza header lines emitted** (`HARD_FAIL` / `SOFT_WARN`
   prefix at column 3): **1050** (= 4 hard-fail + 1046 suppressed).
 - **Exit code:** 1 (matches `EXIT_HARD_FAIL` per
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `runner.py:26` and `runner.py:191-192`).
 
 **First 20 stanzas (heads, lines 2-21 of output, verbatim):**
@@ -418,6 +419,7 @@ FACT — `grep -n "Algebraic_D3Q19" tools/integrity/docs/ground-truth-sources.md
 59:- **Algebraic_D3Q19:** Pure derivation; no vendored upstream. The
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Stanza body verbatim (`ground-truth-sources.md:36-44`):
 
 ```toml
@@ -460,10 +462,12 @@ ran and produced no findings (driver not built; graceful degrade
 returns empty findings, scored as pass).
 
 INFERENCE: the d3q19 dispatches return `0 pass` because
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `discover_checks()` (`runner.py:82-99`) filters
 `all_checks = [(cid, mod) for cid, mod in all_checks if cid == args.check]`
 and no module advertises any of the three CHECK_IDs. The filter
 returns an empty list, `run_checks` returns no findings, and the
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 pass count from `runner.py:182-183` counts zero registered
 checks. This confirms FACT: the three CHECK_IDs are not wired
 through the discovery surface.
@@ -496,6 +500,7 @@ Matches the addendum § 4.3 claim: setup-2 (`0db9c73`).
 
 FACT: the registration shape is a module-level
 `REGISTERED_CHECKS` list of `(CHECK_ID, module)` tuples.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `runner.py:93-94` imports this list.
 
 ### C.2 — `cat3_numerical/checks/cubic_kernel.py` (99 LOC) — check module
@@ -804,6 +809,7 @@ FACT — `grep -n` results:
 
 ### D.2 — Confirmed asymmetry between github and human branches
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT — `emit_output` verbatim (`runner.py:116-145`):
 
 ```python
@@ -845,6 +851,7 @@ FACT: the `github` branch (lines 132-140) calls
 `for f in findings` without any suppressed filter. Asymmetry
 confirmed.
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT — `_emit_human_summary` (`runner.py:148-154`):
 
 ```python
@@ -860,11 +867,13 @@ FACT — `_emit_human_summary` (`runner.py:148-154`):
 This function uses the `RunSummary` counts which themselves are
 correctly computed from `summary.hard_fails = sum(1 for f in
 findings if f.mode == FailureMode.HARD_FAIL and not
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 f.suppressed)` (`runner.py:185-186`). The summary numbers are
 right; only the stanza dump in the `else` branch is wrong.
 
 ### D.3 — `--output` flag definition
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT — `runner.py:57-58`:
 
 ```python
@@ -920,31 +929,45 @@ default branch. No regression — original-shape defect.
 
 FACT — actual current line numbers (this probe):
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `emit_output` definition: `runner.py:116`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `if args.output == "github":` branch start: `runner.py:132`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `if f.suppressed: continue` (in github branch): `runner.py:134`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `else:` branch start: `runner.py:141`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `_emit_human_summary(summary)`: `runner.py:142`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `for f in findings:` loop in else branch: `runner.py:143`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - The stanza emit lines: `runner.py:144-145`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `_emit_human_summary` definition: `runner.py:148`
 
 Prior citations:
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **9add149 commit message** says `runner.py:893`. Off by ~750
   lines — does not match any line in the current 198-LOC file.
   Likely a copy/paste artifact from a different file or version.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Earlier scoping prompts** cited `runner.py:891-895` and
   `:898`. Same issue — file is 198 LOC; cannot match.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Addendum § 4.1** cites `runner.py:141-145` for the buggy
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   span. Actual current span is `runner.py:141-145` (the `else`
   block) with the `for f in findings:` at `:143` and the stanza
   writes at `:144-145`. **Matches.**
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Addendum § 5 P1.6** cites `runner.py:143-145` as the fix
   site (insert `if f.suppressed: continue` between `:143` and
   `:144`). Actual: yes — between `:143` (the `for f in findings:`)
   and `:144` (the first `sys.stdout.write`) is the natural
   insertion point. **Matches.**
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Self-review probe § A.1** cites `runner.py:141-145` for the
   else branch and `:133-139` for the github branch. Actual:
   `:141-145` else branch, `:133-139` github branch
@@ -954,6 +977,7 @@ Prior citations:
 
 INFERENCE: the addendum and self-review-probe citations are
 accurate. The 9add149 commit message and earlier scoping prompts
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 both reference `runner.py:893` — a stale citation that does not
 correspond to any current state of the file; spec drafting must
 not propagate that number.
@@ -964,6 +988,7 @@ not propagate that number.
 
 ### E.1 — Module docstring (lines 1-40)
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT verbatim (`stub_label_stale.py:1-40`):
 
 ```python
@@ -1008,6 +1033,7 @@ FACT — `grep -n "_resolve_impl_path\|def _resolve" tools/integrity/integrity/c
 163:            impl_path = _resolve_impl_path(header, repo_root)
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Function verbatim (`stub_label_stale.py:95-128`):
 
 ```python
@@ -1050,6 +1076,7 @@ Function verbatim (`stub_label_stale.py:95-128`):
 
 ### E.3 — Docstring-vs-code discrepancy
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT — the module-level docstring (`stub_label_stale.py:15-18`) says:
 
 > Sibling-impl resolution (batch-1-spec Decision 2):
@@ -1061,6 +1088,7 @@ The "relative path mirror" framing says: keep the directory
 component intact — `include/<sub>/<base>.hpp` maps to
 `src/<sub>/<base>.cpp` (the `<sub>` is preserved).
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT — the function-level docstring (`stub_label_stale.py:98-102`)
 says:
 
@@ -1074,6 +1102,7 @@ The "namespace-stripped" framing says: drop the first directory
 component — `include/gpusims/<rest>.hpp` maps to `src/<rest>.cpp`
 (the `gpusims/` is removed).
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT — the code (`stub_label_stale.py:117-123`):
 
 ```python
@@ -1116,17 +1145,23 @@ update site was the same edit session.
 
 FACT — actual line numbers (this probe):
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Module-level docstring: `stub_label_stale.py:1-25` (the
   drifted convention text is at lines 15-18).
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `_resolve_impl_path` def: `stub_label_stale.py:95`.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Function body: `stub_label_stale.py:95-128`.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - Namespace-strip block: `stub_label_stale.py:113-123`.
 
 Prior citations:
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Earlier scoping prompt** cited `stub_label_stale.py:644-677`
   for "the corrected logic". File is 195 LOC; cannot match.
   Stale.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **Addendum § 4.4** cites `stub_label_stale.py:15-18` for the
   module docstring (matches) and `95-128` for the function body
   (matches). Also cites `98-105` for the in-function docstring;
@@ -1203,6 +1238,7 @@ FACT — `grep -n "classify(" tools/integrity/integrity/grandfather.py`:
 322:        cls = classify(f)
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Call-site 1 (`grandfather.py:196`, in `render_annotation_line`):
 
 ```python
@@ -1213,6 +1249,7 @@ Call-site 1 (`grandfather.py:196`, in `render_annotation_line`):
 197	    categories = {c.category for _, c in classifications}
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Call-site 2 (`grandfather.py:322`, in `apply_annotations`):
 
 ```python
@@ -1241,6 +1278,7 @@ filtering before grouping avoids creating empty groups.
 
 FACT — file is 330 LOC. Selected dumps follow.
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `Finding` dataclass (`grandfather.py:23-28`):
 
 ```python
@@ -1252,6 +1290,7 @@ FACT — file is 330 LOC. Selected dumps follow.
 28	    message: str
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `Classification` dataclass (`grandfather.py:31-35`):
 
 ```python
@@ -1262,6 +1301,7 @@ FACT — file is 330 LOC. Selected dumps follow.
 35	    issue_ref: str
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `classify` function full body (`grandfather.py:38-125`):
 
 ```python
@@ -1587,9 +1627,13 @@ FACT — the 4 current unsuppressed HARD_FAIL findings (from
 
 | # | Path | Line | check_id | Citation in message |
 |---|---|---|---|---|
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 1 | `docs/phase12_lattice_boltzmann.md` | 203 | `cat1.intra-repo` | `chapter13/cpu/LBM.cpp:97` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 2 | `docs/phase12_lattice_boltzmann.md` | 351 | `cat1.intra-repo` | `chapter13/cpu/LBM.cpp:97` |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 3 | `docs/phase12_lattice_boltzmann.md` | 1276 | `cat1.intra-repo` | `main.cpp:1168-1279` |
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 4 | `particle-fluids/sph-water/shaders/compute_boundary_volume.comp.glsl` | 7 | `cat1.intra-repo` | `SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-75` |
 
 FACT — `classify(...)` results for each (sub-process invocation
@@ -1731,7 +1775,9 @@ Overlap with v1.2 bolt-ons:
 
 - P1.5: `cat3_numerical/checks/{__init__.py, d3q19_*}` — no
   overlap with A.3 work.
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - P1.6: `runner.py:141-145` — no overlap.
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - P1.7: `cat2_contracts/checks/stub_label_stale.py:1-25` — no
   overlap.
 - P1.8: reads `grandfather.py:Classification.category` and
@@ -1944,7 +1990,9 @@ the v1.2 bolt-on test additions (P1.5 → ~4-8 new tests, P1.6 →
 This probe sourced every line-number citation from
 `grep -n`/Read calls executed in this probe run. No line
 numbers carried forward from prompts. Discrepancies with prior
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 citations (e.g., `runner.py:893` in 9add149 commit message,
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `stub_label_stale.py:644-677` in earlier scoping) flagged as
 FACT discrepancies rather than propagated. Convention F holds
 for the probe-author side.

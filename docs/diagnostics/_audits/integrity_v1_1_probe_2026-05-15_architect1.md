@@ -246,8 +246,10 @@ No hits under `common/common-cpp/src/` or `common/common-web/src/`.
 | Label site | Label phrasing | Impl file | Non-comment LOC | Verdict |
 | --- | --- | --- | ---: | --- |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `alembic_writer.hpp:13` | "Phase 1 stub" | `src/alembic_writer.cpp` | 99 | **STALE** — canonical spec § 12 row 5 |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `vdb_writer.hpp:12` | "Phase 1 stub" | `src/vdb_writer.cpp` | 135 | **STALE** |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | `gpusims_common/vdb_writer.py:1/31/56` | "real-or-stub" (discriminator) | (same file) | 150 | NOT STALE — describes runtime mode |
@@ -320,14 +322,19 @@ Sampled 5 Stack D and 5 Stack C suppressions with `random.seed(42)`.
 | # | Symbol (file:line) | Refs found | Classification |
 | --- | --- | --- | --- |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 1 | `ParticleFrame.ids` (alembic_writer.py:51) | only Python decl; C++ struct field at `alembic_writer.hpp:26` (different stack) | TRUE-POSITIVE |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 2 | `ParticleFrame.positions` (alembic_writer.py:44) | kwarg call `examples/hello/main.py:223`; same-file docstring; no `.positions` field-read | TRUE-POSITIVE (canonical spec § 12) |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 3 | `CameraInputState.shift_held` (camera.py:57) | 7 `.shift_held` refs **all in C++** (sph-water:942, eulerian-smoke:444, rd3d:334, common-cpp src/camera.cpp:60, examples/hello/main.cpp:51, camera.hpp:19) | TRUE-POSITIVE — Python field has no Python consumer |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 4 | `CameraInputState` class (camera.py:35) | C++ consumers only; web TS `input.ts` is a comment-only reference | TRUE-POSITIVE |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 5 | `write_float_grid` (vdb_writer.py:61) | re-export in `__init__.py`; one self-call from `write_float_frame` (vdb_writer.py:112); no external consumer | TRUE-POSITIVE |
 
 ### F.2 Stack C (`cat2.public-symbol-used-c`) — 5 samples (FACT)
@@ -335,14 +342,18 @@ Sampled 5 Stack D and 5 Stack C suppressions with `random.seed(42)`.
 | # | Symbol (decl file:line) | Refs found | Classification |
 | --- | --- | --- | --- |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 1 | `StateReader::bufferMeta` (state_reader.hpp:39) | impl `state_reader.cpp:57`; one self-call in `.cpp:66`; TS twin `stateReader.ts:76` (Stack B) | TRUE-POSITIVE |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 2 | `Camera::fromJson` (camera.hpp:121) | **active consumers**: sph-water/main.cpp:2083, rd3d/main.cpp:766, examples/hello/main.cpp:377 | **FALSE-POSITIVE** |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 | 3 | `vk::Window::swapchain` (vk/window.hpp:57) | declaration only; zero `\.swapchain()` / `->swapchain()` / `::swapchain` call sites | TRUE-POSITIVE |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 4 | `Camera::resetArcball` (camera.hpp:100) | impl `camera.cpp:27`; TS twin `camera.ts:216` (Stack B); no C++ call site in src/, examples/, per-sim | TRUE-POSITIVE |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 5 | `vk::ShaderCompiler::compileFile` (vk/shader_compiler.hpp:51) | impl `shader_compiler.cpp:117`; **active callers**: `vk/compute_pipeline.cpp:70` and `:178`, `vk/graphics_pipeline.cpp:193` | **FALSE-POSITIVE** |
 
 ### F.3 Tallies (FACT)
@@ -398,6 +409,7 @@ inferred from each sim's README header.
 | `closed-form/mandelbulb-explorer` | `web/shaders/raymarch.frag.wgsl` (referenced from main.ts) | Distance-estimator raymarcher of the Mandelbulb iterated map (Daniel White 2009) | White (2009) cited in README; **not** registered | LOW — pure closed-form; DE at known reference points is trivially checkable per-pixel |
 | `closed-form/strange-attractors` | `web/shaders/integrate.compute.wgsl` (Stack B, WGSL) | RK4 over Lorenz / Aizawa / Thomas ODEs | Lorenz 1963 / Aizawa 1984 / Thomas 1999 cited in README; **not** registered | LOW — closed-form RK4 over published ODEs; per-particle state easy to hash |
 <!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `continuous-ca/lenia-fft` | `python/lenia_fft/main.py` + `python/lenia_fft/kernels.py` (Stack D, Python) | Bert Chan Lenia: FFT-convolution of state with quad4 kernel, Gaussian growth map, Euler update | Chakazul/LeniaNDK cited in `presets.py:11`; **intentionally unregistered** (test case for `cat1.unregistered-upstream`) | MEDIUM — per-cell state hashable; kernel polynomial closed-form; FFT-backend selection adds non-determinism for byte-exact compare |
 | `continuous-ca/neural-ca` | (unimplemented — README only) | Neural CA grow-from-seed (planned Stack D + B) | tracked only in spec sheet | N/A — not yet implementable |
 | `continuous-ca/reaction-diffusion-2d` | `web/shaders/rd_update.compute.wgsl` (Stack B, WGSL) | Gray-Scott PDE, 5-point Laplacian, forward Euler | Munafo / Pearson presets cited in README; **not** registered | LOW — Gray-Scott has analytic steady states (Turing instability boundary) + per-pixel hash |

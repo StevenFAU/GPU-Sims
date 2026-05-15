@@ -59,6 +59,7 @@ Codes match upstream entries.
 
 Reference: `Chakazul/Lenia` on GitHub (MIT). Polyring (multi-peak) creatures
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; deferred-upstream-bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md); n/a -->
 banked v1.1 with formula anchor at `LeniaNDK.py:329-335`.
 
 ## 6. Export paths
@@ -90,6 +91,7 @@ banked v1.1 with formula anchor at `LeniaNDK.py:329-335`.
 - Save-creature UX: v1.1.
 - Volumetric raymarch viewer: v1.1.
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.bare-path; deferred-upstream-bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md); n/a -->
 - Polyring kernel extension: v1.1+ (formula anchor at `LeniaNDK.py:329-335`).
 
 ## 10. References

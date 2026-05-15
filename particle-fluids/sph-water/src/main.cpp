@@ -2233,10 +2233,13 @@ int main(int argc, char** argv) {
         buildBoundarySpatialHashCpu(bp, rt.domainMin, rt.cellSize, axes,
                                     MAX_CELLS, morton, sorted_index, cell_starts);
 
-        tier.boundary_particles.uploadDirect(bp.data(), bp.size() * sizeof(glm::vec4));
-        tier.boundary_morton_codes.uploadDirect(morton.data(), morton.size() * sizeof(std::uint32_t));
-        tier.boundary_sorted_index.uploadDirect(sorted_index.data(), sorted_index.size() * sizeof(std::uint32_t));
-        tier.boundary_cell_starts.uploadDirect(cell_starts.data(), cell_starts.size() * sizeof(std::uint32_t));
+        // DeviceLocal buffers — stage(ctx, src, bytes) uses an internal
+        // host-visible staging buffer + vkCmdCopyBuffer. uploadDirect cannot
+        // target DeviceLocal memory (it dereferences mapped_ which is null).
+        tier.boundary_particles.stage(ctx,    bp.data(),           bp.size() * sizeof(glm::vec4));
+        tier.boundary_morton_codes.stage(ctx, morton.data(),       morton.size() * sizeof(std::uint32_t));
+        tier.boundary_sorted_index.stage(ctx, sorted_index.data(), sorted_index.size() * sizeof(std::uint32_t));
+        tier.boundary_cell_starts.stage(ctx,  cell_starts.data(),  cell_starts.size() * sizeof(std::uint32_t));
 
         // Pack uniform_sort_boundary (matches compute_boundary_volume.comp.glsl).
         struct alignas(16) BoundaryVolU {

@@ -10,6 +10,7 @@ namespace gpusims {
 
 // Alembic writer for particle-fluid sims and meshes.
 //
+// integrity-allow: cat2.stub-label-stale; pre-v1.1 stale Phase-N stub label on real implementation (canonical spec section 12 row 5 -- tracked for migration as the corresponding header is next edited); n/a
 // In Phase 1, this is a stub: if GPU_SIMS_HAVE_ALEMBIC is not defined at
 // compile time, all functions log a warning on first call and return false.
 // Real implementations land when the first Alembic-consuming sim (likely

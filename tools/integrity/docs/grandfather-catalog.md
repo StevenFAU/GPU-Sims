@@ -216,6 +216,29 @@ does not apply. Detection is precise.
 **Future treatment:** Per-symbol review as sims consume the API.
 Suppressions should dissolve as sim code wires the abstraction.
 
+### `cat2-stub-label-stale`
+
+**Pattern:** `cat2.stub-label-stale` findings -- `In Phase N, this is a stub:`
+labels where the corresponding implementation has more than 10 non-comment
+LOC.
+
+**Why grandfathered:** Two canonical cases exist in the repo as of v1.1
+landing: `common/common-cpp/include/gpusims/alembic_writer.hpp:11`
+(impl 99 non-comment LOC) and `common/common-cpp/include/gpusims/vdb_writer.hpp:12`
+(impl 135 non-comment LOC). Both labels were carried over from Phase 1
+when the surfaces were genuine stubs; subsequent Alembic and OpenVDB
+enablement work landed real implementations without revising the header
+labels. These are migration targets, not permanent suppressions.
+
+**Tracking:** Two entries. Both have known migration paths: when the
+headers are next edited for unrelated reasons, the "In Phase 1, this is
+a stub:" framing should be replaced with the runtime-mode discriminator
+shape used in the Stack D twins (e.g., `// Real-or-stub depending on
+GPU_SIMS_HAVE_ALEMBIC`).
+
+**Future treatment:** Remove suppression on each header when the
+header is next modified. Permanent suppressions are not expected.
+
 ## Suppression-annotation discipline
 
 Each suppressed finding has an inline annotation per spec § 3.2:

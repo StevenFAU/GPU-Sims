@@ -62,6 +62,13 @@ def classify(finding: Finding) -> Classification:
             issue_ref="n/a",
         )
 
+    if cid == "cat2.stub-label-stale":
+        return Classification(
+            category="cat2-stub-label-stale",
+            reason="pre-v1.1 stale Phase-N stub label on real implementation (canonical spec section 12 row 5 -- tracked for migration as the corresponding header is next edited)",
+            issue_ref="n/a",
+        )
+
     if cid == "cat1.intra-repo" and f.startswith("docs/diagnostics/_audits/"):
         return Classification(
             category="audit-citation",

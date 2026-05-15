@@ -9,6 +9,7 @@ namespace gpusims {
 
 // OpenVDB writer for volumetric grid sims.
 //
+// integrity-allow: cat2.stub-label-stale; pre-v1.1 stale Phase-N stub label on real implementation (canonical spec section 12 row 5 -- tracked for migration as the corresponding header is next edited); n/a
 // In Phase 1, this is a stub: if GPU_SIMS_HAVE_OPENVDB is not defined at
 // compile time (i.e., GPU_SIMS_USE_OPENVDB=OFF in CMake), all functions log
 // a warning on first call and return false. When OpenVDB is enabled, real

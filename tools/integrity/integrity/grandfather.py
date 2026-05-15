@@ -118,6 +118,45 @@ def classify(finding: Finding) -> Classification:
                 issue_ref="n/a",
             )
 
+    if cid == "cat1.bare-path" and f.startswith("docs/diagnostics/_audits/"):
+        return Classification(
+            category="audit-bare-path",
+            reason="audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path)",
+            issue_ref="n/a",
+        )
+
+    if cid == "cat1.bare-path" and f.startswith("docs/retro/"):
+        return Classification(
+            category="retro-bare-path",
+            reason="retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path)",
+            issue_ref="n/a",
+        )
+
+    if cid == "cat1.bare-path" and (
+        f == "docs/integrity-toolkit-spec.md"
+        or f.startswith("tools/integrity/docs/")
+        or f == "tools/integrity/README.md"
+    ):
+        return Classification(
+            category="toolkit-doc-bare-path",
+            reason="toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path)",
+            issue_ref="n/a",
+        )
+
+    if cid == "cat1.bare-path" and "LeniaNDK" in msg and "Chakazul" in msg:
+        return Classification(
+            category="deferred-upstream-bare-path",
+            reason="deferred-upstream bare-path citation (Chakazul/LeniaNDK pending vendoring decision per ground-truth-sources.md)",
+            issue_ref="n/a",
+        )
+
+    if cid == "cat1.bare-path":
+        return Classification(
+            category="other-cat1-bare-path",
+            reason="bare-path citation (other-cat1-bare-path; review per category in grandfather-catalog)",
+            issue_ref="n/a",
+        )
+
     return Classification(
         category="other-cat1",
         reason="grandfathered-pre-v1 (see grandfather-catalog other-cat1)",

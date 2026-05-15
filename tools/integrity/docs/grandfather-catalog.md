@@ -251,6 +251,73 @@ GPU_SIMS_HAVE_ALEMBIC`).
 **Future treatment:** Remove suppression on each header when the
 header is next modified. Permanent suppressions are not expected.
 
+### `audit-bare-path` (?)
+
+**Pattern:** `cat1.bare-path` findings in files under
+`docs/diagnostics/_audits/`.
+
+**Why grandfathered:** Audit reports cite repo files and upstream files
+by bare basename as a documentation convention. The v1.2 `cat1.bare-path`
+check requires fully-qualified paths or upstream-registry citations;
+audit-doc bare paths are append-only by the same convention as
+`audit-citation`. New audit reports may continue to cite bare paths
+with `integrity-allow:` annotations applied via the grandfather sweep.
+
+**Future treatment:** Permanent suppression on audit-doc paths. The
+v1.3 may revisit whether new audit reports should use full paths.
+
+### `retro-bare-path` (?)
+
+**Pattern:** `cat1.bare-path` findings in files under `docs/retro/`.
+
+**Why grandfathered:** Retro documents narrate cross-phase history and
+cite files by bare basename to keep prose readable. Same rationale as
+`audit-bare-path`.
+
+**Future treatment:** Permanent suppression on retro paths.
+
+### `toolkit-doc-bare-path` (?)
+
+**Pattern:** `cat1.bare-path` findings in `docs/integrity-toolkit-spec.md`,
+`tools/integrity/docs/**`, or `tools/integrity/README.md`.
+
+**Why grandfathered:** Toolkit-internal documentation cites toolkit
+modules by bare basename when discussing the toolkit's own
+implementation. Same rationale as `spec-grammar-example`.
+
+**Future treatment:** Permanent suppression on toolkit-doc paths.
+
+### `deferred-upstream-bare-path` (?)
+
+**Pattern:** `cat1.bare-path` findings whose message text contains
+both `LeniaNDK` and `Chakazul`.
+
+**Why grandfathered:** The Chakazul/Lenia upstream is not yet vendored
+per `tools/integrity/docs/ground-truth-sources.md` "Not yet registered"
+section. Citations to `LeniaNDK.py:<line>` are known-pending vendoring;
+once vendored, these will become valid registered-upstream citations.
+Suppressing under a named category (rather than `other-cat1-bare-path`)
+keeps the category-pool drain measurable.
+
+**Future treatment:** Remove suppression on each citation when the
+Chakazul upstream is registered.
+
+### `other-cat1-bare-path` (?)
+
+**Pattern:** `cat1.bare-path` findings not matching any of the four
+specific rules above.
+
+**Why grandfathered:** Fall-through bucket for bare-path findings in
+live-source paths (sim code, common-* code, phase specs under
+`docs/phase*.md`). These should be addressed by their introducing
+authors per the v1.1 batch-1 triage hybrid policy: live-source bare
+paths get attributed to authors and fixed, not swept.
+
+**Future treatment:** Each entry should resolve as its introducing
+author rewrites the citation. The category-count drain is the signal
+to monitor. P1.8 (grandfather-sweep live-source protection) ensures
+these aren't auto-swept in v1.2+.
+
 ## Suppression-annotation discipline
 
 Each suppressed finding has an inline annotation per spec § 3.2:

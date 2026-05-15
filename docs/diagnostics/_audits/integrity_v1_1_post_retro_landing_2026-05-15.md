@@ -174,7 +174,7 @@ and propose a rewrite to the registered-upstream-citation form.
 At post-retro-landing time, the real-repo strict gate showed 11
 hard-fails, not the 6 expected from the triage snapshot. Five new
 findings appeared in `project-state.md` (lines 559, 592, 660 ×3)
-between triage HEAD `a28e1d7` and post-retro HEAD `<step-2-SHA>`.
+between triage HEAD `a28e1d7` and post-retro HEAD `a42085a`.
 
 Content verification (read-only `view` at retro time): the cited
 lines sit inside accumulated cross-phase reflection prose covering:

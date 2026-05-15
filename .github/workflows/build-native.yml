@@ -5,11 +5,13 @@ on:
     paths:
       - 'CMakeLists.txt'
       - 'common/common-cpp/**'
+      - 'volumetric-grid/**'
       - '.github/workflows/build-native.yml'
   pull_request:
     paths:
       - 'CMakeLists.txt'
       - 'common/common-cpp/**'
+      - 'volumetric-grid/**'
       - '.github/workflows/build-native.yml'
   workflow_dispatch:
 

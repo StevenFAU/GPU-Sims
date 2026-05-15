@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.13.0] - Phase 12: lattice-boltzmann (Stack C volumetric-grid; D3Q19 BGK around a NACA airfoil)
+
+### Added
+- `volumetric-grid/lattice-boltzmann/` — second Stack C volumetric-grid sim. D3Q19 single-relaxation-time lattice Boltzmann method, ~610 MB f-state at the desktop tier (256×128×128). Three presets (NACA0012-LowRe, NACA0012-MedRe, NACA4412-MedRe), three resolution tiers (128³ laptop, 256×128×128 desktop, 512×256×256 capture).
+- GPU-seeded streamlines (~10k seeds × 64-position ring-buffer history) RK2-advected per render frame.
+- Sim-local velocity-magnitude volume raymarch (does NOT promote ES's `raymarch.frag.glsl` — that promotion is banked for consumer #3 of volume raymarch).
+- Optional OpenVDB velocity-field export via `gpusims::vdb::writeVec3Grid` (first real consumer post-Phase 8; gated at compile + runtime).
+- Capture format: `latticeBoltzmann` top-level meta key; new `frame_invariant` meta-field convention for the obstacle mask.
+- Integrity toolkit: new `[Algebraic_D3Q19]` registry pattern (algebraic-derivation ground-truth, no vendored upstream) at `tools/integrity/docs/algebraic/d3q19.md` with independent Python verification harness.
+- Reference: `[Krueger]` registry entry (`references/lbm-principles-practice/` at SHA `6e2c592f`, MIT) for BGK + halfway-bounce-back math patterns.
+
+### Notes
+- Boundary handling at v1: equilibrium-distribution inlet/outlet (first-order); free-slip ±Y/±Z side walls; halfway bounce-back at the airfoil. Zou-He second-order inlet/outlet banked for v1.1 with derivation doc + verification harness at `tools/integrity/docs/algebraic/zou_he_d3q19.md` (to be created).
+- Six Convention #8 architect-fabrications were caught by the 6-checkpoint protocol during Phase 12 execution before any reached production code; banked as retro item 9. The single-architect-plus-checkpoints model is functioning but the checkpoints are load-bearing.
+
+### Prep commits landed before substantive Phase 12
+- `8fe355b` — vendor `lbm-principles-practice` MIT reference at SHA `6e2c592f`.
+- `0db9c73` — `tools/integrity/docs/algebraic/d3q19.md` + Python verification harness + `d3q19_equilibrium.expected.json` + `[Algebraic_D3Q19]` registry entry. Includes a `load_registry` fix to skip entries without `vendor_root` (the algebraic registry pattern was documented but not loader-supported until this commit; surfaced as registry-consumer-#2 spec/loader drift).
+- `c5955d3` — architect-1 spec at `docs/phase12_lattice_boltzmann.md`.
+
+
 ## [0.12.0] - Phase 11: sph-water (Stack C particle-fluids flagship; first Alembic real-impl consumer)
 
 Stack C particle-fluids flagship. DFSPH-formulated Smoothed Particle Hydrodynamics water at 1M–4M particles, anchored to SPlisHSPlasH 1.8.10 at SHA `c254caf2705ebf5271408dd37a091aa379258a38`.

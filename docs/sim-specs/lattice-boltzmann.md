@@ -1,56 +1,74 @@
-# Lattice Boltzmann — Specification
+# lattice-boltzmann sim spec
 
-> **Status:** Specification pending — not yet drafted by the architect chat
-> **Category:** Volumetric grid
-> **Primary stack:** C (Native C++)
-> **Secondary stack(s):** —
-> **Target machine:** Desktop, A100 hero
-> **Folder:** [`volumetric-grid/lattice-boltzmann`](../../volumetric-grid/lattice-boltzmann/)
+> Phase 12. Stack C. Tier defaults: 256x128x128 desktop.
 
----
+## Goal
 
-## 1. Goal and audience
+Demonstrate incompressible-ish fluid flow around a NACA airfoil using
+the D3Q19 BGK lattice Boltzmann method. Headline visualization: live
+GPU-seeded streamlines plus a velocity-magnitude volume raymarch.
+Educational target: vortex-shedding regime around a low-Reynolds-number
+airfoil.
 
-What does this sim demonstrate? Who is the imagined viewer? What feeling should it produce?
+## Scale tiers
 
-## 2. Mathematical formulation
+| Tier label                  | Nx x Ny x Nz | f-state memory | Streamlines | Notes              |
+|-----------------------------|--------------|----------------|-------------|--------------------|
+| 128^3 (Laptop)              | 128x128x128  | ~150 MB        | 10k         | iGPU / laptop      |
+| 256x128x128 (Desktop)       | 256x128x128  | ~610 MB        | 10k         | RX 6800 XT default |
+| 512x256x256 (Capture)       | 512x256x256  | ~4.8 GB        | 10k         | Hero render only   |
 
-The actual equations being solved, with citations to canonical papers. Approximations explicitly listed and justified.
+## Presets
 
-## 3. Stack assignment and rationale
+| Preset                  | Airfoil   | alpha (deg) | u_inf  | tau    | Re (default tier) |
+|-------------------------|-----------|-------------|--------|--------|-------------------|
+| NACA0012 - Low-Re       | NACA0012  | 4.0         | 0.04   | 0.60   | ~80               |
+| NACA0012 - Med-Re       | NACA0012  | 8.0         | 0.06   | 0.55   | ~230              |
+| NACA4412 - Med-Re       | NACA4412  | 6.0         | 0.06   | 0.55   | ~230              |
 
-Which of A / B / C / D, and why this one over the alternatives. Rejected alternatives noted.
+## Controls
 
-## 4. Data structures and memory layout
+- WASD: camera. RMB-drag: look. Q/E: world-up/down. Shift: boost.
+- F5: save capture. F9: load latest.
+- Panel: presets, tiers, solver (tau, substeps), flow (|u_inf|, AoA),
+  render (toggles, exposure), streamlines (count, history), capture,
+  camera, stats.
 
-The buffers, textures, atlas formats, alignment requirements. Estimated VRAM consumption at each scale tier. (90% of GPU performance lives here.)
+## Capture format
 
-## 5. Per-frame compute pipeline
+Top-level meta key: `latticeBoltzmann`. Buffers: `density` (r32f),
+`velocity` (rgba16f), `obstacle_mask` (r8uint, `frame_invariant: true`).
 
-Sequence of GPU dispatches. Synchronization points. Read/write hazards. For complex pipelines, a diagram.
+f-state distribution functions NOT captured (size; recomputed from
+moments via equilibrium at F9 load).
 
-## 6. Interactive rendering approach
+## Render
 
-What's drawn each frame, with what shader pipeline. Camera type, UI elements, sliders, mouse interactions, hotkeys.
+- Volume raymarch of velocity-magnitude with colormap LUT. ~64-256
+  steps depending on tier.
+- GPU-seeded streamlines (~10k seeds x 64 ring-buffer history) RK2-
+  advected per render frame.
 
-## 7. Offline export path
+## Boundaries (v1)
 
-How state is captured to VDB or Alembic. The offline render pipeline (Blender? Houdini? OptiX standalone?). Targeted hero renders.
+- Inlet (-X) / outlet (+X): equilibrium boundary (first-order
+  accurate); Zou-He second-order banked for v1.1.
+- +-Y, +-Z faces: free-slip (specular reflection).
+- Interior airfoil: halfway bounce-back per
+  `tools/integrity/docs/algebraic/d3q19.md` § 5.
 
-## 8. Scale tiers
+## References
 
-- **Laptop iteration scale:** what runs at 60fps on integrated graphics or low-end discrete.
-- **Desktop flagship scale:** what runs at 60fps on the RX 6800 XT (or 2080 Ti).
-- **HPC hero scale:** what's possible on an A100 batch run, even if not real-time.
-
-## 9. Stretch goals
-
-Optional improvements that would push performance, quality, or interactivity further. Effort estimates.
-
-## 10. Engineering risks
-
-What's likely to be hard or slow. Where bugs typically hide. What needs profiling.
-
-## 11. References
-
-Canonical papers, reference implementations, prior-art demos. License check on any reference code consulted.
+- `references/lbm-principles-practice/` ([Krueger] registry entry; MIT,
+  SHA `6e2c592f`) — D2Q9 pattern reference for BGK equilibrium and
+  halfway bounce-back.
+- `tools/integrity/docs/algebraic/d3q19.md` ([Algebraic_D3Q19] registry
+  entry) — D3Q19 velocity set, weights, opposite-direction table,
+  equilibrium formula. Authoritative ground truth for this sim's
+  shader constants.
+- Zou & He 1997, *Phys. Fluids* 9, 1591 — Zou-He boundary conditions
+  (referenced for v1.1 Zou-He upgrade; not used in v1).
+- Hecht & Harting 2010, arXiv:0811.4593 — 3D Zou-He generalisation.
+- NACA Report 460, Jacobs/Ward/Pinkerton 1933 — NACA 4-digit airfoil
+  equations (used for the analytical SDF voxelisation in
+  `volumetric-grid/lattice-boltzmann/src/main.cpp`).

@@ -20,6 +20,7 @@ Every shipped sim writes **exactly one** sim-namespaced top-level key in `state.
 | boids-3d | 7 | B (TS) | `boids3d` |
 | eulerian-smoke | 8 | C (C++) | `eulerianSmoke` |
 | sph-water | 11 | C (C++) | `sphWater` |
+| lattice-boltzmann | 12 | C (C++) | `latticeBoltzmann` |
 
 Convention: camelCase, named after the sim. Future sims should follow this.
 
@@ -119,6 +120,18 @@ saveBuffer("pressure.bin",    {count: N, stride: 4, format: "r32f",     shape: [
 **Note:** buffer names include `.bin` extension here (`velocity.bin`, etc.), unlike the other sims which pass bare names (`u`, `v`, `trail`, `entities`). `StateWriter` appends `.bin` on bare names; passing `velocity.bin` produces a file literally named `velocity.bin.bin` on disk. Worth verifying against an actual capture — possible bug in Phase 8.
 
 Velocity buffer uses `rgba16f` despite being a 3-component vector — the 4th component is unused. Tier-1 should expose vector fields as `[G, G, G, 4]` and let Tier-2 vector-field diagnostics slice off the unused channel.
+
+### lattice-boltzmann (Phase 12, Stack C)
+
+Buffers:
+
+- `density` — `r32f`, count = Nx·Ny·Nz, stride = 4, shape = `[Nx, Ny, Nz]`. Bare name (no `.bin` extension — explicitly avoids the Phase 8 `.bin.bin` quirk).
+- `velocity` — `rgba16f`, count = Nx·Ny·Nz, stride = 8, shape = `[Nx, Ny, Nz]`. The 4th component is unused at v1; banked as a candidate for vorticity-magnitude or pressure in v1.1. Bare name.
+- `obstacle_mask` — `r8uint`, count = Nx·Ny·Nz, stride = 1, shape = `[Nx, Ny, Nz]`. Bare name. **Carries `"frame_invariant": true` in its meta** — the buffer is uploaded only on the first F5 of a session per preset; F9-load may skip the upload if the current-session preset's mask hash matches. First consumer of the `frame_invariant` convention; see `project-state.md` § 7 for the convention statement.
+
+Distribution functions f_i are **not captured**: at ~610 MB per F5 at the desktop tier they are too large for per-frame archival. F9 reloads `density` + `velocity`, then runs a single `init_equilibrium.comp.glsl` pass to re-derive f_i from the equilibrium-Maxwell-Boltzmann distribution at the loaded macroscopic state. This loses the non-equilibrium component (the part of f_i encoding stress / shear / vorticity at the F5 instant) but for the quasi-steady-state wind-tunnel regime Phase 12 targets, the re-equilibrated state is visually indistinguishable within a few substeps. Banked as v1.1 polish: optional `--capture-full-state` flag emitting f_i at ~10 GB/F5 for hero-render-archival use.
+
+Top-level meta block (`latticeBoltzmann`): `tierIndex`, `presetIndex`, `iteration`, `tau`, `substeps`, `uInfMagnitude`, `angleOfAttackDeg`, hash of obstacle mask, camera state. Spec reference: `docs/phase12_lattice_boltzmann.md` § 4.B.13.
 
 ---
 

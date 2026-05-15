@@ -57,6 +57,11 @@ def load_registry(repo_root: Path) -> dict[str, UpstreamRegistration]:
 
     registrations: dict[str, UpstreamRegistration] = {}
     for name, entry in parsed.items():
+        if "vendor_root" not in entry:
+            # Algebraic-source registration (no vendored upstream); not subject
+            # to anchor-SHA verification. Consumed by cat3 numerical checks via
+            # their own loader paths, not by this dataclass.
+            continue
         registrations[name] = UpstreamRegistration(
             name=name,
             anchor_version=str(entry["anchor_version"]),

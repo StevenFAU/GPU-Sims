@@ -1116,12 +1116,25 @@ int main(int argc, char** argv) {
 
     // ------------------------------------------------------------------------
     // Streamline seed initialization.
-    // Initialize all slots to (0,0,0, age=STREAMLINE_RESEED_AGE) so the very
-    // first streamline_advect call reseeds them.
+    // Initial age is randomized per streamline over [0, STREAMLINE_RESEED_AGE)
+    // so reseed events are uniformly distributed across the cycle. Without the
+    // randomization, all ~10k streamlines reseed in the same frame every
+    // STREAMLINE_RESEED_AGE frames (a visible burst). The position stays at
+    // (0,0,0) — the GPU's first advect pass will reseed each streamline to a
+    // valid inlet-slab position as its age crosses the threshold.
     // ------------------------------------------------------------------------
     auto seed_streamlines = [&]() {
         size_t total = size_t(rt.streamlineCount) * size_t(rt.streamlineHistory);
-        std::vector<glm::vec4> data(total, glm::vec4(0.0f, 0.0f, 0.0f, float(STREAMLINE_RESEED_AGE)));
+        std::vector<glm::vec4> data(total);
+        static std::mt19937 rng(12345u);
+        std::uniform_real_distribution<float> ud(0.0f, 1.0f);
+        const glm::vec3 pos(0.0f);
+        for (uint32_t i = 0; i < rt.streamlineCount; ++i) {
+            float initial_age = ud(rng) * float(STREAMLINE_RESEED_AGE);
+            for (uint32_t h = 0; h < rt.streamlineHistory; ++h) {
+                data[size_t(i) * rt.streamlineHistory + h] = glm::vec4(pos, initial_age);
+            }
+        }
         streamline_positions.stage(ctx, data.data(), data.size() * sizeof(glm::vec4));
         uint32_t zero = 0;
         streamline_head_index.stage(ctx, &zero, sizeof(uint32_t));
@@ -1148,6 +1161,11 @@ int main(int argc, char** argv) {
         rt.tau              = P.tau;
         rt.uInfMagnitude    = P.u_inf;
         rt.angleOfAttackDeg = P.angle_of_attack_deg;
+        // Auto-calibrate velmag colormap range to the preset's free-stream
+        // magnitude. Default Runtime values (0.0, 0.1) span too wide for
+        // u_inf in [0.04, 0.06], squashing wake-structure contrast.
+        rt.velmagMin = 0.0f;
+        rt.velmagMax = 1.5f * rt.uInfMagnitude;
         update_u_inf_vector();
 
         // Voxelize airfoil.

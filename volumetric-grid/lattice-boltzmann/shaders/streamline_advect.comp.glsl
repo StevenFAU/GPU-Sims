@@ -53,6 +53,7 @@ void main() {
     bool out_of_bounds = any(lessThan(pos, U.domain_min.xyz))
                       || any(greaterThan(pos, U.domain_max.xyz));
 
+    bool reseeding_this_frame = false;
     if (age >= float(U.reseed_age_threshold) || out_of_bounds) {
         // Seed ensures distinct streams per (sid, frame_count) pair.
         uint state = sid * 2654435761u ^ U.frame_count * 1597334677u;
@@ -63,6 +64,7 @@ void main() {
         float zs = U.domain_min.z + (U.domain_max.z - U.domain_min.z) * rng01(state);
         pos = vec3(xs, ys, zs);
         age = 0.0;
+        reseeding_this_frame = true;
     } else {
         // RK2 step in lattice units. dt_render is the per-frame time step
         // (clamped at the host).
@@ -75,5 +77,16 @@ void main() {
         age += 1.0;
     }
 
-    positions[sid * U.history + U.head_index] = vec4(pos, age);
+    if (reseeding_this_frame) {
+        // Fill ALL history slots with the new seed position so the line-strip
+        // vertex shader doesn't draw a teleport-jump from the new position to
+        // the 63 stale positions left over from the previous incarnation
+        // (visible as bright "white flash" sheets).
+        vec4 v = vec4(pos, age);
+        for (uint h = 0u; h < U.history; ++h) {
+            positions[sid * U.history + h] = v;
+        }
+    } else {
+        positions[sid * U.history + U.head_index] = vec4(pos, age);
+    }
 }

@@ -136,16 +136,20 @@ The user's visual smoke results will tell us which of these is most urgently nee
 
 Trace:
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `compute_aij_pj.comp.glsl:121-123` applies `aij_pj_sum *= V_i; if (solver_mode == 0) aij_pj_sum *= dt*dt; else aij_pj_sum *= dt;` before writing `aij_pj_scratch[gid]`. This matches upstream `aij_pj *= h * h` (density-pass at `TimeStepDFSPH.cpp:582`) and `aij_pj *= h` (divergence-pass at `:656`).
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `jacobi_update_density.comp.glsl:55` reads `aij_pj_scratch[gid]` as-is, computes `s_i = 1.0 - density_adv`, then `p_new = max(p_i - jacobiRelax * (s_i - aij_pj) * alpha_over_rho2_i, 0.0)`. Matches upstream `:603-606`.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - `jacobi_update_divergence.comp.glsl:55` reads `aij_pj_scratch[gid]` as-is, computes `s_i = -density_change`, same Jacobi update structure. Matches upstream `:674-692`.
 
 No double-scaling defect. The commit-2b audit scrutiny item is resolved.
 
 ### F.2 — Upstream line-range correction
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The original prompt listed `TimeStepDFSPH.cpp:1335-1349` for `compute_aij_pj`'s Akinci branch and `:1401-1412` for `compute_pressure_accel`'s — these are **swapped** in the actual upstream:
 
 - `:1335-1344` is the Akinci branch of **`computePressureAccel`** (`a = p_rho2_i * grad_p_j` pattern).
@@ -199,6 +203,7 @@ My sph-water commits avoided staging any of the parallel chat's WIP files (used 
 
 ### F.7 — Things that surprised me during execution
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - **GLSL upstream-citation grammar is single-line.** The `cat1.upstream-citation` regex matches `<Upstream> <version> <path>:<line>` on a single physical line. Initial multi-line citations like `// Mirrors SPlisHSPlasH 2.16.1\n// SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1217-1223` failed the upstream parser but matched the intra-repo parser, surfacing as unsuppressed `cat1.intra-repo` findings. Fix: put version and path on the same line, even if it stretches comment width.
 
 - **Bare path citations (e.g. `TimeStepDFSPH.cpp`) don't resolve cleanly under `references/SPlisHSPlasH`** (vendor_root); the actual file is at `references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp`. Citations need the full sub-path `SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp` for the resolver to find them. The pre-existing convention in cat3 code uses bare paths and gets caught by the `other-cat1` catch-all; switching to full sub-paths here lets the new citations resolve without grandfathering.

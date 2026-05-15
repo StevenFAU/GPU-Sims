@@ -77,6 +77,7 @@ parser does not match them.
 
 The file contains many plain-path references (no `file:line` suffix)
 used as prose mentions of repo locations. The cat1.intra-repo check
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 does not match bare paths (per `grammar.py:49-52`), so these are not
 mechanically verified by the toolkit. Manual spot-check of the
 non-forward-referenced paths:
@@ -136,6 +137,7 @@ the new file introduces no new findings — does hold.
   every cat1 check (cat1.intra-repo, cat1.upstream-citation,
   cat1.upstream-anchor, cat1.unregistered-upstream,
   cat1.annotation-form). It produces zero findings on all of them.
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 - The file does not contain any `integrity-allow:` annotations, so
   cat1.annotation-form has nothing to validate inside it.
 - `docs/category-contexts/` is first-of-pattern. The integrity toolkit
@@ -285,7 +287,9 @@ and therefore not scanned by the toolkit (`_list_scannable_files`
 uses `git ls-files` when `.git` is present). Once the audit file
 landed as part of commit `149fc93`, it became tracked and contributed
 2 additional findings (one cat1.intra-repo at line 80 from the bare
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `grammar.py:49-52` reference inside a prose explanation, and one
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 cat1.annotation-form at line 139 from the literal "`integrity-allow:`"
 token inside a backtick-fenced phrase). Both are self-referential
 to the toolkit grammar — the audit doc describes the grammar and

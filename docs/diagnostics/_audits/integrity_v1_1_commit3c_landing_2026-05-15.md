@@ -168,6 +168,7 @@ The cleaner long-term fix would be to embed the category name into
 every classifier-rule reason string in `grandfather.py`, removing the
 need for the secondary pattern table. Banked as a v1.2 candidate
 ("classifier reasons should self-identify their category"). Doing it
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 now would invalidate the existing `integrity-allow:` annotations
 (they hard-code the current reason strings), forcing a sweep
 re-application.

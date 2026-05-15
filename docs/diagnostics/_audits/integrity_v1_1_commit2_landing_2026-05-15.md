@@ -19,6 +19,7 @@ Companion to:
 
 ## A. Change summary
 
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 Markdown documents include literal `integrity-allow:` strings as grammar
 examples in fenced code blocks. Audit reports also quote terminal output
 and pre-existing source citations inside fences. Pre-A.5 the toolkit
@@ -27,6 +28,7 @@ spurious grandfather-sweep work and dead suppression annotations.
 
 A.5 makes fence-awareness uniform: in `.md` and `.rst` files, **no cat1
 check fires on a line inside a fenced code block, and no fence-internal
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` line suppresses a finding outside the fence.**
 
 Concretely:
@@ -99,6 +101,7 @@ EXIT=1
 The 15 unsuppressed findings are **all** pre-existing at the moving HEAD
 (see § E.2 below) — `category_context_quantum_landing_2026-05-15.md`,
 `phase11_5_commit3_landing_2026-05-15.md`, `algebraic/d3q19.md`,
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `ground-truth-sources.md:53`, `compute_boundary_volume.comp.glsl:7`.
 None of them are introduced by A.5. Verified by running the integrity
 tool with A.5 stashed: the same baseline files surface as hard-fails,
@@ -129,6 +132,7 @@ the sweep). Verified by `pytest`.
 ## D. Behavioral notes
 
 - **Dead suppressions stay in place** (spec § 4.9). Pre-A.5 grandfather
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
   sweeps placed `// integrity-allow:` annotations inside fenced blocks
   to suppress fence-internal findings; post-A.5 those annotations no
   longer match (because the findings they suppressed no longer fire),
@@ -150,6 +154,7 @@ annotations are ignored entirely," scoped to the annotation parser and
 the suppressor. Implementation revealed that two other cat1 checks
 (`cat1.intra-repo`, `cat1.upstream-citation`) also scan markdown files
 line-by-line and fire on fence-internal content; pre-A.5 they were
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 suppressed by fence-internal `integrity-allow:` annotations placed by
 the grandfather sweep. With the new "fence-internal annotations don't
 suppress" rule, those findings flip to hard-fail (a +210 jump in
@@ -168,6 +173,7 @@ Final list of fence-aware cat1 checks:
 
 **Corrected Decision 6 (in-effect):** in `.md` and `.rst` files, no
 cat1 check fires on a line inside a fenced code block, and no
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 fence-internal `integrity-allow:` line suppresses a finding outside the
 fence. This is the principle the toolkit operates under going forward.
 
@@ -215,8 +221,10 @@ deviation from the user's literal directive is auditable.
 ### E.4 Annotation grammar regex does not match its own classifier reasons (re-confirmation of commit 1 E.2)
 
 When relocating fence machinery to `common/annotations.py`, the new
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 module-level comment that mentions `integrity-allow:` literally now
 needs its own grandfather annotation (cat1.annotation-form fires
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 because the literal `integrity-allow:` appears in the explanatory
 comment). Annotation placed at the correct relative position (line
 preceding the violation) before the suppressor walks upward. Confirmed

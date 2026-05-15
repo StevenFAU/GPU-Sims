@@ -140,7 +140,13 @@ def emit_output(summary: RunSummary, findings: list[Finding], args: CliArgs) -> 
         _emit_human_summary(summary)
     else:
         _emit_human_summary(summary)
+        # P1.6 -- mirror the github branch's suppressed filter (line 134).
+        # Original commit fc20ef7 added the filter only to the github output;
+        # the human branch was always rendering suppressed findings as
+        # HARD_FAIL stanzas, producing a summary/stanza-count mismatch.
         for f in findings:
+            if f.suppressed:
+                continue
             sys.stdout.write(f"  {f.mode.name}: {f.check_id} at {f.file}:{f.line}\n")
             sys.stdout.write(f"    {f.message}\n")
 

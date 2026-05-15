@@ -182,10 +182,17 @@ struct SphPreset {
     float        roughness;
 };
 
+// Upstream Akinci2012 convention (see DamBreakModel.json in references/) places
+// the fluid initial block at least 2 * particleRadius from every container
+// surface. With particleRadius = 0.01 (1M-tier default), that's 0.02 clearance
+// from each AABB face. This invariant is what keeps fluid from reaching q → 0
+// against boundary samples on frame 0. The presets below honor it; any brick
+// edge that previously touched the domain has been nudged inward by 0.02.
 constexpr std::array<SphPreset, 4> SPH_PRESETS = {{
     {
         "Dam-Break",
-        glm::vec3(+0.5f, -1.0f, -1.0f), glm::vec3(+2.0f,  0.5f, +1.0f),
+        // Brick inset 0.02 from -y, +x, -z, +z domain faces; +y / -x already inside.
+        glm::vec3(+0.52f, -0.98f, -0.98f), glm::vec3(+1.98f, +0.5f, +0.98f),
         false, glm::vec3(0.0f), 0.0f, glm::vec3(0.0f),
         EmitterShape::None, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), 0.0f,
         glm::vec3(-2.0f, -1.0f, -1.0f), glm::vec3(+2.0f, +2.0f, +1.0f),
@@ -193,7 +200,8 @@ constexpr std::array<SphPreset, 4> SPH_PRESETS = {{
     },
     {
         "Central-Fountain",
-        glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(+1.0f, -0.95f, +1.0f),
+        // Brick is a thin pool at the floor; inset all four side walls + floor.
+        glm::vec3(-0.98f, -0.98f, -0.98f), glm::vec3(+0.98f, -0.95f, +0.98f),
         false, glm::vec3(0.0f), 0.0f, glm::vec3(0.0f),
         EmitterShape::Cylinder, glm::vec3(0.0f, -0.9f, 0.0f),
         glm::vec3(0.1f, 0.05f, 0.0f), glm::vec3(0.0f, +5.0f, 0.0f), 5000.0f,
@@ -202,7 +210,9 @@ constexpr std::array<SphPreset, 4> SPH_PRESETS = {{
     },
     {
         "Droplet-Impact",
-        glm::vec3(-1.5f, -1.0f, -1.5f), glm::vec3(+1.5f, -0.97f, +1.5f),
+        // Thin floor pool; inset side walls + floor. Droplet at (0, +1, 0) is
+        // already well inside the domain — no clearance issue for the droplet.
+        glm::vec3(-1.48f, -0.98f, -1.48f), glm::vec3(+1.48f, -0.97f, +1.48f),
         true,  glm::vec3(0.0f, +1.0f, 0.0f), 0.15f, glm::vec3(0.0f, -5.0f, 0.0f),
         EmitterShape::None, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), 0.0f,
         glm::vec3(-1.5f, -1.0f, -1.5f), glm::vec3(+1.5f, +2.0f, +1.5f),
@@ -210,6 +220,8 @@ constexpr std::array<SphPreset, 4> SPH_PRESETS = {{
     },
     {
         "Pour-from-Source",
+        // No initial brick (empty domain at start). Emitter at y=+1.95 is
+        // already 0.05 below the +y ceiling (5 * particleRadius clearance).
         glm::vec3(0.0f), glm::vec3(0.0f),
         false, glm::vec3(0.0f), 0.0f, glm::vec3(0.0f),
         EmitterShape::Rectangle, glm::vec3(0.0f, +1.95f, 0.0f),
@@ -1288,27 +1300,34 @@ constexpr std::uint32_t MAX_CELLS = 1u << 18;  // 262 144
 // SPlisHSPlasH 2.16.1 SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:77-110
 // (initModel — caller pre-generates positions and resizes m_x0/m_x/m_v/m_V).
 //
-// Commit 4 fix: two geometric defects from commit 3 corrected here.
-// Commit 5 fix: inset direction was reversed — samples were ending up INSIDE
-//   the fluid domain, attracting fluid to the walls. Flipped to place samples
-//   OUTSIDE the AABB (in the wall material) per upstream Akinci2012 convention.
+// Commit 6 (H1 placement): boundary samples are placed ON the AABB surface
+//   itself — no inset in either direction. This matches upstream Akinci2012
+//   convention: BoundaryModel_Akinci2012::initModel stores literal mesh-surface
+//   positions, and samplers like RegularTriangleSampling and PoissonDiskSampling
+//   drop samples on triangle planes without offset. See the diagnostic at
+//   docs/diagnostics/_audits/phase11_5_boundary_placement_probe_2026-05-15.md.
 //
-// 1. Inset by particle_radius into the rigid body (OUTSIDE the AABB). The
-//    sample plane sits one radius outside the fluid domain, so a fluid
-//    particle touching the AABB wall is at q ≈ 0.5 from the nearest boundary
-//    sample (well into the kernel's monotonic region), not q ≈ 0 (kernel
-//    peak). Matches upstream Akinci2012 convention: boundary particles
-//    represent the solid wall material, not a layer of fluid.
+//   The invariant that prevents fluid particles from reaching q → 0 against
+//   a boundary sample is maintained at the fluid INITIAL POSITION layer, not
+//   the boundary layer: every sph-water preset insets its fluid brick by at
+//   least 2 * particleRadius from every AABB face (matching upstream's
+//   DamBreakModel.json convention). See preset definitions further up this
+//   file.
 //
-//    Sign convention: for each AABB face the sample plane sits OUTSIDE
-//    the fluid domain. Floor (y=ymin) → y = ymin - r. Ceiling (y=ymax) →
-//    y = ymax + r. Same pattern for the other four faces.
+//   Commit 4 / 5 history: both attempted to fix observed boundary artifacts
+//   by adjusting an inset (commit 4: inside the AABB → fluid plastered to
+//   walls; commit 5: outside the AABB → banded standing column). Both
+//   wrong. The probe established that inset is the wrong axis to fix; the
+//   actual defect was that our presets violated the upstream clearance
+//   invariant. This commit restores the upstream H1 geometry and fixes the
+//   presets in lockstep.
 //
-// 2. Seam deduplication. Each AABB edge / corner gets exactly one boundary
-//    sample, not 2 or 3. Implementation: trim each face's hex grid by one
-//    spacing on every rim, then sample the 12 edges and 8 corners
-//    explicitly. Eliminates the 2-3× density contribution that caused the
-//    stratified-sheet artifact diagnosed post-commit-3.
+// Seam deduplication (preserved from commit 4): each AABB edge / corner
+//   gets exactly one boundary sample, not 2 or 3. Implementation: trim each
+//   face's hex grid by one spacing on every rim, then sample the 12 edges
+//   and 8 corners explicitly. This was a genuine defect in commit 3 (faces
+//   sampled their full rectangles, double-counting at seams) and is
+//   independent of the inset question.
 // ============================================================================
 static std::uint32_t generateBoundaryParticles(const glm::vec3& dmin,
                                                const glm::vec3& dmax,
@@ -1318,12 +1337,10 @@ static std::uint32_t generateBoundaryParticles(const glm::vec3& dmin,
     const float spacing = BOUNDARY_SPACING_RATIO * particle_radius;
     if (spacing <= 0.0f) return 0u;
 
-    // Inset plane coordinates: one particle_radius OUTSIDE the AABB (in the
-    // wall material). Min faces shift in the -axis direction, max faces in
-    // +axis. The in-plane axes still span [dmin, dmax]; only the normal-axis
-    // coordinate is offset.
-    const glm::vec3 imin = dmin - glm::vec3(particle_radius);
-    const glm::vec3 imax = dmax + glm::vec3(particle_radius);
+    // No inset — samples sit on the AABB surface. Aliases preserve the
+    // imin/imax names used by the face / edge / corner passes below.
+    const glm::vec3 imin = dmin;
+    const glm::vec3 imax = dmax;
 
     auto push = [&](const glm::vec3& pos) -> bool {
         if (out_positions.size() >= BOUNDARY_PARTICLE_CAP) return false;

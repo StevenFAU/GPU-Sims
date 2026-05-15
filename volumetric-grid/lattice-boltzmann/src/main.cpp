@@ -1128,11 +1128,20 @@ int main(int argc, char** argv) {
         std::vector<glm::vec4> data(total);
         static std::mt19937 rng(12345u);
         std::uniform_real_distribution<float> ud(0.0f, 1.0f);
-        const glm::vec3 pos(0.0f);
+        // Inlet slab: x in [Nx/16, Nx/8], y in [0, Ny], z in [0, Nz].
+        // Matches the GPU reseed branch in streamline_advect.comp.glsl so that
+        // initial placement and post-reseed placement live in the same region.
+        const float x_lo = float(rt.Nx) * 0.0625f;  // Nx/16
+        const float x_hi = float(rt.Nx) * 0.125f;   // Nx/8
         for (uint32_t i = 0; i < rt.streamlineCount; ++i) {
             float initial_age = ud(rng) * float(STREAMLINE_RESEED_AGE);
+            glm::vec3 pos(
+                x_lo + (x_hi - x_lo) * ud(rng),
+                ud(rng) * float(rt.Ny),
+                ud(rng) * float(rt.Nz));
+            glm::vec4 v(pos, initial_age);
             for (uint32_t h = 0; h < rt.streamlineHistory; ++h) {
-                data[size_t(i) * rt.streamlineHistory + h] = glm::vec4(pos, initial_age);
+                data[size_t(i) * rt.streamlineHistory + h] = v;
             }
         }
         streamline_positions.stage(ctx, data.data(), data.size() * sizeof(glm::vec4));
@@ -1593,7 +1602,11 @@ int main(int argc, char** argv) {
             ssu.history              = rt.streamlineHistory;
             ssu.head_index           = rt.streamlineFrameIndex;
             ssu.frame_count          = uint32_t(rt.iteration / uint64_t(std::max(rt.substeps, 1)));
-            ssu.dt_render            = std::clamp(rt.lastFrameMs * 0.001f, 1.0e-3f, 0.05f);
+            // dt_render is in lattice-step units. Each render frame advances
+            // rt.substeps lattice steps, so streamlines should advect by that
+            // amount. Cap at 4.0 so a high substeps value (16) doesn't cause
+            // streamlines to overshoot domain in one frame at near-max u_inf.
+            ssu.dt_render            = std::min(float(rt.substeps), 4.0f);
             ssu.reseed_age_threshold = uint32_t(STREAMLINE_RESEED_AGE);
             ub_streamline_advect[slot].uploadDirect(&ssu, sizeof(ssu));
 

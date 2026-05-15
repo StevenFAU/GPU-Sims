@@ -27,7 +27,7 @@ This doc does three things:
 
 When this doc is approved by the coordinator, three follow-up artifacts land in order: (a) a Quantum-adapted spec template (small delta to the existing template), (b) the full `docs/sim-specs/ising-dwave.md` covering both tracks named in § 6, (c) the integrity-toolkit Cat 3 amendments in § 7. Code work begins only after that chain.
 
-This doc is **not** load-bearing in the same sense as `docs/load-bearing-decisions.md` artifacts on shipped sims. Those record decisions that have shipped and are expensive to revisit. This doc records decisions that have *not yet shipped* and are being deliberated.
+This doc is **not** load-bearing in the same sense as the per-sim `docs/load-bearing-decisions.md` files that ship with each implemented sim (one under each `<category>/<sim>/docs/`). Those record decisions that have shipped and are expensive to revisit. This doc records decisions that have *not yet shipped* and are being deliberated.
 
 ---
 

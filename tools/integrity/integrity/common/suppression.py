@@ -15,7 +15,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from integrity.common.annotations import parse_annotation_line
+from integrity.common.annotations import (
+    fence_state_per_line,
+    is_markdown_path,
+    parse_annotation_line,
+)
 from integrity.common.results import Finding
 
 
@@ -46,16 +50,29 @@ def apply_suppressions(findings: list[Finding], repo_root: Path) -> list[Finding
         except OSError:
             continue
 
+        is_md = is_markdown_path(file_path)
+        fence_state = fence_state_per_line(file_lines) if is_md else None
+
         for f in file_findings:
             zero_idx = f.line - 1
             if zero_idx <= 0 or zero_idx > len(file_lines):
                 continue
+            # If the finding's own line is inside a fenced block, it is
+            # itself a documentation example; no suppression is meaningful.
+            if (
+                is_md
+                and fence_state is not None
+                and zero_idx < len(fence_state)
+                and fence_state[zero_idx]
+            ):
+                continue
             # Walk upward through the contiguous block of annotation lines
-            # immediately above the cited line. Multiple annotations stacked
-            # above one line (e.g., mixed-category groups produced by the
-            # grandfather sweep) all count as "immediately preceding."
+            # immediately above the cited line. Skip fence-internal lines --
+            # an annotation inside a fenced example is not a live annotation.
             j = zero_idx - 1
             while j >= 0:
+                if is_md and fence_state is not None and fence_state[j]:
+                    break
                 line_text = file_lines[j]
                 parsed = parse_annotation_line(line_text)
                 if parsed is None:

@@ -142,35 +142,14 @@ def comment_form_for(file_path: str) -> str:
     return "// integrity-allow: {body}"
 
 
-_FENCE_RE = re.compile(r"^\s*```(?P<lang>[A-Za-z0-9_+\-]*)\s*$")
-
-
-def is_inside_fenced_block(
-    lines: list[str],
-    target_line_zero_indexed: int,
-) -> tuple[bool, str | None]:
-    """Determine whether `lines[target_line_zero_indexed]` is inside a
-    fenced markdown code block. The opening-fence line itself is
-    considered in-fence (we toggle on at start of match)."""
-    in_fence = False
-    fence_lang: str | None = None
-    for i, line in enumerate(lines):
-        m = _FENCE_RE.match(line)
-        if m:
-            if in_fence:
-                if i == target_line_zero_indexed:
-                    return (True, fence_lang)
-                in_fence = False
-                fence_lang = None
-            else:
-                in_fence = True
-                fence_lang = m.group("lang") or ""
-                if i == target_line_zero_indexed:
-                    return (True, fence_lang)
-                continue
-        if i == target_line_zero_indexed:
-            return (in_fence, fence_lang)
-    return (False, None)
+# Fence machinery moved to integrity.common.annotations in v1.1 (A.5)
+# to make it importable by the parser and suppressor. Re-imported here
+# to preserve the grandfather.py API (callers that imported from this
+# module continue to work).
+from integrity.common.annotations import (  # noqa: E402
+    _FENCE_RE,
+    is_inside_fenced_block,
+)
 
 
 def comment_form_for_md_inside_fence(fence_lang: str | None) -> str:

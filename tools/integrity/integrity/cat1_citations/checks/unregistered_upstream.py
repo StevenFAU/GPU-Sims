@@ -17,6 +17,10 @@ from pathlib import Path
 
 from integrity.cat1_citations.grammar import extract_upstream_citations
 from integrity.cat1_citations.upstream_anchor import load_registry
+from integrity.common.annotations import (
+    fence_state_per_line,
+    is_markdown_path,
+)
 from integrity.common.exclusions import is_excluded
 from integrity.common.repo import list_tracked_files
 from integrity.common.results import FailureMode, Finding
@@ -74,7 +78,18 @@ def run(repo_root: Path) -> list[Finding]:
         except OSError:
             continue
 
+        if is_markdown_path(rel):
+            fence_state = fence_state_per_line(text.splitlines())
+        else:
+            fence_state = None
+
         for citation in extract_upstream_citations(text, absolute):
+            if (
+                fence_state is not None
+                and 0 < citation.source_line <= len(fence_state)
+                and fence_state[citation.source_line - 1]
+            ):
+                continue
             if citation.upstream in registered_names:
                 continue
             key = (citation.upstream, rel, citation.source_line)

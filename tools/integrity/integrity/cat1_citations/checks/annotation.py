@@ -15,6 +15,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from integrity.common.annotations import (
+    fence_state_per_line,
+    is_markdown_path,
+)
 from integrity.common.exclusions import is_excluded
 from integrity.common.repo import list_tracked_files
 from integrity.common.results import FailureMode, Finding
@@ -107,7 +111,15 @@ def run(repo_root: Path) -> list[Finding]:
         except OSError:
             continue
 
-        for lineno, line in enumerate(text.splitlines(), start=1):
+        lines_list = text.splitlines()
+        if is_markdown_path(rel):
+            fence_state = fence_state_per_line(lines_list)
+        else:
+            fence_state = [False] * len(lines_list)
+
+        for lineno, line in enumerate(lines_list, start=1):
+            if fence_state[lineno - 1]:
+                continue
             for m in LOOSE_RE.finditer(line):
                 body = m.group(1)
                 problem = _validate(body)

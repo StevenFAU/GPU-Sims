@@ -1289,13 +1289,20 @@ constexpr std::uint32_t MAX_CELLS = 1u << 18;  // 262 144
 // (initModel — caller pre-generates positions and resizes m_x0/m_x/m_v/m_V).
 //
 // Commit 4 fix: two geometric defects from commit 3 corrected here.
+// Commit 5 fix: inset direction was reversed — samples were ending up INSIDE
+//   the fluid domain, attracting fluid to the walls. Flipped to place samples
+//   OUTSIDE the AABB (in the wall material) per upstream Akinci2012 convention.
 //
-// 1. Inset by particle_radius. Boundary samples sit one radius INSIDE each
-//    AABB plane, so a fluid particle that approaches the wall is at q ≈ 0.5
-//    from the nearest boundary sample (well into the kernel's monotonic
-//    region), not q ≈ 0 (kernel peak). Matches upstream Akinci2012
-//    convention: the "boundary surface" is a particle layer just inside the
-//    wall, not coincident with it.
+// 1. Inset by particle_radius into the rigid body (OUTSIDE the AABB). The
+//    sample plane sits one radius outside the fluid domain, so a fluid
+//    particle touching the AABB wall is at q ≈ 0.5 from the nearest boundary
+//    sample (well into the kernel's monotonic region), not q ≈ 0 (kernel
+//    peak). Matches upstream Akinci2012 convention: boundary particles
+//    represent the solid wall material, not a layer of fluid.
+//
+//    Sign convention: for each AABB face the sample plane sits OUTSIDE
+//    the fluid domain. Floor (y=ymin) → y = ymin - r. Ceiling (y=ymax) →
+//    y = ymax + r. Same pattern for the other four faces.
 //
 // 2. Seam deduplication. Each AABB edge / corner gets exactly one boundary
 //    sample, not 2 or 3. Implementation: trim each face's hex grid by one
@@ -1311,9 +1318,12 @@ static std::uint32_t generateBoundaryParticles(const glm::vec3& dmin,
     const float spacing = BOUNDARY_SPACING_RATIO * particle_radius;
     if (spacing <= 0.0f) return 0u;
 
-    // Inset plane coordinates (one particle_radius inside the AABB).
-    const glm::vec3 imin = dmin + glm::vec3(particle_radius);
-    const glm::vec3 imax = dmax - glm::vec3(particle_radius);
+    // Inset plane coordinates: one particle_radius OUTSIDE the AABB (in the
+    // wall material). Min faces shift in the -axis direction, max faces in
+    // +axis. The in-plane axes still span [dmin, dmax]; only the normal-axis
+    // coordinate is offset.
+    const glm::vec3 imin = dmin - glm::vec3(particle_radius);
+    const glm::vec3 imax = dmax + glm::vec3(particle_radius);
 
     auto push = [&](const glm::vec3& pos) -> bool {
         if (out_positions.size() >= BOUNDARY_PARTICLE_CAP) return false;

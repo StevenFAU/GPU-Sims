@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source": "tools/integrity/integrity/cat3_numerical/checks/d3q19_verify.py",
+  "source": "tools/integrity/integrity/cat3_numerical/d3q19_verify.py",
   "derivation": "tools/integrity/docs/algebraic/d3q19.md",
   "velocity_set": [
     [

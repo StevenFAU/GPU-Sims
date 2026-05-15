@@ -24,6 +24,84 @@ EXPECTED_JSON = HERE / "d3q19_equilibrium.expected.json"
 TOL_ABS = 1e-12
 
 
+def load_expected_payload() -> dict:
+    """Load the expected-values JSON payload.
+
+    Returns the dict structure described in the docstring of main() --
+    velocity_set, weights, opposite_index, test_points.
+    """
+    if not EXPECTED_JSON.is_file():
+        raise FileNotFoundError(
+            f"expected values JSON missing: {EXPECTED_JSON}; "
+            f"run `python3 {Path(__file__).name}` to regenerate."
+        )
+    return json.loads(EXPECTED_JSON.read_text(encoding="utf-8"))
+
+
+def verify_velocity_set(payload: dict) -> list[str]:
+    """Verify the JSON payload's velocity_set matches the re-derivation."""
+    expected = [tuple(c) for c in build_velocity_set()]
+    got_raw = payload.get("velocity_set")
+    if got_raw is None:
+        return ["velocity_set: payload key missing"]
+    got = [tuple(c) for c in got_raw]
+    if got != expected:
+        return [
+            f"velocity_set mismatch: got {got}, want {expected}",
+        ]
+    return []
+
+
+def verify_weights(payload: dict) -> list[str]:
+    """Verify weights match the re-derivation: 1/3, 1/18 x6, 1/36 x12."""
+    velocity_set = [tuple(c) for c in build_velocity_set()]
+    expected_fracs = [weight_for(c) for c in velocity_set]
+    expected = [float(w) for w in expected_fracs]
+    got = payload.get("weights")
+    if got is None:
+        return ["weights: payload key missing"]
+    if len(got) != len(expected):
+        return [f"weights length mismatch: got {len(got)}, want {len(expected)}"]
+    errs: list[str] = []
+    for i, (g, e) in enumerate(zip(got, expected)):
+        if abs(g - e) > TOL_ABS:
+            errs.append(f"weights[{i}]: got {g!r}, want {e!r}, |diff|={abs(g-e):.3e}")
+    # Sanity: sum should equal 1.0 exactly under float (rational sum gives 1).
+    s = sum(got)
+    if abs(s - 1.0) > TOL_ABS:
+        errs.append(f"sum(weights) = {s!r}, want 1.0 (|diff|={abs(s-1.0):.3e})")
+    return errs
+
+
+def verify_equilibrium(payload: dict) -> list[str]:
+    """Verify per-test-point feq tables match a fresh evaluation of feq()."""
+    velocity_set = [tuple(c) for c in build_velocity_set()]
+    weights = [float(weight_for(c)) for c in velocity_set]
+    test_points = payload.get("test_points")
+    if not test_points:
+        return ["test_points: payload key missing or empty"]
+    errs: list[str] = []
+    for tp in test_points:
+        name = tp.get("name", "<unnamed>")
+        rho = tp["rho"]
+        u = tp["u"]
+        got_feq = tp.get("feq")
+        if got_feq is None:
+            errs.append(f"{name}: feq missing")
+            continue
+        recomputed = feq(rho, u[0], u[1], u[2], velocity_set, weights)
+        if len(recomputed) != len(got_feq):
+            errs.append(f"{name}: feq length mismatch: got {len(got_feq)}, want {len(recomputed)}")
+            continue
+        for i, (g, r) in enumerate(zip(got_feq, recomputed)):
+            if abs(g - r) > TOL_ABS:
+                errs.append(
+                    f"{name}.feq[{i}]: got {g!r}, recomputed {r!r}, "
+                    f"|diff|={abs(g-r):.3e} > {TOL_ABS:.0e}"
+                )
+    return errs
+
+
 def build_velocity_set() -> list[tuple[int, int, int]]:
     """Enumerate {-1,0,1}^3 with squared L2 norm <= 2, ordered canonically."""
     candidates = [
@@ -254,7 +332,7 @@ def main() -> int:
 
     payload = {
         "schema_version": 1,
-        "source": "tools/integrity/integrity/cat3_numerical/checks/d3q19_verify.py",
+        "source": "tools/integrity/integrity/cat3_numerical/d3q19_verify.py",
         "derivation": "tools/integrity/docs/algebraic/d3q19.md",
         "velocity_set": [list(c) for c in cs],
         "weights": weights,

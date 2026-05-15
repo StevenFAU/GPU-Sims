@@ -2,6 +2,7 @@
 
 from integrity.cat1_citations.checks import (
     annotation,
+    bare_path,
     intra_repo,
     unregistered_upstream,
     upstream,
@@ -10,6 +11,7 @@ from integrity.cat1_citations.checks import (
 
 REGISTERED_CHECKS = [
     (intra_repo.CHECK_ID, intra_repo),
+    (bare_path.CHECK_ID, bare_path),
     (annotation.CHECK_ID, annotation),
     (upstream.CHECK_ID, upstream),
     (upstream_anchor.CHECK_ID, upstream_anchor),

@@ -18,19 +18,20 @@ def test_good_citations_yield_no_findings(fixtures_dir: Path) -> None:
     assert intra_repo_findings == [], f"unexpected findings: {intra_repo_findings}"
 
 
-def test_dangling_citation_is_flagged(fixtures_dir: Path) -> None:
+def test_dangling_bare_basename_is_not_cat1_intra_repo(fixtures_dir: Path) -> None:
+    """v1.2 A.3 migration: bare-basename citations no longer fire under
+    cat1.intra-repo; they flow to cat1.bare-path via the skip-guard."""
     findings = run(_files_dir(fixtures_dir, "bad_citations"))
     dangling = [f for f in findings if "nope.cpp" in f.message]
-    assert len(dangling) == 1
-    assert dangling[0].mode == FailureMode.HARD_FAIL
-    assert "does not resolve" in dangling[0].message
+    assert dangling == [], f"bare basename should not fire cat1.intra-repo: {dangling}"
 
 
-def test_out_of_range_line_is_flagged(fixtures_dir: Path) -> None:
+def test_out_of_range_bare_basename_is_not_cat1_intra_repo(fixtures_dir: Path) -> None:
+    """v1.2 A.3 migration: bare-basename citations (even with out-of-range
+    line numbers) flow to cat1.bare-path, not cat1.intra-repo."""
     findings = run(_files_dir(fixtures_dir, "bad_citations"))
     oor = [f for f in findings if "9999" in f.message]
-    assert len(oor) == 1
-    assert "exceeds file line count" in oor[0].message
+    assert oor == [], f"bare basename should not fire cat1.intra-repo: {oor}"
 
 
 def test_template_token_is_not_a_citation(tmp_path: Path) -> None:

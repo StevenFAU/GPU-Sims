@@ -110,6 +110,11 @@ def run(repo_root: Path) -> list[Finding]:
             if (citation.source_line, citation.path, citation.start, citation.end) in upstream_tails:
                 # Tail of an upstream citation; cat1.upstream-citation handles.
                 continue
+            # Bare paths are handled by cat1.bare-path (v1.2). They flow
+            # through this check's grammar but get filtered here so a
+            # bare basename doesn't double-fire under both checks.
+            if "/" not in citation.path:
+                continue
             result = resolve(citation, repo_root)
             if result.resolved_path is None or not result.in_range:
                 findings.append(Finding(

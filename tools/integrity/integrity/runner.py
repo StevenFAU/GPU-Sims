@@ -77,7 +77,9 @@ def discover_checks(args: CliArgs) -> list[Any]:
     if args.cat is None or args.cat == 2:
         from integrity.cat2_contracts.checks import REGISTERED_CHECKS as cat2_checks
         all_checks.extend(cat2_checks)
-    # Cat 3 registered in commit 8
+    if args.cat is None or args.cat == 3:
+        from integrity.cat3_numerical.checks import REGISTERED_CHECKS as cat3_checks
+        all_checks.extend(cat3_checks)
 
     if args.check is not None:
         all_checks = [(cid, mod) for cid, mod in all_checks if cid == args.check]

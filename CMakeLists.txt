@@ -61,6 +61,10 @@ option(GPU_SIMS_BUILD_PARTICLE_FLUIDS     "Build particle-fluid sims"       OFF)
 option(GPU_SIMS_BUILD_HYBRID_PARTICLE_GRID "Build hybrid particle-grid sims" OFF)
 option(GPU_SIMS_BUILD_QUANTUM             "Build quantum visualization sims" OFF)
 
+# Integrity toolkit Cat 3 driver. OFF by default; CI enables it for the
+# cat3.cubic-kernel check (spec § 8, § 9.1).
+option(GPU_SIMS_BUILD_INTEGRITY_CAT3      "Build the integrity toolkit's Cat 3 Stack C driver" OFF)
+
 # ----------------------------------------------------------------------------
 # Subdirectories
 # ----------------------------------------------------------------------------
@@ -78,6 +82,10 @@ add_subdirectory(continuous-ca/reaction-diffusion-3d)
 
 add_subdirectory(volumetric-grid/eulerian-smoke)
 add_subdirectory(particle-fluids/sph-water)
+
+if(GPU_SIMS_BUILD_INTEGRITY_CAT3)
+    add_subdirectory(tools/integrity/drivers/integrity_cat3_stack_c)
+endif()
 
 # if(GPU_SIMS_BUILD_VOLUMETRIC_GRID)
 #     add_subdirectory(volumetric-grid/lattice-boltzmann)

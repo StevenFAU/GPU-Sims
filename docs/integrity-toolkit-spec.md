@@ -552,6 +552,18 @@ Per stack, the "public" surface is defined as:
 | `cat2.re-export-match` | Re-export modules (`index.ts`, `__init__.py`) match the smoke-import contract recorded in CI | HARD_FAIL |
 | `cat2.stub-label-stale` | Files with "stub"/"placeholder"/"skeleton" in their docstring or header comment match their actual implementation status | HARD_FAIL |
 
+### 7.4.1 Per-stack check-ID suffix convention
+
+Per the precedent set across commits 5-7, Cat 2 checks that have per-stack implementations use a stack-suffix on the check ID:
+
+| Check ID | Stack | Implementation |
+|---|---|---|
+| `cat2.public-symbol-used` | Stack D (Python) | stdlib `ast` |
+| `cat2.public-symbol-used-c` | Stack C (C++) | libclang |
+| `cat2.public-symbol-used-ts` | Stack B (TypeScript) | TS compiler API via Node subprocess |
+
+The unsuffixed `cat2.public-symbol-used` defaults to Stack D since it was the first to land. Future Cat 2 checks added per-stack should follow this convention: unsuffixed for Stack D, `-c` for Stack C, `-ts` for Stack B.
+
 ## 8. Category 3: Numerical correctness vs upstream
 
 ### 8.1 What's checked
@@ -824,7 +836,7 @@ These are the named instances of Convention #8 the toolkit must mechanically det
 | ParticleFrame::radii silent data-loss | `common/common-cpp/src/alembic_writer.cpp:51-82` | 2 | `cat2.public-symbol-used` |
 | `vdb::writeVec3Grid` unexercised real impl | `common/common-cpp/src/vdb_writer.cpp:97-145` | 2 | `cat2.public-symbol-used` |
 | Stale "stub" label on alembic_writer.hpp | `common/common-cpp/include/gpusims/alembic_writer.hpp` | 2 | `cat2.stub-label-stale` |
-| kernel_gradW factor-of-6 (commit 1 fix) | `particle-fluids/sph-water/src/main.cpp:1349` (pre-fix) | 3 | `cat3.cubic-kernel` |
+| kernel_gradW factor-of-6 (commit 1 fix) | `particle-fluids/sph-water/src/main.cpp:1349` (pre-fix) | 3 | `cat3.cubic-kernel` (catches formula-vs-implementation drift; v1 check transcribes the GLSL kernel to a host-side C++ driver and verifies driver output against analytical expected values; direct GLSL/WGSL shader-level verification is v2 candidate per § 13) |
 
 Each row is a concrete v1 acceptance test. The toolkit must catch every one of these against synthetic fixtures during its own tests, and must catch them in the real repo when run against an artificial regression (e.g., reverting commit 1's kernel-norm fix in a test branch and asserting `cat3.cubic-kernel` HARD_FAILs).
 
@@ -839,6 +851,7 @@ Each row is a concrete v1 acceptance test. The toolkit must catch every one of t
 - **Spec-vs-implementation reconciliation** — verifying phase spec claims against the actual landed code
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - **Bare-path-to-upstream-basename detection** — extend Cat 1 to detect bare-path citations like `LeniaNDK.py:329-335` (no version prefix) when the basename matches a registered upstream's known files. Requires a per-upstream alias list or basename index. Surfaces fabrication-shape citations that the v1 upstream grammar misses.
+- **GLSL/WGSL shader-level kernel verification** — v1 Cat 3 verifies the C++ transcription of the cubic kernel against analytical expected values. A shader-level harness that loads the actual GLSL/WGSL source, dispatches it to a compute pipeline, reads back values, and compares against expected — would catch drift between shader source and the host-side C++ driver port. Requires Vulkan/WebGPU runtime setup; significantly heavier than v1's host-only driver.
 
 ### Out of scope permanently
 

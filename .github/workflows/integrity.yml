@@ -77,10 +77,14 @@ jobs:
             libwayland-dev \
             libxkbcommon-dev
 
-      - name: Configure Stack C build (for compile_commands.json)
+      - name: Configure Stack C build (for compile_commands.json + Cat 3 driver)
         run: |
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DGPU_SIMS_BUILD_INTEGRITY_CAT3=ON
+
+      - name: Build Cat 3 Stack C driver
+        run: ninja -C build integrity_cat3_stack_c
 
       - name: Run integrity toolkit's own tests (dogfood)
         working-directory: tools/integrity

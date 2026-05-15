@@ -96,7 +96,11 @@ post-A.3 reality is a separate follow-up (bank as v1.3 candidate).**
   the overlap in the summary string itself. **Bank as v1.3 candidate.**
 - **No pause-and-surface fired during commit 3 execution.**
 
-## § F. Next commit
+## § F. Sibling commit SHAs
 
-Commit 4 (P1.7) — `stub_label_stale.py` module-docstring drift fix.
-SHA back-fill at commit 5.
+This commit: `71559ce`. Sibling commits in this batch:
+
+- Commit 1 (P1.8 — grandfather-sweep live-source protection): `5fe5e6b`
+- Commit 2 (P1.5 — register `cat3.d3q19-*` checks): `119e353`
+- Commit 4 (P1.7 — `stub_label_stale.py` docstring fix): `5cdd20f`
+- Commit 5 (SHA back-fill): this commit

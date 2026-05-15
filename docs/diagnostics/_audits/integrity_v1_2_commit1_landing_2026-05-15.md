@@ -201,7 +201,11 @@ hard-fail bucket is unchanged by P1.8 because:
   unchanged, `classify()` signature compatible). The composition
   with A.3 was clean despite the volume of new findings.
 
-## § F. Next commit
+## § F. Sibling commit SHAs
 
-Commit 2 (P1.5) — register the three `cat3.d3q19-*` checks. SHA
-back-fill at commit 5.
+This commit: `5fe5e6b`. Sibling commits in this batch:
+
+- Commit 2 (P1.5 — register `cat3.d3q19-*` checks): `119e353`
+- Commit 3 (P1.6 — human-renderer suppressed filter): `71559ce`
+- Commit 4 (P1.7 — `stub_label_stale.py` docstring fix): `5cdd20f`
+- Commit 5 (SHA back-fill): this commit

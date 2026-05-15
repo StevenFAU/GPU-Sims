@@ -124,7 +124,11 @@ new findings.
   candidate.**
 - **No pause-and-surface fired during commit 2 execution.**
 
-## § F. Next commit
+## § F. Sibling commit SHAs
 
-Commit 3 (P1.6) — strict-mode human-renderer suppressed-stanza
-filter. SHA back-fill at commit 5.
+This commit: `119e353`. Sibling commits in this batch:
+
+- Commit 1 (P1.8 — grandfather-sweep live-source protection): `5fe5e6b`
+- Commit 3 (P1.6 — human-renderer suppressed filter): `71559ce`
+- Commit 4 (P1.7 — `stub_label_stale.py` docstring fix): `5cdd20f`
+- Commit 5 (SHA back-fill): this commit

@@ -84,7 +84,11 @@ mirror" phrasing remains in the file.
 
 - None. Cosmetic one-paragraph fix.
 
-## § F. Next commit
+## § F. Sibling commit SHAs
 
-Commit 5 (SHA back-fill) — replace `<COMMIT_N_SHA>` placeholders
-across the four commit-landing audit reports with actual SHAs.
+This commit: `5cdd20f`. Sibling commits in this batch:
+
+- Commit 1 (P1.8 — grandfather-sweep live-source protection): `5fe5e6b`
+- Commit 2 (P1.5 — register `cat3.d3q19-*` checks): `119e353`
+- Commit 3 (P1.6 — human-renderer suppressed filter): `71559ce`
+- Commit 5 (SHA back-fill): this commit

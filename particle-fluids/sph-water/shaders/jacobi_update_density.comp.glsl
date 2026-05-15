@@ -4,9 +4,7 @@
 // scaled by dt*dt) plus per-particle density_adv and alpha/rho^2, and writes
 // the relaxed Jacobi update of pressure.
 //
-// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
-// Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:591 (source term s_i =
-// 1 - density_adv) and :606 (Jacobi update with relaxation 0.5).
+// Reference: SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:590 (source term s_i = 1 - density_adv) and SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:606 (Jacobi update with relaxation 0.5).
 #version 460
 
 layout(local_size_x = 256) in;

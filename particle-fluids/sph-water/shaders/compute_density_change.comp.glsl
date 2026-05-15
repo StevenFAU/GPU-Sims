@@ -7,7 +7,7 @@
 // upstream applies it in the divergenceSolve driver / divergenceSolveIteration,
 // not inside computeDensityChange.
 //
-// Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH::computeDensityChange.
+// Reference: SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1247-1295 (computeDensityChange).
 #version 460
 
 layout(local_size_x = 256) in;

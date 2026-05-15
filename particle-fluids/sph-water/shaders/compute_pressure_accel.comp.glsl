@@ -7,7 +7,7 @@
 // particle pressure acceleration; it is *not* applied to velocity here —
 // apply_velocity.comp.glsl integrates it after the inner loop converges.
 //
-// Reference: SPlisHSPlasH 1.8.10 TimeStepDFSPH::computePressureAccel (fluid-only branch).
+// Reference: SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:1299-1367 (computePressureAccel, fluid-only branch).
 #version 460
 
 layout(local_size_x = 256) in;

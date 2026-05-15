@@ -87,7 +87,7 @@ blender --background --python render-pipelines/blender/render_sph.py -- \
 
 ## Design references
 
-- DFSPH solver: SPlisHSPlasH 1.8.10, especially `TimeStepDFSPH.cpp` and
+- DFSPH solver: SPlisHSPlasH 2.16.1, especially `TimeStepDFSPH.cpp` and
   `SPHKernels.h`. See `docs/load-bearing-decisions.md` for file:line anchors.
 - Screen-space fluid: Müller-Fetterer 2007 "Screen Space Meshes",
   Williams-van der Laan 2008 follow-up.

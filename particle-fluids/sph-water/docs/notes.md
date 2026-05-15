@@ -17,7 +17,7 @@ banked at v1 for v1.1 follow-on.
       and `density_solve.comp.glsl`. v1 ships a placeholder skeleton per the
       spec's deliberate-not-fabricated stance; canonical formulation from
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
-      SPlisHSPlasH 1.8.10 `TimeStepDFSPH.cpp:442-692` to be translated in the
+      SPlisHSPlasH 2.16.1 `SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:540-706` to be translated in the
       Phase 11 follow-up polish per the architect-2 Callout 1 verification
       item.
 

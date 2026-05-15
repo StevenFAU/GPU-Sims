@@ -6,7 +6,7 @@ This document is a sim-local quick reference. For the full reasoning, see
 ## DFSPH (not WCSPH, not PCISPH, not IISPH, not PBF)
 
 Divergence-Free SPH per Bender-Koschier 2015 + 2017. Anchored to SPlisHSPlasH
-1.8.10 at SHA `c254caf2705ebf5271408dd37a091aa379258a38` for every formula
+2.16.1 at SHA `6bff55a6eaf14083d34650f22a268ce156b62b54` for every formula
 citation. Five non-obvious upstream conventions encoded:
 
 1. Support-radius parameterization (q = r/h, cutoff q ≤ 1).

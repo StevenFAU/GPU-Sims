@@ -111,8 +111,7 @@ constexpr std::array<uint32_t, NUM_TIERS> TIER_PARTICLE_COUNTS = {
 constexpr int DEFAULT_TIER_INDEX = 1;
 constexpr float EMITTER_RESERVE_FRAC = 0.20f;
 
-// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
-// DFSPH defaults — SPlisHSPlasH 1.8.10 at TimeStepDFSPH.cpp:35-41.
+// DFSPH defaults — SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:35-41.
 constexpr int   DFSPH_MIN_ITER_DENSITY   = 2;
 constexpr int   DFSPH_MAX_ITER_DENSITY   = 100;
 constexpr float DFSPH_MAX_ERROR_DENSITY  = 0.01f;     // PERCENT - 0.01 = 0.01% of rho_0
@@ -120,8 +119,7 @@ constexpr int   DFSPH_MAX_ITER_DIV       = 100;
 constexpr float DFSPH_MAX_ERROR_DIV      = 0.1f;       // PERCENT - 0.1 = 0.1% of rho_0
 constexpr bool  DFSPH_DIV_SOLVER_DEFAULT = true;
 constexpr float DFSPH_ALPHA_EPS          = 1.0e-5f;
-// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
-constexpr float DFSPH_JACOBI_RELAX       = 0.5f;       // SPlisHSPlasH TimeStepDFSPH.cpp:606,:692
+constexpr float DFSPH_JACOBI_RELAX       = 0.5f;       // SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:606,:692
 
 constexpr float CFL_FACTOR    = 0.5f;
 constexpr float DT_MIN        = 1.0e-4f;

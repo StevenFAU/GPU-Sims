@@ -1,14 +1,11 @@
 // density_alpha.comp.glsl — DFSPH per-particle density ρ_i and α-factor (stored
-// integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
-// as α/ρ² in the multiphase-compatible form per SPlisHSPlasH TimeStepDFSPH.cpp:758-760).
+// as α/ρ² in the multiphase-compatible form).
+// Reference: SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:758-760 (p_rho2 = p/rho^2 inline).
 //
 // References:
-// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
-//   Cubic spline kernel: SPlisHSPlasH 1.8.10 SPHKernels.h:43-78
-// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
-//   α-factor:            SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:813-822 / :1175-1188
-// integrity-allow: cat1.upstream-citation; pre-v1 SPlisHSPlasH 1.8.10 anchor in live code (migration target tracked in grandfather-catalog live-shader-1810); n/a
-//   α floor ε:           SPlisHSPlasH 1.8.10 TimeStepDFSPH.h:28 = 1.0e-5
+//   Cubic spline kernel: SPlisHSPlasH 2.16.1 SPlisHSPlasH/SPHKernels.h:37-85
+//   α-factor:            SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp:813-822 / :1175-1184
+//   α floor ε:           SPlisHSPlasH 2.16.1 SPlisHSPlasH/DFSPH/TimeStepDFSPH.h:28 = 1.0e-5
 #version 460
 
 layout(local_size_x = 256) in;

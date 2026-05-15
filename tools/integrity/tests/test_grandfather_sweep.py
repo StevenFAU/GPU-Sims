@@ -51,6 +51,11 @@ def test_toolkit_own_source_classification() -> None:
     assert classify(f).category == "toolkit-own-source"
 
 
+def test_retro_grammar_example_classification() -> None:
+    f = _f("cat1.annotation-form", "docs/retro/integrity-toolkit-v1.md")
+    assert classify(f).category == "retro-grammar-example"
+
+
 def test_audit_report_grammar_example_classification() -> None:
     f = _f(
         "cat1.annotation-form",

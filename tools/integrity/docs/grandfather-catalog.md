@@ -86,6 +86,19 @@ These are not real annotations; they are the parser definition itself.
 
 **Future treatment:** Permanent suppression on these files.
 
+### `retro-grammar-example`
+
+**Pattern:** `cat1.annotation-form` findings in files under `docs/retro/`.
+
+**Why grandfathered:** Retrospective documents describe the toolkit's
+own grammar in prose. The `cat1.annotation-form` check parses every
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
+`integrity-allow:` literal as if it were a real annotation; literals
+inside retro-doc prose are documentation, not annotations. Same
+reason class as `spec-grammar-example`.
+
+**Future treatment:** Permanent suppression on these docs.
+
 ### `audit-report-grammar-example`
 
 **Pattern:** `cat1.annotation-form` findings in files under

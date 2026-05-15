@@ -18,6 +18,7 @@ A nine-check toolkit gating every push and PR via `.github/workflows/integrity.y
 | 1 | `cat1.upstream-citation` | Upstream citations resolve under their registered vendor roots at the registered anchor versions |
 | 1 | `cat1.upstream-anchor` | Vendored references' HEAD SHAs match the registry's anchor SHAs |
 | 1 | `cat1.unregistered-upstream` | Every cited upstream name is in the ground-truth registry |
+<!-- integrity-allow: cat1.annotation-form; retrospective-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 | 1 | `cat1.annotation-form` | All `integrity-allow:` annotations have valid grammar |
 | 2 | `cat2.public-symbol-used` | Stack D Python `__init__.py` exports have non-self consumer references |
 | 2 | `cat2.public-symbol-used-c` | Stack C `include/gpusims/` public surface has non-self consumer references |
@@ -124,8 +125,10 @@ Compressed observations from each commit's audit.
 
 **The toolkit doesn't run itself on itself.** Cat 2 catches Stack D defects in `gpusims_common` but doesn't run against `integrity`'s own package. Adding this is a v1.1 self-application item. Probably worth doing — it would catch the same scaffolding-without-wiring class of defect that commit 4a discovered, before the next instance happens.
 
+<!-- integrity-allow: cat1.annotation-form; retrospective-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 **Annotation grammar doesn't understand markdown code fences.** Literal mentions of `integrity-allow:` in fenced code blocks within docs get parsed as real annotations. Handled in v1 by per-line grandfather suppression. v2 could add fenced-block awareness to the grammar.
 
+<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 **Bare-path-to-upstream-basename detection deferred.** The LeniaNDK citation pattern (`LeniaNDK.py:329-335` with no version prefix) falls through the upstream grammar. v2 candidate in spec § 13.
 
 ## 5. Workflow conventions banked

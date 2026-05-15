@@ -92,6 +92,12 @@ def classify(finding: Finding) -> Classification:
                 reason="documentation-only literal mention of the annotation grammar (not a real annotation)",
                 issue_ref="n/a",
             )
+        if f.startswith("docs/retro/"):
+            return Classification(
+                category="retro-grammar-example",
+                reason="retrospective-doc literal mention of the annotation grammar (not a real annotation)",
+                issue_ref="n/a",
+            )
         if f.startswith("tools/integrity/integrity/"):
             return Classification(
                 category="toolkit-own-source",

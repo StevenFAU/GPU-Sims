@@ -3,9 +3,14 @@ title: "Integrity v1.2 A.3 — Commit 3 landing audit"
 date: 2026-05-15
 author: claude-code (executor)
 status: complete
+landed-as-sha: 880a400
 sibling-docs:
   - /home/otacon/Downloads/integrity_v1_2_a3_spec.md
   - docs/diagnostics/_audits/integrity_v1_2_a3_commit2_landing_2026-05-15.md
+companion-shas:
+  - "v1.2 A.3 commit 1 (module + fixtures + tests): 6fc5884"
+  - "v1.2 A.3 commit 2 (classifier rules): 77628b6"
+  - "v1.2 A.3 commit 4 (sweep companion): 908f619"
 ---
 
 # Integrity v1.2 A.3 — Commit 3 landing audit

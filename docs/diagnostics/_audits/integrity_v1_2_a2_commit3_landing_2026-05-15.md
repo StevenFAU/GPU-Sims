@@ -160,6 +160,7 @@ restores the previous registry tuple verbatim.
   live-source" count remains at the pre-A.2 other-cat1 baseline (no
   toolkit-own-unused entries skipped)
 - Verify: post-sweep, `stack_paths.py` carries an
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
   `integrity-allow: cat2.public-symbol-used-toolkit` annotation
 - Refresh the `toolkit-own-unused (?)` count in
   `grandfather-catalog.md` and any other drifted category counts

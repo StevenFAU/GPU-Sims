@@ -29,6 +29,7 @@ EXIT_BAD_CLI = 64
 
 
 @dataclass
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class CliArgs:
     cat: int | None
     check: str | None
@@ -79,6 +80,7 @@ def parse_args(argv: list[str]) -> CliArgs:
     )
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def discover_checks(args: CliArgs) -> list[Any]:
     """Discover registered check modules per --cat / --check filters."""
     from integrity.cat1_citations.checks import REGISTERED_CHECKS as cat1_checks
@@ -99,6 +101,7 @@ def discover_checks(args: CliArgs) -> list[Any]:
     return all_checks
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def run_checks(checks: list[Any], args: CliArgs) -> list[Finding]:
     """Execute the given checks against args.root, return all findings."""
     findings: list[Finding] = []

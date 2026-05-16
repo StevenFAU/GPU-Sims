@@ -15,6 +15,7 @@ from integrity.cat1_citations.grammar import IntraRepoCitation
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class ResolutionResult:
     citation: IntraRepoCitation
     resolved_path: Path | None     # None if unresolved

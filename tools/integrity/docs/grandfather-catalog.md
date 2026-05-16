@@ -25,7 +25,7 @@ the report. Auto-refresh from the history file is a v1.2 candidate.
 
 ## Categories
 
-### `audit-citation` (597)
+### `audit-citation` (100)
 
 **Pattern:** `cat1.intra-repo` findings in files under `docs/diagnostics/_audits/`.
 
@@ -57,7 +57,7 @@ citations should be updated to `2.16.1` and the suppressions removed.
 **Future treatment:** Remove suppression on each citation when the
 corresponding shader/source file is next modified for unrelated reasons.
 
-### `audit-doc-1810` (15)
+### `audit-doc-1810` (17)
 
 **Pattern:** `cat1.upstream-citation` findings citing `SPlisHSPlasH 1.8.10`
 in any file NOT under `particle-fluids/sph-water/shaders/` or
@@ -70,7 +70,7 @@ record of what was wrong.
 
 **Future treatment:** Permanent suppression.
 
-### `spec-grammar-example` (17)
+### `spec-grammar-example` (18)
 
 **Pattern:** `cat1.annotation-form` findings in `docs/integrity-toolkit-spec.md`
 or files under `tools/integrity/docs/`.
@@ -85,7 +85,7 @@ always fail the check.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `toolkit-own-source` (22)
+### `toolkit-own-source` (25)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `tools/integrity/integrity/`.
@@ -98,7 +98,7 @@ These are not real annotations; they are the parser definition itself.
 
 **Future treatment:** Permanent suppression on these files.
 
-### `retro-grammar-example` (2)
+### `retro-grammar-example` (8)
 
 **Pattern:** `cat1.annotation-form` findings in files under `docs/retro/`.
 
@@ -111,7 +111,7 @@ reason class as `spec-grammar-example`.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `audit-report-grammar-example` (19)
+### `audit-report-grammar-example` (49)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `docs/diagnostics/_audits/`.
@@ -123,7 +123,7 @@ they quote `integrity-allow:` strings. Same reason class as
 
 **Future treatment:** Permanent suppression.
 
-### `other-cat1` (66)
+### `other-cat1` (36)
 
 **Pattern:** Any other `cat1.*` finding not matched by the rules above.
 
@@ -166,7 +166,7 @@ sim/feature lands. Remove suppression as the consumer wires up.
 Permanent suppressions are NOT expected for this category — every
 entry has an intended consumer.
 
-### `cat2-stack-c-unused` (111)
+### `cat2-stack-c-unused` (110)
 
 **Pattern:** `cat2.public-symbol-used-c` findings against Stack C's
 public surface (commit 6).
@@ -253,7 +253,7 @@ GPU_SIMS_HAVE_ALEMBIC`).
 **Future treatment:** Remove suppression on each header when the
 header is next modified. Permanent suppressions are not expected.
 
-### `toolkit-own-unused` (?)
+### `toolkit-own-unused` (24)
 
 **Pattern:** `cat2.public-symbol-used-toolkit` findings -- top-level
 public `def` or `class` symbols declared in
@@ -293,7 +293,7 @@ underscore-prefix renaming rather than wiring up a new consumer.
 Auto-refresh of this section's count is banked for v1.3 (Decision 6
 keeps refresh manual in v1.2).
 
-### `audit-bare-path` (635)
+### `audit-bare-path` (735)
 
 **Pattern:** `cat1.bare-path` findings in files under
 `docs/diagnostics/_audits/`.
@@ -310,7 +310,7 @@ with `integrity-allow:` annotations applied via the grandfather sweep.
 **Future treatment:** Permanent suppression on audit-doc paths. The
 v1.3 may revisit whether new audit reports should use full paths.
 
-### `retro-bare-path` (11)
+### `retro-bare-path` (18)
 <!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 
 **Pattern:** `cat1.bare-path` findings in files under `docs/retro/`.

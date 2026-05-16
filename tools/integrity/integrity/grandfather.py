@@ -29,6 +29,7 @@ class Finding:
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class Classification:
     category: str
     reason: str
@@ -244,6 +245,7 @@ from integrity.common.annotations import (  # noqa: E402
 )
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def comment_form_for_md_inside_fence(fence_lang: str | None) -> str:
     """Pick a comment form for an annotation inside a markdown code block."""
     if fence_lang is None:
@@ -325,6 +327,7 @@ def render_annotation_line(
 
 
 # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def collect_findings(repo_root: Path) -> list[Finding]:
     """Run the integrity toolkit in JSON mode and parse non-suppressed findings."""
     result = subprocess.run(
@@ -353,6 +356,7 @@ def collect_findings(repo_root: Path) -> list[Finding]:
     return findings
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def group_findings_by_target(
     findings: Iterable[Finding],
 ) -> dict[tuple[str, int], list[Finding]]:

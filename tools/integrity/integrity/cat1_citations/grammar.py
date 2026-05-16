@@ -137,6 +137,7 @@ UPSTREAM_RE = re.compile(
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class UpstreamCitation:
     """A parsed `<UpstreamName> <version> <path>:<line>` citation."""
     upstream: str       # As written, e.g. "SPlisHSPlasH"

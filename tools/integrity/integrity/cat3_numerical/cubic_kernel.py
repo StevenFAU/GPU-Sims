@@ -30,6 +30,7 @@ EXPECTED_VALUES_RELATIVE = Path(
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class TestPoint:
     q: float
     h: float
@@ -38,6 +39,7 @@ class TestPoint:
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class DriverEvaluation:
     q: float
     h: float

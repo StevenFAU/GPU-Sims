@@ -28,6 +28,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 OUTPUT_PATH = SCRIPT_DIR / "expected_values.toml"
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def cubic_W(q: float, h: float) -> float:
 # integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     """Cubic spline kernel W(r,h) per SPHKernels.h:37-55.
@@ -42,6 +43,7 @@ def cubic_W(q: float, h: float) -> float:
     return norm * 2.0 * (1.0 - q) ** 3
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def cubic_gradW_magnitude(q: float, h: float, inject_factor_of_6: bool = False) -> float:
 # integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
     """|gradW(r,h)| per SPHKernels.h:62-85.

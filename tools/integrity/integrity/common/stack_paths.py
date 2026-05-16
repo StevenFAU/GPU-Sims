@@ -7,12 +7,14 @@ from pathlib import Path
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class StackPaths:
     name: str
     public_surface_dir: Path
     implementation_dir: Path
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def stack_paths(root: Path) -> dict[str, StackPaths]:
     """Return the per-stack public/impl path map rooted at `root`."""
     return {

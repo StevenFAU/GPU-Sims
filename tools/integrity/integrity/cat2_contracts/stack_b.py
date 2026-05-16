@@ -23,6 +23,7 @@ HELPER_DIR = Path("tools/integrity/integrity/cat2_contracts/ts_helper")
 
 
 @dataclass(frozen=True)
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 class PublicSymbolB:
     name: str
     kind: str
@@ -31,10 +32,12 @@ class PublicSymbolB:
     reference_count: int
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def is_node_available() -> bool:
     return shutil.which("node") is not None
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def ensure_helper_built(repo_root: Path) -> bool:
     """Build the TS helper if not already built. Returns True on success."""
     helper_dir = repo_root / HELPER_DIR

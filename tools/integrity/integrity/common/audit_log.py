@@ -23,6 +23,7 @@ scope: machine-generated; do not edit by hand
 """
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def audit_log_path(root: Path, when: _dt.date | None = None) -> Path:
     """Return the audit log path for `when` (default: today UTC)."""
     if when is None:
@@ -31,6 +32,7 @@ def audit_log_path(root: Path, when: _dt.date | None = None) -> Path:
     return root / "docs" / "diagnostics" / "_audits" / f"integrity_failures_{date_str}.md"
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def append_findings(
     root: Path,
     findings: list[Finding],

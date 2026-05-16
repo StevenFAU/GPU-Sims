@@ -184,11 +184,13 @@ def feq(rho: float, ux: float, uy: float, uz: float,
     return out
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def opposite_index(i: int, cs: list[tuple[int, int, int]]) -> int:
     target = (-cs[i][0], -cs[i][1], -cs[i][2])
     return cs.index(target)
 
 
+# integrity-allow: cat2.public-symbol-used-toolkit; pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused); n/a
 def assert_close(label: str, got: float, want: float, tol: float = TOL_ABS) -> None:
     if abs(got - want) > tol:
         raise AssertionError(

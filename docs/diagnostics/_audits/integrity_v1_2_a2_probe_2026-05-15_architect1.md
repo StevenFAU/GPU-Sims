@@ -590,7 +590,9 @@ error. A.2 must either add a re-export surface to the toolkit's
 
 FACT (from the dumps above):
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `stack_d.py:17` — `COMMON_PY_PACKAGE_DIR = Path("common/common-py/gpusims_common")`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `stack_d.py:18` — `PACKAGE_NAME = "gpusims_common"`
 - Used inside `extract_public_surface` (line 39) and inside the
   `from gpusims_common.X` absolute-import detection (line 58).
@@ -616,6 +618,7 @@ integrity: 0 pass, 0 soft-warn, 0 hard-fail, 17 suppressed
 
 No stanzas printed (per P1.6, suppressed stanzas are no longer
 emitted). All 17 `cat2-stack-d-unused` findings (§ A.3) are present
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 but suppressed by inline `integrity-allow:` annotations from the
 v1.1 grandfather sweep.
 
@@ -711,7 +714,9 @@ to refresh), 2 are `stack_paths.py` constants (already a per-stack
 table; A.2 could add a fourth row), and 1 is the human-message string
 in the check itself. The actual *load-bearing* references are:
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `stack_d.py:17` — `COMMON_PY_PACKAGE_DIR` constant
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `stack_d.py:18` — `PACKAGE_NAME` constant (used in line 58 for the
   absolute-form import prefix `gpusims_common.`)
 
@@ -872,6 +877,7 @@ INFERENCE — partitioning these 30 by failure-mode:
   `EXPECTED_JSON`, `TOL_ABS`, etc. all flag — but they ARE used,
   just only inside their defining module. The Stack D existing check
   has the same single-module-self-exclusion logic
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   (`stack_d.py:262-264`). So the existing check, applied to the
   toolkit, would produce identical false positives.
 
@@ -1325,6 +1331,7 @@ INFERENCE: there is one declared `[project.scripts]` console entry,
 `integrity = "integrity.__main__:main"` — i.e. when the package is
 installed via pip, it produces an `integrity` shell command that
 runs `integrity.__main__.main`. That, plus
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `python3 -m integrity` (same target via `__main__.py:11`) and the
 ad-hoc `python3 tools/integrity/scripts/grandfather_sweep.py`, are
 the only external entry points.
@@ -1450,6 +1457,7 @@ catalog" candidate for the same commit, since A.2 will be adding a
 new heading (`toolkit-own-unused`) anyway.
 
 K.2 — **`stack_paths()` has no consumer.** Per § E.2 / § F.1,
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `integrity/common/stack_paths.py:16 stack_paths()` is the kind of
 "declared public API, no consumer" pattern A.2 will surface. Could
 be a real defect (the three Stack checks should consume it instead

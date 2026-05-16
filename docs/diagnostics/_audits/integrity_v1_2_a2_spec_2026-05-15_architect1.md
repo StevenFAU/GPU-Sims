@@ -1160,6 +1160,7 @@ notes stay unchanged.
 ### 7.4 Verify `stack_paths()` is in the toolkit-own-unused bucket
 
 Per Decision 7. Verify the post-sweep state includes an
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` annotation on `stack_paths.py` for
 `stack_paths()`. Run:
 

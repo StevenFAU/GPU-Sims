@@ -71,3 +71,38 @@ def test_used_symbols_not_flagged(fixtures_dir: Path) -> None:
 def test_missing_compile_commands_returns_empty(tmp_path: Path) -> None:
     findings = run(tmp_path)
     assert findings == []
+
+
+# ---------------------------------------------------------------------------
+# T2.3 single-parse refactor perf assertion (opt-in)
+# ---------------------------------------------------------------------------
+
+
+import os  # noqa: E402
+
+
+@pytest.mark.skipif(
+    os.environ.get("INTEGRITY_PERF_ASSERTIONS") != "1",
+    reason=(
+        "Performance assertion; set INTEGRITY_PERF_ASSERTIONS=1 to enable. "
+        "Default-skipped because CI walltime is observed via action logs, "
+        "not via pytest, per spec section 3.D."
+    ),
+)
+def test_stack_c_single_parse_walltime_under_ceiling() -> None:
+    """Single-parse refactor (T2.3) target: real-repo Stack C scan under
+    a conservative ceiling. Pre-refactor double-parse baseline was ~95s
+    locally; the refactor halves that. Ceiling set generously to avoid
+    flake on slow runners (>2x expected post-refactor walltime)."""
+    import time
+
+    repo_root = Path(__file__).resolve().parents[3]
+    if not (repo_root / "build" / "compile_commands.json").is_file():
+        pytest.skip("compile_commands.json absent; perf assertion needs build/")
+    start = time.monotonic()
+    run(repo_root)
+    walltime = time.monotonic() - start
+    assert walltime < 120.0, (
+        f"Stack C single-parse run took {walltime:.1f}s; "
+        f"expected <120s ceiling (post-refactor target ~50s)"
+    )

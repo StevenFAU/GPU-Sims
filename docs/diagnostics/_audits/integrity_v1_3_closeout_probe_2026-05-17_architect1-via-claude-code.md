@@ -106,6 +106,7 @@ No commit message contains "v1.3 closeout" (FACT — verified by visual scan).
 425:def apply_annotations(
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`Classification` dataclass (FACT, verbatim, grandfather.py:31-36):**
 
 ```python
@@ -117,6 +118,7 @@ class Classification:
     issue_ref: str
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`Finding` dataclass for context (FACT, verbatim, grandfather.py:23-28):**
 
 ```python
@@ -128,12 +130,14 @@ class Finding:
     message: str
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`classify()` signature (FACT, verbatim, grandfather.py:110):**
 
 ```python
 def classify(finding: Finding) -> Classification:
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`apply_annotations()` signature (FACT, verbatim, grandfather.py:425-430):**
 
 ```python
@@ -146,6 +150,7 @@ def apply_annotations(
 ```
 
 - **`annotation_already_present()` signature + body (FACT, verbatim,
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   grandfather.py:322-334):**
 
 ```python
@@ -165,6 +170,7 @@ def annotation_already_present(prev_line: str, check_id: str) -> bool:
 ```
 
 - **Final `return Classification(category="other-cat1", ...)` in
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `classify()` (FACT, verbatim, grandfather.py:268-272):**
 
 ```python
@@ -186,6 +192,7 @@ def annotation_already_present(prev_line: str, check_id: str) -> bool:
   `check_id`, `file`, `line`, `message` only). The `suppressed`
   property is read from the JSON-shape `dict` returned by
   `integrity --output json` inside `collect_findings()` at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `grandfather.py:402`, but the parsed `Finding` instance carries no
   such field.
 
@@ -199,6 +206,7 @@ def annotation_already_present(prev_line: str, check_id: str) -> bool:
 ### B.2 — `tools/integrity/scripts/grandfather_sweep.py`
 
 - **LOC:** 61 (FACT).
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`main()` body (FACT, verbatim, grandfather_sweep.py:14-57):**
 
 ```python
@@ -272,6 +280,7 @@ def main(argv: list[str]) -> int:
 ```
 
 - **First `Index.create()` / `index.parse(...)` call site (FACT,
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   verbatim, stack_c.py:148-160):**
 
 ```python
@@ -290,9 +299,11 @@ def main(argv: list[str]) -> int:
         _walk_for_public_decls(tu.cursor, public_dir, symbols, seen_usrs, class_stack=[])
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   Containing function: **`extract_public_surface()`** (stack_c.py:129).
 
 - **Second `Index.create()` / `index.parse(...)` call site (FACT,
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   verbatim, stack_c.py:351-363):**
 
 ```python
@@ -315,6 +326,7 @@ def main(argv: list[str]) -> int:
             )
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   Containing function: **`find_references()`** (stack_c.py:327).
 
 - **Function called by `public_symbol_used_c.py`'s `run()`:** both
@@ -498,6 +510,7 @@ jobs:
 ```
 
 - **`fetch-depth` value on the checkout step:** `1` (FACT,
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `integrity.yml:28`).
 
 - **Implication for closeout commit-4 § 5.C.2 audit-prose freshness
@@ -511,6 +524,7 @@ jobs:
 
 ### B.6 — `tools/integrity/integrity/common/annotations.py`
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`ANNOTATION_RE` (FACT, verbatim, annotations.py:31-36):**
 
 ```python
@@ -522,6 +536,7 @@ ANNOTATION_RE = re.compile(
 )
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`parse_annotation_line()` (FACT, verbatim, annotations.py:39-55):**
 
 ```python
@@ -555,6 +570,7 @@ def parse_annotation_line(text: str) -> tuple[str, str, str] | None:
 
 ### B.7 — `tools/integrity/integrity/snapshot.py`
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`_KNOWN_CATEGORIES` (FACT, verbatim, snapshot.py:27-55):**
 
 ```python
@@ -589,6 +605,7 @@ _KNOWN_CATEGORIES = (
 )
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`_REASON_PATTERNS` (FACT, verbatim, snapshot.py:58-69):**
 
 ```python
@@ -606,6 +623,7 @@ _REASON_PATTERNS: tuple[tuple[str, str], ...] = (
 )
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - **`_extract_category()` (FACT, verbatim, snapshot.py:72-81):**
 
 ```python
@@ -629,6 +647,7 @@ def _extract_category(reason: str) -> str:
   invariant. There's no unit test pinning the tuple membership,
   unlike `FALLTHROUGH_CATEGORIES` which is pinned by
   `test_fallthrough_categories_contents` per a docstring comment in
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   grandfather.py:74.
 
 ### B.8 — `project-state.md`
@@ -668,6 +687,7 @@ Canonical example: Phase 10 polish-4 surfaced two contradictory comments in `mai
 ### Combined-multi-sim-venv testing for shared-pattern adoption
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Bare-path citation on line 561 is `main.py:306-318` — same defect
 class the cat1.bare-path annotation on line 560 covers.
 
@@ -683,6 +703,7 @@ class the cat1.bare-path annotation on line 560 covers.
 4. **Buffer-naming convention** (mid-revision probe). `StateWriter` auto-appends `.bin` at `state_writer.cpp:57`; six of seven shipped sims pass bare names; ES is the lone outlier producing real `velocity.bin.bin` files on disk. Phase 11 follows bare-name; ES bug stays out of scope.
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Bare-path citation on line 595 is `state_writer.cpp:57`.
 
   **Lines 662-675 (around 666-667):**
@@ -697,6 +718,7 @@ Bare-path citation on line 595 is `state_writer.cpp:57`.
 ```
 
 Line 668 triggers three cat1.bare-path findings:
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `context.hpp:78`, `context.cpp:116`, `context.cpp:202`.
 
 - **Gate output for project-state.md (FACT, verbatim):**
@@ -1082,6 +1104,7 @@ Command:
 `buffer.cpp:108-145`
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (`BoundaryModel_Akinci2012.h:1-116` appears as `.h` in the corpus
 but `head -30` truncated alphabetically — verified by running
 `sort -u | wc -l`, the corpus is much larger than 30 unique entries.)
@@ -1176,6 +1199,7 @@ is simpler but more expensive on every run.
 ### E.2 — Workflow-level flag (FACT + INFERENCE)
 
 If the spec adopts option 1 (`fetch-depth: 0`), the workflow checkout
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 step at `integrity.yml:28` needs to change from `fetch-depth: 1` to
 `fetch-depth: 0`. This is a workflow-global change visible to every
 job, not just the audit-prose freshness step.
@@ -1248,6 +1272,7 @@ classifier.
 
 **Recommendation:** option (b) (add `suppressed: bool` to `Finding`
 with a default of `False` and populate it from the JSON dict at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `grandfather.py:402`). This is a 3-line dataclass change plus the
 populate line; no callers will break because the field has a
 default.
@@ -1255,6 +1280,7 @@ default.
 ### G.2 — Suppression not firing on project-state.md cat1.bare-path
 
 **FACT** (§ B.8): three `cat1.bare-path` annotation lines at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 project-state.md:560/594/667 do not suppress the cat1.bare-path
 findings at 561/595/668 (5 total findings, all HARD_FAIL). The
 annotations and findings share the same `cat1.bare-path` check_id

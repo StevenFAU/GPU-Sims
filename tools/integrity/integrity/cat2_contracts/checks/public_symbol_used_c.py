@@ -25,9 +25,7 @@ from pathlib import Path
 
 from integrity.cat2_contracts.stack_c import (
     BUILD_COMPILE_COMMANDS,
-    discover_consumer_sources,
-    extract_public_surface,
-    find_references,
+    extract_and_find_references,
 )
 from integrity.common.results import FailureMode, Finding
 
@@ -43,15 +41,12 @@ def run(repo_root: Path) -> list[Finding]:
         return findings
 
     try:
-        public_symbols = extract_public_surface(repo_root)
+        public_symbols, refs_by_usr = extract_and_find_references(repo_root)
     except RuntimeError:
         return findings
 
     if not public_symbols:
         return findings
-
-    consumer_sources = discover_consumer_sources(repo_root)
-    refs_by_usr = find_references(repo_root, public_symbols, consumer_sources)
 
     for symbol in public_symbols:
         sites = refs_by_usr.get(symbol.usr, [])

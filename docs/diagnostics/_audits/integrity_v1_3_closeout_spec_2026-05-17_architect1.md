@@ -296,11 +296,15 @@ Confirm at HEAD:
 
 - `apply_annotations(repo_root, dry_run, sweep_live_source, force_sweep_categories)`
   returns `tuple[int, int, dict[str, int], int]` (probe § B.1
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   confirmed: `grandfather.py:425-430`).
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 - `classify(finding) -> Classification` (probe § B.1: `grandfather.py:110`).
 - `Classification` dataclass fields are `category`, `reason`, `issue_ref`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   (probe § B.1: `grandfather.py:31-36`, frozen=True).
 - `Finding` dataclass fields are `check_id`, `file`, `line`, `message`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   (probe § B.1: `grandfather.py:23-28`). **No `suppressed` field
   currently exists** (probe § G.1).
 - `FALLTHROUGH_CATEGORIES: frozenset[str]` (probe § B.1: line 76) and
@@ -1802,6 +1806,7 @@ migration.
 ### 7.A Purpose & sources
 
 Per Part-B retro Decision 6 / probe § E.3 / probe § K.6: three
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` annotations on `project-state.md` at lines 559, 593,
 666 carry the `other-cat1` reason string but have no backing findings.
 They are fossils — the underlying findings either resolved (the cited

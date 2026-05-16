@@ -133,6 +133,7 @@ integrity: 5 pass, 0 soft-warn, 60 hard-fail, 1273 suppressed
 
 Rewrite alone is finding-suppression neutral. Suppressed grew by +10:
 nine new inline `cat1.annotation-form` sweep-companion annotations on
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 test-fixture lines that contain literal `integrity-allow:` grammar
 tokens, plus one bookkeeping increment from the rewrite docstring
 exchange.
@@ -231,6 +232,7 @@ classifier-design concern; banked here, not addressed by closeout.
 spec's drafted `rewrite_stale_reasons` body began with
 `findings = collect_findings(repo_root)`. Empirically,
 `collect_findings` filters suppressed findings out of its return value
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (`grandfather.py:402` skips entries with `f.get("suppressed")` set).
 The rewrite mode by construction needs the suppressed findings — those
 are the entries whose annotations exist and may be stale — so calling
@@ -246,6 +248,7 @@ absence; this approach sidesteps both by reading the raw JSON.
 
 **Dry-run vs apply count: 9 vs 8.** Already covered in § C. The
 difference is a single duplicate-line collision in
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `integrity_v1_2_a3_probe_2026-05-15_architect1.md:1046`. The dry-run
 counter walks the rewrite list; the apply pass collapses identical
 in-place rewrites. Future tightening: dedupe the rewrite list by
@@ -254,6 +257,7 @@ not blocking.
 
 **New inline annotations on test fixtures.** The new
 rewrite-stale-reasons tests construct fixtures that literally embed
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` grammar tokens (the annotation lines the rewrite
 logic operates on). These embeddings would fire `cat1.annotation-form`
 on the test file itself; the test file lives under
@@ -262,6 +266,7 @@ on the test file itself; the test file lives under
 of the regular sweep by P1.8 protection. To keep the gate at the
 60-hard-fail baseline per spec § 1.4 and the verification block in
 § 2.D, nine inline
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a`
 comments were added above the literal-token lines (the same pattern
 the existing tests in this file use at line 73 etc.). This is the
@@ -269,6 +274,7 @@ toolkit's standard self-suppression convention for tests that exercise
 the annotation grammar.
 
 **Test fixture path strings sanitised.** The initial draft used
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `"some/path.cpp:42"` as fixture text. That string format matches the
 `cat1.intra-repo` citation grammar and fired six new
 `HARD_FAIL`s on the test file itself. Per Hard Rule 10

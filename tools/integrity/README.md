@@ -52,6 +52,12 @@ To suppress a finding with an inline annotation (per spec § 3.2):
 
 See `tools/integrity/docs/failure-modes.md` and `tools/integrity/docs/grandfather-catalog.md` for details.
 
+## Conventions
+
+Toolkit conventions are documented at
+[`docs/conventions.md`](docs/conventions.md). Banked across the v1.x
+cycle; references in spec / retro / audit prose should point there.
+
 ## Sibling tools
 
 ### audit-prose-freshness

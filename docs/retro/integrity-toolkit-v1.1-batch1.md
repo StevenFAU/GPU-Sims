@@ -176,7 +176,7 @@ annotation parser/suppressor without considering that `cat1.intra-repo`
 and `cat1.upstream-citation` also scan markdown files line-by-line and
 would also fire on fence-internal content. Audit reports with terminal-
 output examples inside fenced blocks (containing citations like
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 `example.cpp:42` for illustration) became 200+ new hard-fails.
 
@@ -328,14 +328,14 @@ would have caught at write-time:
 
 | Finding | Bare path | Registered upstream |
 |---|---|---|
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 | 25 | `chapter13/cpu/LBM.cpp:97` | Krueger book-companion-code-2016 |
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 | 26 | `chapter13/cpu/LBM.cpp:97` | Krueger book-companion-code-2016 |
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 | 27 | `main.cpp:1168-1279` | (ambiguous — no upstream) |
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 | 28 | `SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-75` | SPlisHSPlasH 2.16.1 |
 
 The Krueger upstream is already registered. The SPlisHSPlasH 2.16.1

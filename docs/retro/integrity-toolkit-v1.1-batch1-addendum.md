@@ -103,7 +103,7 @@ per run unless `--no-history-append`)".
 commit (`dbac051`) touching the file; `git show
 dbac051:tools/integrity/.grandfather-history.json` is also `[]`. The
 commit subject "seed history" created an empty-array file; it never seeded
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 a real entry. The append machinery in `snapshot.py:178-181` is functional
 — but no commit since `dbac051` has landed a populated entry, and runs
@@ -130,19 +130,19 @@ bare-path patterns A.3 would catch".
 hard-fails remain (the original 6 minus the two own-source findings
 annotated by `a42085a`). A.3 at basic basename-match scope catches:
 
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 - `chapter13/cpu/LBM.cpp:97` at `docs/phase12_lattice_boltzmann.md:203` —
   Krueger registered. **CATCHABLE.**
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 - `chapter13/cpu/LBM.cpp:97` at `docs/phase12_lattice_boltzmann.md:351` —
   same. **CATCHABLE.**
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 - `SPlisHSPlasH/BoundaryModel_Akinci2012.cpp:48-75` at
 <!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
   `compute_boundary_volume.comp.glsl:7` — SPlisHSPlasH 2.16.1 registered.
   **CATCHABLE.**
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 - `main.cpp:1168-1279` at `docs/phase12_lattice_boltzmann.md:1276` —
   basename `main.cpp` is **AMBIGUOUS** (matches dozens of intra-repo files
@@ -191,7 +191,7 @@ operating shape and may warrant different convention design.
 without filtering on `f.suppressed`. The summary line reports the correct
 counts (`4 hard-fail, 1007 suppressed`), but the stanza list dumps
 suppressed findings as if they were HARD_FAIL stanzas. The `github`-output
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 branch at `runner.py:133-139` correctly filters with `if f.suppressed:
 continue`. The `human`-output branch does not.
@@ -204,7 +204,7 @@ the summary line correctly reports 4 unsuppressed. The human-readable
 output and the summary line are mutually inconsistent.
 
 Fix: one-line addition of `if f.suppressed: continue` to the human-output
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 branch (between `runner.py:143` and `runner.py:144`).
 
@@ -295,7 +295,7 @@ Added to batch-2 scope from the probe:
   sub-tests, or three separate modules — design choice for spec drafting.
   Uses the existing `d3q19_verify.py` harness; no new algebraic work.
 - **P1.6 — Fix strict-mode human-renderer suppressed-stanza filter
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
   (§ 4.1).** One-line fix to `runner.py:143-145` (insert `if
   f.suppressed: continue`). No test changes needed beyond confirming

@@ -26,6 +26,13 @@ HISTORY_FILE_RELATIVE = Path("tools/integrity/.grandfather-history.json")
 
 _KNOWN_CATEGORIES = (
     "audit-citation",
+    # v1.3 T1.1 -- cat1.intra-repo snapshot-doc categories. Grouped with
+    # audit-citation (the existing cat1.intra-repo classifier output).
+    # Placed before "other-cat1" to preserve fall-through semantics for
+    # the substring-matched extraction.
+    "toolkit-doc-snapshot",
+    "project-state-snapshot",
+    "retro-doc-snapshot",
     "live-shader-1810",
     "audit-doc-1810",
     "spec-grammar-example",

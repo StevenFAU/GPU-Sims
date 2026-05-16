@@ -128,7 +128,7 @@ Compressed observations from each commit's audit.
 <!-- integrity-allow: cat1.annotation-form; retrospective-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 **Annotation grammar doesn't understand markdown code fences.** Literal mentions of `integrity-allow:` in fenced code blocks within docs get parsed as real annotations. Handled in v1 by per-line grandfather suppression. v2 could add fenced-block awareness to the grammar.
 
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->
 **Bare-path-to-upstream-basename detection deferred.** The LeniaNDK citation pattern (`LeniaNDK.py:329-335` with no version prefix) falls through the upstream grammar. v2 candidate in spec § 13.
 

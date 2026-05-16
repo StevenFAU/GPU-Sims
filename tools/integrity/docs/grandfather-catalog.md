@@ -53,6 +53,53 @@ editing them would erase the historical record.
 v1 may reference paths-that-no-longer-exist; if so, those new citations get
 the same suppression at write-time.
 
+### `toolkit-doc-snapshot` (4)
+
+**Pattern:** `cat1.intra-repo` findings in `tools/integrity/docs/**`,
+`docs/integrity-toolkit-spec.md`, or `tools/integrity/README.md`.
+
+**Why grandfathered:** Toolkit-internal documentation references toolkit-tracked
+file paths as documentation convention. Treating these as `cat1.intra-repo`
+violations and grandfathering under `other-cat1` was the pre-v1.3 behavior;
+v1.3 names them under their own permanent category for clarity and to drain
+the `other-cat1` fallthrough pool.
+
+**Future treatment:** Permanent suppression. New toolkit-doc citations may
+continue to cite intra-repo paths without explicit grammar annotation; the
+grandfather sweep absorbs them on next run.
+
+### `project-state-snapshot` (0)
+
+**Pattern:** `cat1.intra-repo` findings in `project-state.md` (repo root).
+
+**Why grandfathered:** `project-state.md` is the cross-phase snapshot
+narrative document; it references intra-repo file paths as a documentation
+convention. Per v1.1 batch-1 post-retro landing audit § D.3, this category
+was sketched then; v1.3 lands it.
+
+**Future treatment:** Permanent suppression. The count is currently 0
+because all prior `cat1.intra-repo` findings on `project-state.md` either
+resolved (via concurrent commits to project-state.md) or were re-attributed
+when A.3 introduced `cat1.bare-path`. The category is forward-compatible
+for any future findings.
+
+**Tracked observation:** Three `integrity-allow:` fossil annotations on
+`project-state.md` at lines 559, 593, 666 bear the `other-cat1` reason
+string but have no backing findings. Banked for v1.3 part-C hygiene cleanup
+per part-B spec Decision 6; not addressed in T1.1.
+
+### `retro-doc-snapshot` (4)
+
+**Pattern:** `cat1.intra-repo` findings in `docs/retro/**`.
+
+**Why grandfathered:** Retro documents narrate cross-batch history and cite
+repo file paths in prose. The post-retro landing audit's sweep companion
+observed retro-doc findings falling through to `other-cat1`; v1.3 names them.
+
+**Future treatment:** Permanent suppression. New retros (e.g., the v1.3
+batch-1 part-A retro that landed concurrently with this batch) may cite
+intra-repo paths; the grandfather sweep absorbs them.
+
 ### `live-shader-1810` (3)
 
 **Pattern:** `cat1.upstream-citation` findings citing `SPlisHSPlasH 1.8.10`
@@ -100,7 +147,7 @@ always fail the check.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `toolkit-own-source` (25)
+### `toolkit-own-source` (26)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `tools/integrity/integrity/`.
@@ -138,7 +185,7 @@ they quote `integrity-allow:` strings. Same reason class as
 
 **Future treatment:** Permanent suppression.
 
-### `other-cat1` (36)
+### `other-cat1` (28)
 
 **Pattern:** Any other `cat1.*` finding not matched by the rules above.
 
@@ -157,7 +204,7 @@ surface (commit 5).
 symbols with no current consumer. Sample shapes:
 
 - `ParticleFrame.{positions, velocities, radii, ids}` — fields written
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; toolkit-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog toolkit-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
   via the dataclass constructor in `alembic_writer.py:96`
   (`ParticleFrame(positions=x_np, count=n)`) but never read by
@@ -192,10 +239,10 @@ declared in `common/common-cpp/include/gpusims/` with no current
 consumer in `common-cpp/src/`, `common-cpp/examples/`, or per-sim
 Stack C source. Includes the canonical spec § 12 defects:
 
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; toolkit-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog toolkit-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; toolkit-doc bare-path citation pre-v1.2 (see grandfather-catalog toolkit-doc-bare-path); n/a -->
 - `gpusims::vdb::writeVec3Grid` — declared in `vdb_writer.hpp:33`,
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; toolkit-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog toolkit-doc-snapshot); n/a -->
   implemented at `src/vdb_writer.cpp:97`, never called.
 - `gpusims::abc::ParticleFrame::radii` — declared in
   `alembic_writer.hpp`, written by constructor in the host code at

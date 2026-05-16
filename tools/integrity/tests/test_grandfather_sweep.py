@@ -304,3 +304,46 @@ def test_fallthrough_categories_contents() -> None:
         "other-cat1",
         "other-cat1-bare-path",
     })
+
+
+# ---------------------------------------------------------------------------
+# T1.1 -- Three new permanent cat1.intra-repo categories
+# ---------------------------------------------------------------------------
+
+
+def test_toolkit_doc_snapshot_routes_tools_integrity_docs() -> None:
+    f = _f("cat1.intra-repo", "tools/integrity/docs/algebraic/d3q19.md", line=175)
+    assert classify(f).category == "toolkit-doc-snapshot"
+
+
+def test_toolkit_doc_snapshot_routes_integrity_spec() -> None:
+    f = _f("cat1.intra-repo", "docs/integrity-toolkit-spec.md", line=1)
+    assert classify(f).category == "toolkit-doc-snapshot"
+
+
+def test_toolkit_doc_snapshot_routes_readme() -> None:
+    f = _f("cat1.intra-repo", "tools/integrity/README.md", line=1)
+    assert classify(f).category == "toolkit-doc-snapshot"
+
+
+def test_project_state_snapshot_routes() -> None:
+    f = _f("cat1.intra-repo", "project-state.md", line=559)
+    assert classify(f).category == "project-state-snapshot"
+
+
+def test_retro_doc_snapshot_routes() -> None:
+    f = _f("cat1.intra-repo", "docs/retro/integrity-toolkit-v1.1-batch1.md", line=332)
+    assert classify(f).category == "retro-doc-snapshot"
+
+
+def test_new_rules_dont_match_unrelated_live_source_paths() -> None:
+    # A live-source path should still fall through to other-cat1.
+    f = _f("cat1.intra-repo", "common/common-cpp/src/widget.cpp", line=10)
+    assert classify(f).category == "other-cat1"
+
+
+def test_new_categories_in_known_categories() -> None:
+    from integrity.snapshot import _KNOWN_CATEGORIES
+    assert "toolkit-doc-snapshot" in _KNOWN_CATEGORIES
+    assert "project-state-snapshot" in _KNOWN_CATEGORIES
+    assert "retro-doc-snapshot" in _KNOWN_CATEGORIES

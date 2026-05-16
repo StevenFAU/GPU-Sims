@@ -236,6 +236,35 @@ def classify(finding: Finding) -> Classification:
             issue_ref="n/a",
         )
 
+    # T1.1 -- Three named permanent categories for cat1.intra-repo findings
+    # on snapshot-style documents. Per v1.3 roadmap section 4 T1.1 and v1.1
+    # batch-1 post-retro landing audit section D.3.
+
+    if cid == "cat1.intra-repo" and (
+        f.startswith("tools/integrity/docs/")
+        or f == "docs/integrity-toolkit-spec.md"
+        or f == "tools/integrity/README.md"
+    ):
+        return Classification(
+            category="toolkit-doc-snapshot",
+            reason="toolkit-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog toolkit-doc-snapshot)",
+            issue_ref="n/a",
+        )
+
+    if cid == "cat1.intra-repo" and f == "project-state.md":
+        return Classification(
+            category="project-state-snapshot",
+            reason="project-state.md cross-phase snapshot intra-repo citation (see grandfather-catalog project-state-snapshot)",
+            issue_ref="n/a",
+        )
+
+    if cid == "cat1.intra-repo" and f.startswith("docs/retro/"):
+        return Classification(
+            category="retro-doc-snapshot",
+            reason="retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot)",
+            issue_ref="n/a",
+        )
+
     return Classification(
         category="other-cat1",
         reason="grandfathered-pre-v1 (see grandfather-catalog other-cat1)",

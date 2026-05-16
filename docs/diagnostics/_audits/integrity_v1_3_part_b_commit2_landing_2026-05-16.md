@@ -271,4 +271,4 @@ commit 1). Behavior-identical to the spec's class-based example code.
 ## § H. Next commit
 
 Commit 3 — SHA back-fill. SHA cross-reference for this commit will be
-filled in by commit 3: `<COMMIT_2_SHA>`.
+filled in by commit 3: `710ac93`.

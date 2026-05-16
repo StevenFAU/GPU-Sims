@@ -153,4 +153,4 @@ semantics are unchanged.
 
 Commit 2 — T1.1 three classifier rules + catalog sections + sweep
 companion. SHA cross-reference for this commit will be filled in by
-commit 3 (SHA back-fill): `<COMMIT_1_SHA>`.
+commit 3 (SHA back-fill): `239d7a2`.

@@ -556,7 +556,6 @@ For sim-tier dropdowns whose interactivity depends on runtime conditions (FFT-ba
 
 Comments that assert non-obvious platform or library behavior (coordinate orientations, byte conventions, GPU driver quirks, OS-specific paths, library-internal contracts) must cite the verification source: an inline sandbox probe, a verification report at file:line, or a documented Claude Code escape-hatch test. "Verbatim inherited from prior sim" is not sufficient — the prior sim's working behavior may rely on positional symmetries that don't transfer. Spec drafters author these comments with citations; architect-2 review catches missing ones; Claude Code execution preserves them.
 
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 <!-- integrity-allow: cat1.bare-path; bare-path citation (other-cat1-bare-path; review per category in grandfather-catalog); n/a -->
 Canonical example: Phase 10 polish-4 surfaced two contradictory comments in `main.py` about Taichi GGUI cursor-y origin — line 164 claimed y=0 at bottom, line 203 claimed y=0 at bottom (inherited verbatim from Phase 9 MPM main.py:306-318). Empirical reality on Taichi 1.7.4 / Vulkan / Ubuntu 24.04 is y=0 at TOP. MPM's flip worked despite the wrong comment because MPM's panels sit in a region where the inversion is symmetric. Lenia's paint surface exposed the inconsistency. Banked Phase 10 retro.
 
@@ -590,7 +589,6 @@ Phase 11 sph-water caught five distinct fabrication shapes via pre-spec-lock, mi
 
 3. **`StateWriter::saveBuffer` signature** (mid-revision probe). Synced is 4-arg `(name, data, bytes, meta = {})` with count/stride/format/shape in the nlohmann::json meta. Architect-1's 5-arg fabrication and architect-2's 3-arg recall were both wrong; only the probe was right.
 
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 <!-- integrity-allow: cat1.bare-path; bare-path citation (other-cat1-bare-path; review per category in grandfather-catalog); n/a -->
 4. **Buffer-naming convention** (mid-revision probe). `StateWriter` auto-appends `.bin` at `state_writer.cpp:57`; six of seven shipped sims pass bare names; ES is the lone outlier producing real `velocity.bin.bin` files on disk. Phase 11 follows bare-name; ES bug stays out of scope.
 
@@ -663,7 +661,6 @@ A red badge on `main` after this commit is a real regression. The `Build (native
 
 ### Stack C (common-cpp)
 
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 <!-- integrity-allow: cat1.bare-path; bare-path citation (other-cat1-bare-path; review per category in grandfather-catalog); n/a -->
 - **Build (native) Debug-job: `createDebugMessenger` name-collision — resolved Phase 8.5.1 (latent since Phase 1).** `common/common-cpp/src/vk/context.cpp:207` called the namespace-scope 3-arg `gpusims::vk::createDebugMessenger(VkInstance, const VkDebugUtilsMessengerCreateInfoEXT&, VkDebugUtilsMessengerEXT*)` from inside the body of the 0-arg member `Context::createDebugMessenger()`. C++ unqualified name lookup found the class member first (class scope precedes enclosing namespace scope), failed to match the 3-arg call, and emitted a compile error. The entire block is wrapped in `#if GPU_SIMS_VALIDATION_LAYERS` which is `=1` in Debug only per `common/common-cpp/CMakeLists.txt:111–112`, so Release compiles the block out and never triggered the bug. The bug shipped in Phase 1 at `3a64055` and survived 9 days of red Build (native) Debug-job CI from Phase 3 onward, because the project's documented local build command at § 11 was Release-only and the user had never built Debug locally. Fix: renamed the member `Context::createDebugMessenger` → `Context::initDebugMessenger` (three sites: `context.hpp:78` declaration, `context.cpp:116` ctor call, `context.cpp:202` definition). Line 207's call now resolves to the free function as originally intended. **Broader episode is the subject of a new convention entry in § 7 ("Watch the actual CI surface, not the assumed CI surface").**
 

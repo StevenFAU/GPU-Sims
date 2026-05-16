@@ -55,7 +55,7 @@ tool was built to surface.
 
 ## § C. Verification
 
-Pre-edit anchoring (HEAD `<COMMIT_2_SHA>`, after closeout commit 2 landed):
+Pre-edit anchoring (HEAD `a9b2aeb`, after closeout commit 2 landed):
 
 ```
 $ python3 -m integrity --mode strict --no-audit-log 2>&1 | head -1
@@ -183,4 +183,4 @@ binary; future pre-commit-hook adoption is a one-line YAML add.
 - Convention F (v1.1 post-retro landing audit § D.2.1) — audit-prose
   freshness origination; lands in the conventions doc in commit 5
 - Convention #12 — commit 8 of this batch resolves the
-  `<COMMIT_2_SHA>` placeholder above
+  `a9b2aeb` placeholder above

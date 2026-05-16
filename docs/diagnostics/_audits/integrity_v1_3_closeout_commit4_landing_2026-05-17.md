@@ -47,7 +47,7 @@ CI-only tool with no direct operator workflow).
 
 ## § C. Verification
 
-Pre-edit anchoring (HEAD `<COMMIT_3_SHA>`, after closeout commit 3 landed):
+Pre-edit anchoring (HEAD `f45ebb2`, after closeout commit 3 landed):
 
 ```
 $ python3 -m integrity --mode strict --no-audit-log 2>&1 | head -1
@@ -149,4 +149,4 @@ closeout commits if they were submitted as a PR.
   before check-side scope expansion; resolved into mechanical
   enforcement by this commit
 - Convention #12 — commit 8 of this batch resolves the
-  `<COMMIT_3_SHA>` placeholder above
+  `f45ebb2` placeholder above

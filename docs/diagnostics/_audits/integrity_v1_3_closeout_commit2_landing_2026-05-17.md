@@ -58,7 +58,7 @@ against pathological regressions only.
 
 ## § C. Verification
 
-Pre-edit anchoring (HEAD `<COMMIT_1_SHA>`, after closeout commit 1 landed):
+Pre-edit anchoring (HEAD `1c84cce`, after closeout commit 1 landed):
 
 ```
 $ python3 -m integrity --mode strict --no-audit-log 2>&1 | head -1
@@ -229,4 +229,4 @@ behavioral changes to commit 1.
 - v1 retro § 4 (`docs/retro/integrity-toolkit-v1.md`)
 - v1.1 batch-1 retro § 6.1 item 8 (`docs/retro/integrity-toolkit-v1.1-batch1.md`)
 - Convention #12 (SHA back-fill) — commit 8 of this batch resolves the
-  `<COMMIT_1_SHA>` placeholder above
+  `1c84cce` placeholder above

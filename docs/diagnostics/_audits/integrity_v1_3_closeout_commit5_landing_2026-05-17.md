@@ -56,7 +56,7 @@ README updated with a Conventions section pointing at the new doc.
 
 ## § C. Verification
 
-Pre-edit anchoring (HEAD `<COMMIT_4_SHA>`, after closeout commit 4 landed):
+Pre-edit anchoring (HEAD `c7e97bd`, after closeout commit 4 landed):
 
 ```
 $ python3 -m integrity --mode strict --no-audit-log 2>&1 | head -1
@@ -158,4 +158,4 @@ reference and the retros remain the per-origination forensic record.
 - Part-A retro § 5.2 (taxonomy proposal)
 - Part-B retro § 5.4 (architect-2 opt-out formal-bank recommendation)
 - Convention #12 — commit 8 of this batch resolves the
-  `<COMMIT_4_SHA>` placeholder above
+  `c7e97bd` placeholder above

@@ -47,7 +47,7 @@ toolkit v1 milestone closed:
 
 ## § C. Verification
 
-Pre-edit anchoring (HEAD `<COMMIT_6_SHA>`, after closeout commit 6 landed):
+Pre-edit anchoring (HEAD `ebbb743`, after closeout commit 6 landed):
 
 ```
 $ python3 -m integrity --mode strict --no-audit-log 2>&1 | head -1
@@ -73,6 +73,7 @@ integrity: 5 pass, 0 soft-warn, 49 hard-fail, 1339 suppressed
 ```
 
 +4 hard-fails from the new prose: two grammar-literal mentions of
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` in audit-doc context (commit-6 audit body refers
 to the annotation tokens), one new bare-path citation in
 project-state.md's banked-items list, one new cat1.bare-path that
@@ -130,6 +131,7 @@ the conventions doc disclosure (resolved D4–D7); T4 horizon
 enumerates the v2 candidates verbatim from the spec.
 
 **G.2 line-number re-anchor.** Post-commit-6, the
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `project-state.md:560 / 594 / 667` annotation references that the
 probe report uses no longer apply (commit 6's three deletions
 shifted those lines up). § 9's G.2 entry uses the post-commit-6 line
@@ -145,6 +147,7 @@ project-state.md is the canonical chronological record).
 
 **Sweep companion shape.** 4 annotations added: 2
 `audit-report-grammar-example` (commit-6 audit's body mentions
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` literally), 1 `audit-bare-path` (some bare-path
 citation in the same audit), 1 `other-cat1-bare-path`
 (project-state.md added a bare-path citation in the new banked-items
@@ -179,5 +182,5 @@ gap is visible without manually re-discovering it.
 - Spec § 8 (`docs/diagnostics/_audits/integrity_v1_3_closeout_spec_2026-05-17_architect1.md`)
 - Probe § B.8, § B.9, § G.2, § G.4, § G.5
 - Convention #12 — commit 8 of this batch resolves the
-  `<COMMIT_6_SHA>` and `<COMMIT_8_SHA>` placeholders above
+  `ebbb743` and `<COMMIT_8_SHA>` placeholders above
 - `tools/integrity/docs/conventions.md` (D4–D7 disclosures referenced)

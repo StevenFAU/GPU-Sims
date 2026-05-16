@@ -44,7 +44,7 @@ worse if a future suppression fix activates them.
 
 ## § C. Verification
 
-Pre-edit anchoring (HEAD `<COMMIT_5_SHA>`, after closeout commit 5 landed):
+Pre-edit anchoring (HEAD `3d25ddc`, after closeout commit 5 landed):
 
 ```
 $ python3 -m integrity --mode strict --no-audit-log 2>&1 | head -1
@@ -137,4 +137,4 @@ suppression window.
 - Probe § B.8, § E.3, § G.2, § K.6
 - Part-B retro Decision 6
 - Convention #12 — commit 8 of this batch resolves the
-  `<COMMIT_5_SHA>` placeholder above
+  `3d25ddc` placeholder above

@@ -31,7 +31,9 @@ out-of-range failure, range citation, non-repo-local skip). README gets
 a Sibling-Tools section pointing at the script.
 
 Tightened-from-spec regex scope: the spec § 4.C.1 draft regex matched
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 upstream-style citations (`chapter13/cpu/LBM.cpp:97`) and bare
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 basenames (`LeniaNDK.py:329`) which are common in the corpus but not
 meant to resolve in-repo. First-run smoke against the real repo with
 the spec's draft regex produced 881 failures — far above the >50

@@ -81,12 +81,11 @@ def _repo_local_top_dirs(repo_root: Path) -> set[str]:
     """Set of directory names at repo root. A citation path is treated as
     repo-local only if its first segment matches one of these.
 
-    This filters out upstream-style citations (e.g., `chapter13/cpu/LBM.cpp:97`
-    or bare basenames like `LeniaNDK.py:329`) that the cat1.bare-path
-    grammar accepts as valid prose but that are not meant to resolve
-    against the local repo. The cat1.intra-repo check uses git ls-files
-    for the same gating; this tool stays cheap by checking dir presence
-    only.
+    This filters out upstream-style citations (e.g., bare basenames
+    or multi-segment paths whose first segment is a vendor chapter
+    folder rather than a repo directory). The cat1.intra-repo check
+    uses git ls-files for the same gating; this tool stays cheap by
+    checking repo-root presence only.
 
     Bare files at the repo root (e.g., `CHANGELOG.md`, `project-state.md`)
     are also returned by name so single-segment citations to them still

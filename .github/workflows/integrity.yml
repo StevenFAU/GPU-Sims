@@ -58,6 +58,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[dev]
 
+      - name: Check paired grandfather-sweep
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Fetch the base branch ref so the diff range resolves. The
+          # workflow's checkout step uses fetch-depth: 1, which gives us
+          # only the head commit; fetching the base ref (a real ref name,
+          # not a bare SHA) is the reliable path per probe section E.1
+          # option 2.
+          git fetch --no-tags --depth=1 origin "$BASE_REF"
+          python3 tools/integrity/scripts/check_paired_sweep.py \
+            --base-ref "$BASE_SHA" --head-ref "$HEAD_SHA"
+
       - name: Install build dependencies (for compile_commands.json)
         run: |
           sudo apt-get update

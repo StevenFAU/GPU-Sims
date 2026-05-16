@@ -347,3 +347,272 @@ def test_new_categories_in_known_categories() -> None:
     assert "toolkit-doc-snapshot" in _KNOWN_CATEGORIES
     assert "project-state-snapshot" in _KNOWN_CATEGORIES
     assert "retro-doc-snapshot" in _KNOWN_CATEGORIES
+
+
+# ---------------------------------------------------------------------------
+# rewrite-stale-reasons (v1.3 closeout commit 1; Part-B retro section 4.1)
+# ---------------------------------------------------------------------------
+
+
+def _make_finding_dict(
+    check_id: str,
+    file: str,
+    line: int,
+    message: str,
+    suppression_reason: str,
+) -> dict:
+    """Construct a JSON-shape finding dict matching what `--output json` emits."""
+    return {
+        "check_id": check_id,
+        "mode": "HARD_FAIL",
+        "file": file,
+        "line": line,
+        "message": message,
+        "suppressed": True,
+        "suppression_reason": suppression_reason,
+        "suppression_issue": "n/a",
+    }
+
+
+def test_rewrite_stale_reasons_category_changed_rewrites(tmp_path, monkeypatch) -> None:
+    """A stale-category annotation gets rewritten when classify() now
+    returns a different category."""
+    from integrity import grandfather
+
+    # Fixture: project-state.md with a stale `other-cat1` annotation on a
+    # cat1.intra-repo finding that now classifies as project-state-snapshot.
+    fixture = tmp_path / "project-state.md"
+    fixture.write_text(
+        "line 1\n"
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        "<!-- integrity-allow: cat1.intra-repo; "
+        "grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->\n"
+        "synthetic finding target line (no citation here)\n",
+        encoding="utf-8",
+    )
+
+    suppressed = _make_finding_dict(
+        check_id="cat1.intra-repo",
+        file="project-state.md",
+        line=3,
+        message="synthetic: target path does not resolve",
+        suppression_reason="grandfathered-pre-v1 (see grandfather-catalog other-cat1)",
+    )
+    monkeypatch.setattr(
+        grandfather, "_collect_all_findings", lambda root: [suppressed],
+    )
+
+    files, anns, rewrites = grandfather.rewrite_stale_reasons(tmp_path, dry_run=False)
+
+    assert anns == 1
+    assert files == 1
+    assert rewrites[0][2] == "other-cat1"
+    assert rewrites[0][3] == "project-state-snapshot"
+
+    new_content = fixture.read_text(encoding="utf-8")
+    assert "project-state.md cross-phase snapshot intra-repo citation" in new_content
+    assert "grandfathered-pre-v1" not in new_content
+
+
+def test_rewrite_stale_reasons_wording_diff_only_skipped(tmp_path, monkeypatch) -> None:
+    """When the annotation's wording differs but the category is the
+    same, leave it alone (D1 conservative scope)."""
+    from integrity import grandfather
+
+    # Annotation already in the project-state-snapshot category; the wording
+    # is slightly different but classify() would still return the same
+    # category. D1: no rewrite.
+    fixture = tmp_path / "project-state.md"
+    fixture.write_text(
+        "line 1\n"
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        "<!-- integrity-allow: cat1.intra-repo; "
+        "project-state-snapshot — historical citation (paraphrased); n/a -->\n"
+        "synthetic finding target line (no citation here)\n",
+        encoding="utf-8",
+    )
+
+    suppressed = _make_finding_dict(
+        check_id="cat1.intra-repo",
+        file="project-state.md",
+        line=3,
+        message="synthetic: target path does not resolve",
+        suppression_reason=(
+            "project-state-snapshot — historical citation (paraphrased)"
+        ),
+    )
+    monkeypatch.setattr(
+        grandfather, "_collect_all_findings", lambda root: [suppressed],
+    )
+
+    files, anns, rewrites = grandfather.rewrite_stale_reasons(tmp_path, dry_run=False)
+
+    assert anns == 0
+    assert files == 0
+    assert rewrites == []
+
+
+def test_rewrite_stale_reasons_dry_run_no_writes(tmp_path, monkeypatch) -> None:
+    """Dry-run mode reports rewrites without modifying files on disk."""
+    from integrity import grandfather
+
+    fixture = tmp_path / "project-state.md"
+    original = (
+        "line 1\n"
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        "<!-- integrity-allow: cat1.intra-repo; "
+        "grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->\n"
+        "synthetic finding target line (no citation here)\n"
+    )
+    fixture.write_text(original, encoding="utf-8")
+
+    suppressed = _make_finding_dict(
+        check_id="cat1.intra-repo",
+        file="project-state.md",
+        line=3,
+        message="synthetic: target path does not resolve",
+        suppression_reason="grandfathered-pre-v1 (see grandfather-catalog other-cat1)",
+    )
+    monkeypatch.setattr(
+        grandfather, "_collect_all_findings", lambda root: [suppressed],
+    )
+
+    files, anns, rewrites = grandfather.rewrite_stale_reasons(tmp_path, dry_run=True)
+
+    assert anns == 1
+    assert files == 1
+    assert len(rewrites) == 1
+    # File on disk unchanged in dry-run.
+    assert fixture.read_text(encoding="utf-8") == original
+
+
+def test_rewrite_stale_reasons_preserves_comment_form(tmp_path, monkeypatch) -> None:
+    """The rewrite leaves the comment-form intact: // stays //; # stays #;
+    <!-- --> stays HTML-comment-wrapped."""
+    from integrity import grandfather
+
+    # Three fixtures: one Python (#), one C++ (//), one Markdown (<!-- -->).
+    # Each carries a stale annotation whose finding reclassifies.
+    py_file = tmp_path / "tools" / "integrity" / "integrity" / "snippet.py"
+    py_file.parent.mkdir(parents=True)
+    py_file.write_text(
+        "x = 1\n"
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        "# integrity-allow: cat1.annotation-form; "
+        "grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a\n"
+        "y = 2\n",
+        encoding="utf-8",
+    )
+
+    cpp_file = tmp_path / "common" / "lib.cpp"
+    cpp_file.parent.mkdir(parents=True)
+    cpp_file.write_text(
+        "int x = 1;\n"
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        "// integrity-allow: cat1.bare-path; "
+        "grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a\n"
+        "int y = 2;\n",
+        encoding="utf-8",
+    )
+
+    md_file = tmp_path / "docs" / "retro" / "notes.md"
+    md_file.parent.mkdir(parents=True)
+    md_file.write_text(
+        "line 1\n"
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        "<!-- integrity-allow: cat1.intra-repo; "
+        "grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->\n"
+        "line 3\n",
+        encoding="utf-8",
+    )
+
+    # Fake suppressed findings for each file.
+    finds = [
+        _make_finding_dict(
+            check_id="cat1.annotation-form",
+            file="tools/integrity/integrity/snippet.py",
+            line=3,
+            message="y = 2 (synthetic finding line)",
+            suppression_reason=(
+                "grandfathered-pre-v1 (see grandfather-catalog other-cat1)"
+            ),
+        ),
+        _make_finding_dict(
+            check_id="cat1.bare-path",
+            file="common/lib.cpp",
+            line=3,
+            message="int y = 2 (synthetic)",
+            suppression_reason=(
+                "grandfathered-pre-v1 (see grandfather-catalog other-cat1)"
+            ),
+        ),
+        _make_finding_dict(
+            check_id="cat1.intra-repo",
+            file="docs/retro/notes.md",
+            line=3,
+            message="line 3 (synthetic)",
+            suppression_reason=(
+                "grandfathered-pre-v1 (see grandfather-catalog other-cat1)"
+            ),
+        ),
+    ]
+    monkeypatch.setattr(grandfather, "_collect_all_findings", lambda root: finds)
+
+    files, anns, rewrites = grandfather.rewrite_stale_reasons(tmp_path, dry_run=False)
+    assert files == 3
+    assert anns == 3
+
+    py_new = py_file.read_text(encoding="utf-8")
+    cpp_new = cpp_file.read_text(encoding="utf-8")
+    md_new = md_file.read_text(encoding="utf-8")
+
+    # Python annotation stays `#` form.
+    # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+    assert "\n# integrity-allow: cat1.annotation-form;" in py_new
+    # C++ annotation stays `//` form.
+    # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+    assert "\n// integrity-allow: cat1.bare-path;" in cpp_new
+    # Markdown annotation stays `<!-- ... -->` HTML-comment form.
+    # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+    assert "<!-- integrity-allow: cat1.intra-repo;" in md_new
+    assert md_new.count("-->") >= 1
+
+
+def test_rewrite_stale_reasons_mutually_exclusive_with_sweep_flags(tmp_path) -> None:
+    """CLI rejects --rewrite-stale-reasons combined with --sweep-live-source
+    or --force-sweep-category."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parent.parent / "scripts" / "grandfather_sweep.py"
+    repo_root_arg = ["--repo-root", str(tmp_path)]
+
+    result = subprocess.run(
+        [sys.executable, str(script), "--rewrite-stale-reasons",
+         "--sweep-live-source", "--dry-run", *repo_root_arg],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 2
+    assert "mutually exclusive" in result.stderr
+
+    result = subprocess.run(
+        [sys.executable, str(script), "--rewrite-stale-reasons",
+         "--force-sweep-category", "toolkit-own-unused",
+         "--dry-run", *repo_root_arg],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 2
+    assert "mutually exclusive" in result.stderr
+
+
+def test_rewrite_stale_reasons_no_match_returns_empty(tmp_path, monkeypatch) -> None:
+    """No suppressed findings with stale categories -> no-op."""
+    from integrity import grandfather
+
+    monkeypatch.setattr(grandfather, "_collect_all_findings", lambda root: [])
+
+    files, anns, rewrites = grandfather.rewrite_stale_reasons(tmp_path, dry_run=False)
+    assert files == 0
+    assert anns == 0
+    assert rewrites == []

@@ -143,6 +143,7 @@ semantics are unchanged.
 
 - Spec § 3 — T1.2 commit definition.
 - Probe § C.2 — Pre-edit shape of the literal-string match (re-anchored
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   at commit time; the filter site is now at grandfather.py:431, not
   probe-time line 406, reflecting the inserted constant block).
 - Probe § K.1, K.2, K.3, K.9 — Decisions applied.

@@ -1,6 +1,6 @@
 """Tests for A.5: fence-block awareness in integrity.common.suppression.
 
-# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+# integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
 A fence-internal `integrity-allow:` line must NOT suppress a real finding
 on the line immediately following the fence."""
 
@@ -20,7 +20,7 @@ def test_fence_internal_annotation_does_not_suppress(tmp_path: Path) -> None:
         "\n".join([
             "# Heading",
             "",
-            "```cpp",  # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+            "```cpp",  # integrity-allow: cat1.annotation-form; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a
             "// integrity-allow: cat1.intra-repo; documentation only; n/a",
             "```",
             "real_broken_citation:42",  # line 6

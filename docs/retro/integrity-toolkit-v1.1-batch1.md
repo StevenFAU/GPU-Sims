@@ -330,7 +330,7 @@ would have caught at write-time:
 |---|---|---|
 <!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 | 25 | `chapter13/cpu/LBM.cpp:97` | Krueger book-companion-code-2016 |
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 | 26 | `chapter13/cpu/LBM.cpp:97` | Krueger book-companion-code-2016 |
 <!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 <!-- integrity-allow: cat1.bare-path; retrospective-doc bare-path citation pre-v1.2 (see grandfather-catalog retro-bare-path); n/a -->

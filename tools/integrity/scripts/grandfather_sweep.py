@@ -5,10 +5,11 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections import Counter
 from pathlib import Path
 
 from integrity.common.repo import find_repo_root
-from integrity.grandfather import apply_annotations
+from integrity.grandfather import apply_annotations, rewrite_stale_reasons
 
 
 def main(argv: list[str]) -> int:
@@ -38,9 +39,41 @@ def main(argv: list[str]) -> int:
             "categories protected."
         ),
     )
+    parser.add_argument(
+        "--rewrite-stale-reasons",
+        action="store_true",
+        help=(
+            "Rewrite the reason text of existing annotations whose embedded "
+            "category no longer matches the current classifier output. "
+            "Conservative: rewrites only when category changed, not when "
+            "wording-only diffs are present. Mutually exclusive with the "
+            "normal sweep modes; use after adding new classifier rules."
+        ),
+    )
     ns = parser.parse_args(argv)
 
     root = ns.repo_root if ns.repo_root else find_repo_root()
+
+    if ns.rewrite_stale_reasons:
+        if ns.sweep_live_source or ns.force_sweep_category:
+            print(
+                "error: --rewrite-stale-reasons is mutually exclusive with "
+                "--sweep-live-source / --force-sweep-category",
+                file=sys.stderr,
+            )
+            return 2
+        files, anns, rewrites = rewrite_stale_reasons(root, ns.dry_run)
+        label = "would rewrite" if ns.dry_run else "rewrote"
+        print(
+            f"grandfather-sweep: {label} {anns} annotation reasons "
+            f"across {files} files"
+        )
+        if rewrites:
+            by_transition = Counter((r[2], r[3]) for r in rewrites)
+            for (old_cat, new_cat), count in by_transition.most_common():
+                print(f"  {old_cat} -> {new_cat}: {count}")
+        return 0
+
     files, anns, counts, live_source_skipped = apply_annotations(
         root, ns.dry_run,
         sweep_live_source=ns.sweep_live_source,

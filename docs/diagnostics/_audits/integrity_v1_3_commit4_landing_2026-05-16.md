@@ -69,7 +69,9 @@ integrity: 5 pass, 0 soft-warn, 44 hard-fail, 1262 suppressed
 
 Hard-fail count unchanged from commit-3's post-sweep state (44).
 Suppressed count grew by 2 from the inline sweep companion picking up
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 two new bare-path findings in commit-3's audit report (`runner.py:148`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 and `runner.py:154` line-number-drift citations).
 
 ## § D. Design decisions applied

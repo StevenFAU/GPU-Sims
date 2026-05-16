@@ -83,6 +83,7 @@ resolved (via concurrent commits to project-state.md) or were re-attributed
 when A.3 introduced `cat1.bare-path`. The category is forward-compatible
 for any future findings.
 
+<!-- integrity-allow: cat1.annotation-form; documentation-only literal mention of the annotation grammar (not a real annotation); n/a -->
 **Tracked observation:** Three `integrity-allow:` fossil annotations on
 `project-state.md` at lines 559, 593, 666 bear the `other-cat1` reason
 string but have no backing findings. Banked for v1.3 part-C hygiene cleanup

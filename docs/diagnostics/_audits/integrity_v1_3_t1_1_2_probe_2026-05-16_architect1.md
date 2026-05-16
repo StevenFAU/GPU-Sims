@@ -61,6 +61,7 @@ exit-code semantics treat the per-finding hard-fails as informational
 under `--mode strict --no-audit-log`).
 
 First 5 of 15 captured unsuppressed-finding stanzas (FACT, verbatim;
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 remaining 10 stanzas are bare-path findings on `CHANGELOG.md:154`,
 `common/common-py/examples/hello/hello/main.py:31`, and six
 `continuous-ca/lenia-fft/docs/load-bearing-decisions.md:236-283` lines
@@ -172,7 +173,7 @@ that T1.2 touches:
      1	"""Grandfather-sweep logic for the integrity toolkit v1.
      2	
      3	Classifies HARD_FAIL findings into one of seven pre-v1 categories and
-     4	# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+     4	# integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a
      5	generates inline `integrity-allow:` annotations on the cited source
      6	lines. See `tools/integrity/docs/grandfather-catalog.md` for the
      7	per-category rationale.
@@ -339,6 +340,7 @@ def is_fallthrough_category(category: str) -> bool:
 ```
 
 *Pro:* mirrors `SWEEPABLE_PATH_PREFIXES` / `SWEEPABLE_EXACT_PATHS`
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (grandfather.py:53-64); single source of truth; one-line edit to add a
 future fallthrough; no coupling to category-name spelling. *Con:* set
 lives separately from construction site; new fallthrough requires
@@ -398,12 +400,14 @@ docstrings noted separately):
 | `tools/integrity/tests/test_grandfather_sweep.py:69, 218, 234, etc.` | test assertions on classifier output | NO (testing category-name correctness; T1.2 should leave these intact) |
 
 **INFERENCE.** T1.2's *code* refactor is exactly one line:
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `grandfather.py:406` is the only call site that gates behavior on the
 fallthrough property. The other matches are either the source-of-truth
 strings (the construction sites that *produce* the names) or
 user-facing/reporting strings that should keep the literal names for
 operator readability.
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Wider context of line 406 (FACT — from `grandfather.py:402-413` per
 § B.1 dump):
 

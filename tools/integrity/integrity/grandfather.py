@@ -524,3 +524,182 @@ def apply_annotations(
                 abs_path.write_text("\n".join(file_lines), encoding="utf-8")
 
     return files_modified, annotations_added, category_counts, live_source_skipped
+
+
+# ---------------------------------------------------------------------------
+# rewrite-stale-reasons (v1.3 closeout commit 1; Part-B retro section 4.1)
+#
+# When a classifier rule reclassifies findings from one category to another,
+# existing inline annotations continue to carry the old category's reason
+# text. The suppression matcher keys on check_id only, so the findings stay
+# suppressed but the reason wording is stale. This mode walks the suppressed
+# findings, compares each annotation's embedded category to the current
+# classify() output, and rewrites the reason text in place when they differ.
+#
+# Conservative scope (D1, spec section 0.3): rewrite only when category
+# changed; wording-only drift is NOT rewritten.
+# ---------------------------------------------------------------------------
+
+
+def _collect_all_findings(repo_root: Path) -> list[dict]:
+    """Run integrity in JSON mode and return all findings (suppressed + not).
+
+    Distinct from `collect_findings`, which drops suppressed entries.
+    `rewrite_stale_reasons` needs the suppressed findings: those are the
+    ones with existing annotations whose reasons may be stale.
+    Returns raw JSON dicts so callers can read fields like
+    `suppression_reason` that the Finding dataclass does not carry.
+    """
+    result = subprocess.run(
+        ["python3", "-m", "integrity", "--output", "json",
+         "--no-audit-log", "--mode", "warn-only"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode not in (0, 1):
+        raise RuntimeError(
+            f"integrity toolkit exited {result.returncode}: {result.stderr}"
+        )
+    data = json.loads(result.stdout)
+    return list(data.get("findings", []))
+
+
+def _parsed_category_from_reason(reason: str) -> str | None:
+    """Return the known category embedded in an annotation reason string,
+    or None if no known category matches.
+
+    Reuses `snapshot._extract_category` (the canonical substring-match
+    reference) so this function's category mapping stays in sync with
+    the rest of the toolkit.
+    """
+    from integrity.snapshot import _extract_category, _KNOWN_CATEGORIES  # noqa: PLC0415
+    cat = _extract_category(reason)
+    return cat if cat in _KNOWN_CATEGORIES else None
+
+
+def _rewrite_annotation_reason(line: str, new_reason: str) -> str:
+    """Rewrite the reason segment of an annotation line in place.
+
+    Preserves the comment-form (//, #, or <!-- -->), the check_id, and
+    the issue_ref segments. Annotation grammar lives in spec section 3.2;
+    the regex below is the canonical capture pattern.
+    """
+    # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+    pattern = re.compile(
+        # integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+        r"(integrity-allow:\s*[^;]+;\s*)([^;]+?)(\s*;\s*(?:#\d+|n/a))"
+    )
+    return pattern.sub(
+        lambda m: f"{m.group(1)}{new_reason}{m.group(3)}", line, count=1,
+    )
+
+
+def rewrite_stale_reasons(
+    repo_root: Path,
+    dry_run: bool,
+) -> tuple[int, int, list[tuple[str, int, str, str]]]:
+    """Rewrite annotation reason strings whose embedded category no
+    longer matches the current `classify()` output.
+
+    Conservative scope (D1, v1.3 closeout spec section 0.3): rewrites only
+    when the annotation's parsed category differs from the current
+    classification; wording-only differences within the same category are
+    NOT rewritten.
+
+    Iterates suppressed findings (returned by `_collect_all_findings`):
+    those are the findings whose annotations are eligible for rewriting.
+    Per probe G.1 no `is_suppressed` helper / `Finding.suppressed` field
+    exists; this function reads suppression state from the integrity
+    JSON dict directly.
+
+    Returns:
+        (files_modified, annotations_rewritten, rewrites_detail)
+        where rewrites_detail is a list of (file, line, old_cat, new_cat)
+        tuples, one per rewrite (1-indexed line numbers).
+    """
+    from integrity.common.annotations import parse_annotation_line  # noqa: PLC0415
+
+    rewrites: list[tuple[str, int, str, str]] = []
+    by_path: dict[str, list[tuple[int, str]]] = {}
+
+    for f in _collect_all_findings(repo_root):
+        if not f.get("suppressed"):
+            continue
+        old_reason_text = f.get("suppression_reason", "")
+        old_cat = _parsed_category_from_reason(old_reason_text)
+        if old_cat is None:
+            continue
+        finding = Finding(
+            check_id=f["check_id"],
+            file=f["file"],
+            line=int(f["line"]),
+            message=f["message"],
+        )
+        new_classification = classify(finding)
+        new_cat = new_classification.category
+        # D1 conservative scope: rewrite only when category transitioned.
+        if old_cat == new_cat:
+            continue
+
+        # Locate the annotation line. Conservative +/- 3-line window above
+        # the finding to tolerate multi-annotation stacks (e.g., the
+        # project-state.md 559/560 case where two annotations stack).
+        path = repo_root / finding.file
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeDecodeError):
+            continue
+        for ann_idx in range(max(0, finding.line - 3), min(len(lines), finding.line)):
+            ann_line = lines[ann_idx]
+            parsed = parse_annotation_line(ann_line)
+            if parsed is None:
+                continue
+            ann_check_id, ann_reason, _ = parsed
+            # Match annotation's check_id against the finding's check_id
+            # (specifically or via category wildcard `catN.*`).
+            if ann_check_id != finding.check_id and not (
+                ann_check_id.endswith(".*")
+                and finding.check_id.startswith(ann_check_id[:-2] + ".")
+            ):
+                continue
+            # Confirm the annotation's reason text matches the suppression
+            # reason we already classified as old_cat. Skip if a different
+            # annotation in the window happens to match the check_id.
+            if _parsed_category_from_reason(ann_reason) != old_cat:
+                continue
+            rewrites.append((finding.file, ann_idx + 1, old_cat, new_cat))
+            by_path.setdefault(finding.file, []).append(
+                (ann_idx, new_classification.reason)
+            )
+            break  # one annotation per finding; stop searching
+
+    files_modified = 0
+    annotations_rewritten = 0
+    if not dry_run:
+        for file_rel, edits in by_path.items():
+            path = repo_root / file_rel
+            try:
+                original_text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            lines = original_text.splitlines(keepends=False)
+            modified = False
+            for ann_idx, new_reason in edits:
+                new_line = _rewrite_annotation_reason(lines[ann_idx], new_reason)
+                if new_line != lines[ann_idx]:
+                    lines[ann_idx] = new_line
+                    modified = True
+                    annotations_rewritten += 1
+            if modified:
+                content = "\n".join(lines)
+                if original_text.endswith("\n"):
+                    content += "\n"
+                path.write_text(content, encoding="utf-8")
+                files_modified += 1
+    else:
+        annotations_rewritten = len(rewrites)
+        files_modified = len(by_path)
+
+    return files_modified, annotations_rewritten, rewrites

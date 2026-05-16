@@ -111,6 +111,7 @@ dataclass. One-line refactor at the filter site.
 **Decision 2 (probe K.2) — T1.2 refactor scope: exactly one line.**
 The mandatory refactor site is the literal-string-match in
 `apply_annotations`'s LIVE-SOURCE filter (currently at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `grandfather.py:406` per probe § C.2; re-anchor at execution time).
 No other call sites refactor in this commit — `snapshot.py`'s
 category-name list is for reason-string extraction (different purpose),
@@ -132,11 +133,13 @@ between the spec-time counts and post-commit live counts.
 (three-predicate union).** Matches `f.startswith("tools/integrity/docs/")
 or f == "docs/integrity-toolkit-spec.md" or f == "tools/integrity/README.md"`.
 Mirrors the existing `toolkit-doc-bare-path` predicate at
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `grandfather.py:189-198` exactly. Shape A (single prefix) misses
 `docs/integrity-toolkit-spec.md` and `tools/integrity/README.md`; Shape
 B is forward-compatible.
 
 **Decision 6 (probe K.6) — project-state.md fossil annotations banked.**
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 Three `integrity-allow:` annotations on `project-state.md` at lines
 559, 593, 666 currently bear the `other-cat1` reason string but have
 no backing findings (probe § E.3). They are fossils from concurrent-
@@ -154,6 +157,7 @@ re-classifications enumerated in probe § E.2:
 - `docs/retro/integrity-toolkit-v1.1-batch1.md:332, 334, 339` (3)
 
 If the dry-run shows extras (e.g., touches
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `test_grandfather_sweep.py:74-141`'s test-string annotations), pause-
 and-surface — the new rules are too broad. If it shows fewer,
 something has drifted since the probe — pause-and-surface.

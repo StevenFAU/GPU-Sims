@@ -133,7 +133,7 @@ annotated by `a42085a`). A.3 at basic basename-match scope catches:
 <!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 - `chapter13/cpu/LBM.cpp:97` at `docs/phase12_lattice_boltzmann.md:203` —
   Krueger registered. **CATCHABLE.**
-<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+<!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->
 - `chapter13/cpu/LBM.cpp:97` at `docs/phase12_lattice_boltzmann.md:351` —
   same. **CATCHABLE.**
 <!-- integrity-allow: cat1.intra-repo; retro-doc snapshot intra-repo citation pre-v1.3 (see grandfather-catalog retro-doc-snapshot); n/a -->

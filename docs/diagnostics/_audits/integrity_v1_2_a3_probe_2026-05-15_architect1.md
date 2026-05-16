@@ -348,7 +348,7 @@ FACT: total LOC = 124.
      4	
      5	False positives are defended by the grammar's extension filter and the
      6	template-token mask. False positives that still escape are suppressible
-     7	# integrity-allow: cat1.annotation-form; regex or docstring literal of the annotation grammar token (not a real annotation); n/a
+     7	# integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a
      8	via `integrity-allow: cat1.intra-repo; <reason>; <issue-ref>`.
      9	"""
     10	
@@ -1043,7 +1043,7 @@ FACT: total LOC = 78.
     50	  `docs/diagnostics/_audits/phase11_5_setup1_2026-05-14_setup1.md`.
     51	- **Krueger:** Vendored at Phase 12 setup-1. The repository is D2Q9 only;
     52	  the citation in Phase 12 shader doc-blocks references the chapter13 CPU
-    53	<!-- integrity-allow: cat1.intra-repo; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
+    53	<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
     54	  equilibrium pattern at `chapter13/cpu/LBM.cpp:97` and `chapter13/cpu_intro/main.cpp:271`,
     55	  and the halfway bounce-back pattern at `chapter5/poiseuille_BB.m:123`.
     56	  The 3D specifics (D3Q19 velocity set, ω_i weights) are NOT in this

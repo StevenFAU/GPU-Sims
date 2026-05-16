@@ -137,9 +137,11 @@ see § F.1).
 | Decision | Spec § | Implementation |
 |---|---|---|
 | 4 — Catalog numeric inline + auto-refresh verification | K.4 | Sections landed with provisional counts 5/0/6 (spec values); auto-refresh detected drift and corrected to live values 4/0/4. Zero drift confirmed via second `--dry-run` |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 5 — `toolkit-doc-snapshot` Shape B predicate | K.5 | Three-predicate union: `startswith("tools/integrity/docs/") or == "docs/integrity-toolkit-spec.md" or == "tools/integrity/README.md"`. Mirrors existing `toolkit-doc-bare-path` predicate at grandfather.py:209-218 (re-anchored at execution time) |
 | 6 — project-state.md fossil annotations banked | K.6 | Annotations at `project-state.md` lines 559, 593, 666 deliberately NOT rewritten. The bulk-rewrite pass initially touched them; reverted via `git checkout project-state.md` and re-verified report counts unchanged (confirms fossil status per probe § E.3) |
 | 7 — Sweep companion expected diff | K.7 | **DEVIATION.** See § F.1. The 11-finding sweep enumeration was empirically incompatible with the existing sweep mechanism; the intended end-state was achieved via manual annotation rewriting on 7 files (toolkit-doc + retro paths) |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | 8 — `_KNOWN_CATEGORIES` extension | K.8 | Three entries added at `snapshot.py:27-48`, grouped with `audit-citation` (the existing cat1.intra-repo classifier output) and placed before `other-cat1` to preserve fall-through substring-match semantics. Test `test_new_categories_in_known_categories` pins it |
 | 9 — Convention H wording cross-link | — | Not applicable to commit 2 (lives in commit 1) |
 
@@ -172,10 +174,12 @@ findings on docs/diagnostics/_audits/ paths) than the 5 files enumerated
 in Decision 7.
 
 Root cause: the 11 enumerated findings in probe § E.2 were already
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 annotated with `integrity-allow:` lines carrying the
 `grandfathered-pre-v1 (see grandfather-catalog other-cat1)` reason
 string (confirmed by `grep -n 'integrity-allow.*cat1.intra-repo.*other-cat1'`
 on the 5 files). The current `apply_annotations` implementation
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (`grandfather.py:485-495`) checks `annotation_already_present` on the
 previous line, which matches on `check_id` (here `cat1.intra-repo` or the
 `cat1.*` wildcard) — NOT on reason text. So the sweep correctly skipped

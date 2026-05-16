@@ -261,3 +261,46 @@ def test_apply_annotations_default_still_sweeps_named_category_on_live_source(tm
     # doesn't apply. Should be processed normally.
     assert skipped == 0
     assert counts.get("live-shader-1810", 0) == 1
+
+
+# ---------------------------------------------------------------------------
+# T1.2 -- FALLTHROUGH_CATEGORIES + is_fallthrough_category (Convention H)
+# ---------------------------------------------------------------------------
+
+
+def test_other_cat1_is_fallthrough() -> None:
+    from integrity.grandfather import is_fallthrough_category
+    assert is_fallthrough_category("other-cat1") is True
+
+
+def test_other_cat1_bare_path_is_fallthrough() -> None:
+    from integrity.grandfather import is_fallthrough_category
+    assert is_fallthrough_category("other-cat1-bare-path") is True
+
+
+def test_named_category_is_not_fallthrough() -> None:
+    from integrity.grandfather import is_fallthrough_category
+    assert is_fallthrough_category("audit-citation") is False
+    assert is_fallthrough_category("toolkit-own-source") is False
+    assert is_fallthrough_category("toolkit-own-unused") is False
+
+
+def test_unknown_category_is_not_fallthrough() -> None:
+    from integrity.grandfather import is_fallthrough_category
+    assert is_fallthrough_category("nonexistent") is False
+    assert is_fallthrough_category("") is False
+
+
+def test_fallthrough_categories_is_frozenset() -> None:
+    from integrity.grandfather import FALLTHROUGH_CATEGORIES
+    assert isinstance(FALLTHROUGH_CATEGORIES, frozenset)
+
+
+def test_fallthrough_categories_contents() -> None:
+    from integrity.grandfather import FALLTHROUGH_CATEGORIES
+    # Pin the v1.3 baseline. When a future batch adds new fallthrough
+    # categories, update this assertion intentionally.
+    assert FALLTHROUGH_CATEGORIES == frozenset({
+        "other-cat1",
+        "other-cat1-bare-path",
+    })

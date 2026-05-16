@@ -64,6 +64,31 @@ SWEEPABLE_EXACT_PATHS: frozenset[str] = frozenset({
 })
 
 
+# Convention H (v1.2 bolt-ons retro section 4.2 -- fallthrough discriminator):
+# the set of category names that classify findings via fall-through (catch-all
+# "other-<catN>" buckets). Findings in these categories on LIVE-SOURCE paths
+# are protected from auto-sweeping by default per P1.8.
+#
+# Forward-compatible: when a future batch adds a new fallthrough bucket (for
+# example, other-cat3 if/when introduced), add it here. The frozenset is
+# pinned by test_fallthrough_categories_contents to make future extensions
+# intentional.
+FALLTHROUGH_CATEGORIES: frozenset[str] = frozenset({
+    "other-cat1",
+    "other-cat1-bare-path",
+})
+
+
+def is_fallthrough_category(category: str) -> bool:
+    """True if `category` is a fall-through bucket (catch-all).
+
+    Per Convention H (v1.2 bolt-ons retro section 4.2). Used by
+    apply_annotations's LIVE-SOURCE filter to identify which categories
+    should be protected from auto-sweep by default on live-source paths.
+    """
+    return category in FALLTHROUGH_CATEGORIES
+
+
 def is_live_source_path(file_path: str) -> bool:
     """Return True iff file_path is LIVE-SOURCE per the triage section B bucket.
 
@@ -403,7 +428,7 @@ def apply_annotations(
         kept: list[Finding] = []
         for f in findings:
             cat = classify(f).category
-            if cat in ("other-cat1", "other-cat1-bare-path") and is_live_source_path(f.file):
+            if is_fallthrough_category(cat) and is_live_source_path(f.file):
                 if cat in force_sweep_categories:
                     kept.append(f)
                     continue

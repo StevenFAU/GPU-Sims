@@ -13,6 +13,7 @@ sibling-docs:
 
 ## § A. Change summary
 
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 Removes three `integrity-allow: cat1.intra-repo;` annotations from
 `project-state.md` at probe-time lines 559, 593, 666 per Part-B retro
 Decision 6 / probe § E.3 / probe § K.6. These annotations carry the
@@ -28,6 +29,7 @@ The adjacent `cat1.bare-path` `other-cat1-bare-path` annotations at
 probe-time lines 560 / 594 / 667 are **not** deleted. Probe § G.2
 established that those annotations are not actually suppressing the
 `cat1.bare-path` findings at the next line (5 HARD_FAILs continue to
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 fire against `project-state.md:561 / 595 / 668`); banking the bug as
 a known issue is the closeout-scope answer (lands in commit 7). They
 remain in place because removing them could silently make the gate
@@ -120,6 +122,7 @@ suppression-not-firing question in commit 7 as a v2 investigation
 item.
 
 **Final fossil count.** With these three deletions, the project-state
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 file's `integrity-allow: cat1.intra-repo` annotation surface is
 empty. Any future `cat1.intra-repo` finding on the file would either
 need a fresh annotation (placed by the regular sweep) or be a real

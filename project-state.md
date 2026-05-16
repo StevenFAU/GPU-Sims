@@ -77,6 +77,7 @@ Seven categories. Each lives in its own top-level folder.
 | 11 | sph-water (Stack C particle-fluids flagship; DFSPH; first Alembic consumer) | DFSPH inner-iter Jacobi loops; Morton spatial hash; screen-space fluid render; subgroup-size pinning; FetchContent for Alembic 1.8.10. Scaffold shipped at ``09c0d9f``; main.cpp + § 5 cross-cutting edits land in follow-up commits per `phase11_deferred_backfill.md`. SHA-backfill follow-up tidies this row and § 11 below once Phase 11's third commit resolves. | ✅ Shipped | ``09c0d9f`` |
 | 12 | lattice-boltzmann (Stack C volumetric-grid; D3Q19 BGK around a NACA airfoil) | Second Stack C volumetric-grid sim. D3Q19 single-relaxation-time LBM, 19+19 r32f 3D-image ping-pong, GPU-seeded RK2-advected streamlines, sim-local velocity-magnitude raymarch. First sim consuming algebraic-derivation ground-truth (`[Algebraic_D3Q19]` registry pattern via `tools/integrity/docs/algebraic/d3q19.md`); first real consumer of `gpusims::vdb::writeVec3Grid` post-Phase 8. Boundary v1: equilibrium-distribution inlet/outlet + halfway-BB airfoil; Zou-He banked for v1.1. Three prep commits (``8fe355b``, ``0db9c73``, ``c5955d3``) landed pre-substantive. | ✅ Shipped | ``d41564d`` |
 | 10+ | Remaining sims | One phase per remaining sim. Each consumes a settled `common-` package; per-sim phases are smaller than the foundation phases. Per Phase 9 banking, the natural Alembic-real-impl consumer is sph-water (Stack C). The natural cross-stack lenia-fft consumer (Stack D Taichi + Stack B WebGPU) is post-MPM. | ⬜ Not started | — |
+| 12.5 | Integrity toolkit v1 closed | The toolkit's gate covers Cat 1 citations, Cat 2 contracts, Cat 3 numerical correctness across three stacks. v1.3 closeout batch shipped rewrite-stale-reasons sweep mode (Part-B § 4.1), T2.1 paired-sweep CI enforcement, T2.2 audit-prose-freshness sibling tool, T2.3 Stack C single-parse refactor, T3.1–T3.4 decisions with disclosure, project-state.md fossil cleanup, and this marker. Conventions live at `tools/integrity/docs/conventions.md`. v2 horizon items remain available if a forcing function appears. No further v1.x work is planned. | ✅ Done | `<COMMIT_8_SHA>` |
 
 (Phase numbering is for the architect's reference; commit messages don't need to use it.)
 
@@ -620,6 +621,26 @@ These come up periodically in design discussions; the locked answer is "later".
 - **Mobile / touch.** Both stacks open windows/canvases at fixed resolutions and assume keyboard + mouse input.
 - **Mandelbulb-explorer v1.1 polish.** Higher default `iterCap` (≥12 at n=8) for richer per-pixel orbit-trap variegation; smoothstep ramp with adjustable `trapLo`/`trapHi` bounds in place of the linear `clamp(0, 1)`; perceptual gamma on the trap ramp. Notes captured in `closed-form/mandelbulb-explorer/docs/notes.md`. Triggered when v1.1 polish becomes worth it; not before.
 
+### Integrity toolkit v1.x banked-but-not-planned items (post-closeout)
+
+The v1.3 closeout batch shipped 2026-05-17. Items below are available
+if a forcing function appears but are not on a planned schedule:
+
+- **T2 items:** none (all landed in v1.3 closeout).
+- **T3 items:** D4–D7 resolved in `tools/integrity/docs/conventions.md`;
+  T3.4 items 1–3 formally banked unresolved per conventions.md
+  disclosure.
+- **T4 horizon (v2 candidates):** Category 4 runtime integration tests;
+  type-aware Cat 2 matching (currently token-based for Stack C);
+  GPU shader coverage via headless (dawn / SwiftShader);
+  per-sim cat3 expansion (quantum sim candidates already drafted
+  per `docs/category-contexts/quantum.md` § 6.1);
+  multi-line citation grammar;
+  spec-vs-implementation reconciliation (architect-2 review work);
+  `_emit_human_summary` ordering polish.
+- **Part-D banked:** none. Part-C (project-state.md fossil cleanup)
+  closed by commit 6 of the v1.3 closeout batch.
+
 ---
 
 ## 9. Known issues
@@ -707,6 +728,33 @@ Phase 10.1 is phase-sized despite the small per-sim LOC count (~50 LOC per sim a
 Architect-2 cross-review of polish-6 framing endorsed Option B (package restructure) over Option A (top-level rename) on compounding-cost grounds: Option A defers ~50 LOC of migration debt per future Stack D sim; Phase 14 with seven sims pays Option B at 350 LOC instead of the current 150. Option B is the structurally-right answer; Option A is the patch.
 
 Banked Phase 10 retro. Spec drafting next.
+
+### Integrity toolkit known issues banked from v1.3 closeout probe
+
+These were surfaced by the v1.3 closeout pre-spec probe
+(`docs/diagnostics/_audits/integrity_v1_3_closeout_probe_2026-05-17_architect1-via-claude-code.md`
+§ G.2 / § G.4) and intentionally NOT addressed in the closeout batch
+to keep scope bounded.
+
+- **G.2 (suppression non-firing on project-state.md cat1.bare-path).**
+<!-- integrity-allow: cat1.bare-path; bare-path citation (other-cat1-bare-path; review per category in grandfather-catalog); n/a -->
+  Three `cat1.bare-path` annotations on `project-state.md:559/592/664`
+  (re-numbered from probe-time 560/594/667 after commit 6's three
+  fossil-annotation deletions) do not suppress the cat1.bare-path
+  findings at the next-line position the suppression grammar
+  specifies — 5 HARD_FAIL findings continue to fire despite the
+  annotations being in the immediately-preceding-line slot. Either
+  there's a real bug in the runner-side suppression pipeline, or
+  markdown-context multi-annotation stacks interact differently than
+  expected. Long-standing (predates v1.3 part-B's 60-baseline).
+  Available for v2 investigation.
+
+- **G.4 (`_KNOWN_CATEGORIES` no pinning test).** Unlike
+  `FALLTHROUGH_CATEGORIES`, the `_KNOWN_CATEGORIES` tuple in
+  `tools/integrity/integrity/snapshot.py` has no unit test pinning
+  its contents. A one-line `assert len(_KNOWN_CATEGORIES) == N` style
+  test would catch silent edits. Tiny scope; available whenever the
+  next toolkit micro-batch lands.
 
 ---
 

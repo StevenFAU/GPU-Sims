@@ -75,13 +75,11 @@ Default scans: `docs/integrity-toolkit-spec.md`, `docs/retro/*.md`,
 `docs/diagnostics/_audits/*.md`, `project-state.md`. Exits non-zero if
 any citation fails to resolve.
 
-## Implementation status
+## Status
 
-- [x] Commit 1: scaffold (this commit)
-- [ ] Commit 2: Cat 1 citation parsing + intra-repo resolution
-- [ ] Commit 3: Cat 1 upstream-citation + anchor verification
-- [ ] Commit 4: grandfather sweep + CI integration
-- [ ] Commit 5: Cat 2 Stack D
-- [ ] Commit 6: Cat 2 Stack C
-- [ ] Commit 7: Cat 2 Stack B
-- [ ] Commit 8: Cat 3 cubic-kernel
+Integrity toolkit v1 is shipped and closed as of 2026-05-17 per the
+v1.3 closeout batch. The gate runs on every push and PR via
+`.github/workflows/integrity.yml`. Conventions are documented at
+[`docs/conventions.md`](docs/conventions.md). v2 horizon items are
+banked in `project-state.md` § 8; no v1.x work is planned beyond
+maintenance.

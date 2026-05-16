@@ -40,7 +40,7 @@ batch-1 retro § 5.5 quantified at +6.7% drift per batch cycle.
 
 ## Categories
 
-### `audit-citation` (100)
+### `audit-citation` (101)
 
 **Pattern:** `cat1.intra-repo` findings in files under `docs/diagnostics/_audits/`.
 
@@ -126,7 +126,7 @@ reason class as `spec-grammar-example`.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `audit-report-grammar-example` (50)
+### `audit-report-grammar-example` (51)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `docs/diagnostics/_audits/`.
@@ -308,7 +308,7 @@ underscore-prefix renaming rather than wiring up a new consumer.
 Auto-refresh of this section's count is banked for v1.3 (Decision 6
 keeps refresh manual in v1.2).
 
-### `audit-bare-path` (735)
+### `audit-bare-path` (745)
 
 **Pattern:** `cat1.bare-path` findings in files under
 `docs/diagnostics/_audits/`.

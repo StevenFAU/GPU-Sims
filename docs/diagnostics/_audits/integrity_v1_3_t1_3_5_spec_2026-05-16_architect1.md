@@ -286,6 +286,7 @@ re-derivation in every retro"; T1.4 is that home for Conventions C
 and D.
 
 Probe § F.6 noted that the bolt-ons probe § D.1 example carries a
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 stale line number (`runner.py:148` → current disk `:154`). For T1.4's
 embedded example, line numbers are tagged "as of probe SHA" or
 omitted; the worked-example payload is the methodology, not the

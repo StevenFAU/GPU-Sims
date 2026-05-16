@@ -1,6 +1,6 @@
 """Cubic SPH kernel numerical correctness per spec § 8.
 
-Reads expected values from expected_values.toml, runs the Stack C
+Reads expected values from expected_values.json, runs the Stack C
 driver binary at build/tools/integrity/drivers/integrity_cat3_stack_c/,
 compares each evaluation against tolerance. HARD_FAIL on any
 disagreement.
@@ -16,7 +16,6 @@ import json
 import math
 import os
 import subprocess
-import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -25,7 +24,7 @@ DRIVER_RELATIVE_PATH = Path(
     "build/tools/integrity/drivers/integrity_cat3_stack_c/integrity_cat3_stack_c"
 )
 EXPECTED_VALUES_RELATIVE = Path(
-    "tools/integrity/integrity/cat3_numerical/expected_values.toml"
+    "tools/integrity/integrity/cat3_numerical/expected_values.json"
 )
 
 
@@ -48,12 +47,16 @@ class DriverEvaluation:
 
 
 def load_expected_values(repo_root: Path) -> tuple[list[TestPoint], dict]:
-    """Parse expected_values.toml. Returns (test_points, tolerance_dict)."""
+    """Parse expected_values.json. Returns (test_points, tolerance_dict).
+
+    See tools/integrity/docs/cat3-conventions.md for the file-format
+    convention (JSON-as-canonical for cat3 expected-values files).
+    """
     path = repo_root / EXPECTED_VALUES_RELATIVE
     if not path.is_file():
         return [], {}
 
-    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
     tolerance = data.get("tolerance", {"atol": 1e-5, "rtol": 1e-5})
     points: list[TestPoint] = []
     for tp in data.get("test_points", []):

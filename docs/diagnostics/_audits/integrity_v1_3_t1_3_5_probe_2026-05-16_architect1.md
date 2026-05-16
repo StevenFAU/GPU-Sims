@@ -351,6 +351,7 @@ FACT — searched via
 `grep -rn 'grandfather.catalog\|grandfather_catalog\|### \`' tools/integrity/`.
 All matches were either:
 
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 - Inline `integrity-allow:` annotation strings with
   `grandfather-catalog <category>` reasons (~50 hits across
   toolkit / tests / docs).
@@ -614,8 +615,10 @@ doc should embed both fragments.
 `docs/diagnostics/_audits/integrity_v1_2_a3_probe_2026-05-15_architect1.md`
 § A.3 (lines 238–334): the probe verbatim-dumps
 `cat1_citations/resolver.py` (103 LOC), including the verbatim
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 two-step resolution function (`resolve()` at resolver.py:42-65)
 and the INFERENCE block explicitly naming the false-positive class
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 the v1 intra-repo check accidentally accommodates (resolver.py:42-65
 will succeed on bare basenames whenever a sibling file matches).
 That probe-time enumeration is precisely what Convention C asks for:
@@ -664,8 +667,11 @@ exactly what Convention D asks for: enumerate every call site of
 the function the spec proposes to modify, before writing the fix.
 
 Line-number FACT (per probe-run verification): in current disk
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 state, `_emit_human_summary` is defined at `runner.py:154` and
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `emit_output` at `runner.py:116`. The bolt-ons probe § D.1 / D.2
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 cited `_emit_human_summary` at `runner.py:148`, which was correct
 at probe time but stale post-`71559ce` (P1.6 fix added 6 lines).
 The v1.2 A.2 probe § C.3 line 387 records the updated `:154`.
@@ -797,6 +803,7 @@ FACT — `wc -l`: 111 LOC. Key spans:
 ```
 
 FACT — `grep` for `tomllib.load|tomllib.loads|toml.load` across the
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 toolkit returns only the single call at `cubic_kernel.py:54`. No
 other consumer of TOML inside `cat3_numerical/`.
 
@@ -820,6 +827,7 @@ from integrity.cat3_numerical.cubic_kernel import (
 ```
 
 The check calls `load_expected_values(repo_root)` once at
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `checks/cubic_kernel.py:37` and references the constant
 `EXPECTED_VALUES_RELATIVE` (used for `Finding.file=` field
 attribution).
@@ -1129,7 +1137,9 @@ drafting time below the roadmap's 30-LOC estimate (drafting cost
 
 **F.6 — `_emit_human_summary` line-number drift (prior-probe
 cross-check).** Per C.6 Example 2: the bolt-ons probe § D.1
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 records `_emit_human_summary` at runner.py:148; current disk
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 puts it at runner.py:154 (6-line drift attributable to commit
 `71559ce` / P1.6 fix). The v1.2 A.2 probe § C.3 recorded the
 updated :154. This is the line-number-drift class the probe-
@@ -1137,6 +1147,7 @@ prompt preamble warned about — current FACT supersedes prior
 probes.
 
 **F.7 — `--force-sweep-category` flag drift.** Per § E.1: the
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 flag is already on disk at `grandfather_sweep.py:27-40` (verified
 in B.4), but the v1.2 A.2 probe § E.1 expected it as A.2 commit
 2 deliverable. The flag landed earlier than the A.2 probe

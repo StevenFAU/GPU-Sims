@@ -33,7 +33,7 @@ def test_within_tolerance_nan_rejected() -> None:
 
 
 def test_load_expected_values_real_file() -> None:
-    """The committed expected_values.toml should parse cleanly with 6 points."""
+    """The committed expected_values.json should parse cleanly with 6 points."""
     repo_root = Path(__file__).resolve().parents[3]
     points, tolerance = load_expected_values(repo_root)
     assert len(points) == 6, f"expected 6 test points, got {len(points)}"

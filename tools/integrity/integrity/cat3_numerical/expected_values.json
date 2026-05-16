@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "source": "tools/integrity/integrity/cat3_numerical/generate_expected.py",
+  "derivation": "SPlisHSPlasH 2.16.1 SPHKernels.h:43-85",
+  "anchor_sha": "6bff55a6eaf14083d34650f22a268ce156b62b54",
+  "tolerance": {
+    "atol": 1e-05,
+    "rtol": 1e-05
+  },
+  "test_points": [
+    {
+      "q": 0.0,
+      "h": 1.0,
+      "expected_W": 2.5464790894703255,
+      "expected_gradW_magnitude": 0.0
+    },
+    {
+      "q": 0.1,
+      "h": 1.0,
+      "expected_W": 2.4089692186389278,
+      "expected_gradW_magnitude": 2.597408671259733
+    },
+    {
+      "q": 0.25,
+      "h": 1.0,
+      "expected_W": 1.8302818455567964,
+      "expected_gradW_magnitude": 4.7746482927568605
+    },
+    {
+      "q": 0.5,
+      "h": 1.0,
+      "expected_W": 0.6366197723675814,
+      "expected_gradW_magnitude": 3.819718634205488
+    },
+    {
+      "q": 0.75,
+      "h": 1.0,
+      "expected_W": 0.07957747154594767,
+      "expected_gradW_magnitude": 0.954929658551372
+    },
+    {
+      "q": 1.0,
+      "h": 1.0,
+      "expected_W": 0.0,
+      "expected_gradW_magnitude": 0.0
+    }
+  ]
+}

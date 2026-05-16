@@ -66,7 +66,9 @@ integrity: 5 pass, 0 soft-warn, 83 hard-fail, 1289 suppressed
 ```
 
 Stack C entry-point call sites confirmed against probe § B.3 (two
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `Index.create()` instantiations at `stack_c.py:150` in
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `extract_public_surface` and `stack_c.py:353` in `find_references`,
 unchanged at landing time):
 
@@ -130,6 +132,7 @@ integrity: 5 pass, 0 soft-warn, 44 hard-fail, 1329 suppressed
 
 The 38-annotation sweep companion absorbs:
 - one `toolkit-own-unused` finding for the new public
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   `extract_and_find_references` symbol on `stack_c.py:619` (it has a
   current consumer in `public_symbol_used_c.py`; the check doesn't
   follow imports across modules, so an annotation is the right

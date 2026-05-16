@@ -52,6 +52,23 @@ To suppress a finding with an inline annotation (per spec § 3.2):
 
 See `tools/integrity/docs/failure-modes.md` and `tools/integrity/docs/grandfather-catalog.md` for details.
 
+## Sibling tools
+
+### audit-prose-freshness
+
+A pre-commit utility that verifies backtick-fenced `path:line` citations
+in spec, retro, and audit prose resolve against the actual repo. Not
+part of the main gate (per Decision D3 in the v1.3 closeout spec
+§ 0.3); intended for spec authors to run before committing.
+
+```bash
+python3 tools/integrity/scripts/audit_prose_freshness.py [PATHS...]
+```
+
+Default scans: `docs/integrity-toolkit-spec.md`, `docs/retro/*.md`,
+`docs/diagnostics/_audits/*.md`, `project-state.md`. Exits non-zero if
+any citation fails to resolve.
+
 ## Implementation status
 
 - [x] Commit 1: scaffold (this commit)

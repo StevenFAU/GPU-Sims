@@ -12,7 +12,7 @@ sibling-docs:
 
 # A.2 commit 4 landing audit — grandfather sweep + catalog count refresh
 
-Companion to: `<commit-4-sha>` (SHA back-filled by commit 5 per Convention #12).
+Companion to: `9c8979a` (SHA back-filled by commit 5 per Convention #12).
 Builds on: `e079c7b` (commit 1), `df21312` (commit 2), `926aa30` (commit 3).
 
 ## A. Change summary

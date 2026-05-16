@@ -11,7 +11,7 @@ sibling-docs:
 
 # A.2 commit 3 landing audit — register cat2.public-symbol-used-toolkit
 
-Companion to: `<commit-3-sha>` (SHA back-filled by commit 5 per Convention #12).
+Companion to: `926aa30` (SHA back-filled by commit 5 per Convention #12).
 Builds on: `e079c7b` (commit 1), `df21312` (commit 2).
 
 ## A. Change summary

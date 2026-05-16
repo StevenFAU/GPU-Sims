@@ -12,7 +12,7 @@ sibling-docs:
 
 # A.2 commit 1 landing audit — new check module + fixtures + tests
 
-Companion to: `<commit-1-sha>` (SHA back-filled by commit 5 per Convention #12).
+Companion to: `e079c7b` (SHA back-filled by commit 5 per Convention #12).
 
 ## A. Change summary
 

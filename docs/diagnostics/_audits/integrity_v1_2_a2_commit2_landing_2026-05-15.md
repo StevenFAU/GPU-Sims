@@ -10,7 +10,7 @@ sibling-docs:
 
 # A.2 commit 2 landing audit — classifier + catalog + apply_annotations refactor
 
-Companion to: `<commit-2-sha>` (SHA back-filled by commit 5 per Convention #12).
+Companion to: `df21312` (SHA back-filled by commit 5 per Convention #12).
 Builds on: `e079c7b` (commit 1 — new check module + fixtures + tests).
 
 ## A. Change summary

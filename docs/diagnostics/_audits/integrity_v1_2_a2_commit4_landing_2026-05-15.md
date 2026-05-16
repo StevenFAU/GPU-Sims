@@ -226,3 +226,44 @@ snapshot.py change is similarly trivially reversible.
 SHA back-fill across all four audit reports' `Companion to:
 <commit-N-sha>` placeholders. Separate commit per Convention #12;
 no `--amend`.
+
+## Addendum A — landing-time gate-state correction (2026-05-15)
+
+Appended at landing per Convention C / audit-prose freshness
+convention (v1.3 candidates roadmap Addendum A pattern). The post-A.2
+strict-mode gate measured against current disk is **45 hard-fail**, not
+the 44 baseline this report's § E claimed.
+
+- **What the +1 is:** one `cat1.annotation-form` finding on this audit
+  report itself at line 126, where the prose `24 findings. After the
+  sweep, all 24 carry an
+  ` literal-mention-of-grammar string was added to the body AFTER the
+  commit-4 sweep had already run earlier in the commit. The sweep
+  picked up the analogous string in the commit-3 audit (added to the
+  body BEFORE commit 4's sweep) and produced an
+  audit-report-grammar-example annotation there, but could not see
+  this report's body because the body did not exist yet at sweep
+  time.
+- **Why kept as +1 rather than corrected in-place:** Per the
+  audit-prose freshness convention, the body of a landed audit
+  report is not silently edited. Adding an inline suppression
+  annotation above line 126 is mechanically a sweep operation but
+  semantically a body edit on the landed artifact. The next batch's
+  sweep companion will absorb this finding as a routine sweep result
+  (the same way commit-4's sweep absorbed commit-1/2's audit-body
+  grammar literals).
+- **Why not run a follow-up sweep now:** Hard Rule #9 specifies
+  per-category force-sweep, not blanket. A blanket sweep here would
+  technically work for this single finding but would establish a
+  precedent of "sweep again to clean up the audit-of-the-just-finished-
+  sweep," which is recursive and risks scope creep across batches.
+  The freshness convention is the cleaner answer: surface and defer.
+
+The +1 does not affect Decisions 7 or 8 verification; the underlying
+LIVE-SOURCE baseline (per the strict-mode dump) is still 44, plus the
++1 audit-doc residue.
+
+If a reader runs `--mode strict --no-audit-log` post-this-addendum
+and sees 45 rather than 44, the difference is this single
+annotation-form finding on this report's § C prose. The next sweep
+will eliminate it.

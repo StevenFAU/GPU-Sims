@@ -168,4 +168,4 @@ header comments map to top-level keys.
 ## § G. Next commit
 
 Commit 3 — T1.4 probe template conventions doc. SHA cross-reference
-will be filled in by commit 4 (SHA back-fill): `<COMMIT_3_SHA>`.
+will be filled in by commit 4 (SHA back-fill): `9e3afa9`.

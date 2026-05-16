@@ -162,4 +162,4 @@ rather than importing `emit_grandfather_report` from `integrity.snapshot`.
 ## § G. Next commit
 
 Commit 2 — T1.5 cat3 TOML → JSON convergence. SHA cross-reference will
-be filled in by commit 4 (SHA back-fill): `<COMMIT_2_SHA>`.
+be filled in by commit 4 (SHA back-fill): `72a2d26`.

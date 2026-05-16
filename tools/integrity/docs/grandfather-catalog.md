@@ -308,7 +308,7 @@ underscore-prefix renaming rather than wiring up a new consumer.
 Auto-refresh of this section's count is banked for v1.3 (Decision 6
 keeps refresh manual in v1.2).
 
-### `audit-bare-path` (745)
+### `audit-bare-path` (747)
 
 **Pattern:** `cat1.bare-path` findings in files under
 `docs/diagnostics/_audits/`.

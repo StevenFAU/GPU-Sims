@@ -99,7 +99,9 @@ citations are all path-prefixed
 
 2. **Line-number-drift precedent already validated in commit 1.** The
    bolt-ons probe § D.1's `_emit_human_summary` line citation
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    (`runner.py:148`) is stale relative to current disk
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    (`runner.py:154` per probe § F.6). The doc's "How to apply"
    guidance to tag with anchor SHA rather than line numbers is exactly
    the methodology that prevents this drift; the doc's own bolt-ons
@@ -115,4 +117,4 @@ replace those placeholders with the actual SHAs.
 
 - Commit 1: `65a7685` (T1.3)
 - Commit 2: `72a2d26` (T1.5)
-- Commit 3: this commit — `<COMMIT_3_SHA>`
+- Commit 3: this commit — `9e3afa9`

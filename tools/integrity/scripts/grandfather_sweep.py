@@ -24,11 +24,27 @@ def main(argv: list[str]) -> int:
             "sweep is required."
         ),
     )
+    parser.add_argument(
+        "--force-sweep-category",
+        action="append",
+        default=[],
+        metavar="CATEGORY",
+        help=(
+            "Force-sweep findings classified into the given category, "
+            "regardless of LIVE-SOURCE protection. Repeatable. Example: "
+            "--force-sweep-category toolkit-own-unused. Use sparingly -- "
+            "this opts a single named category out of the P1.8 live-source "
+            "attribution-not-sweep policy, leaving all other LIVE-SOURCE "
+            "categories protected."
+        ),
+    )
     ns = parser.parse_args(argv)
 
     root = ns.repo_root if ns.repo_root else find_repo_root()
     files, anns, counts, live_source_skipped = apply_annotations(
-        root, ns.dry_run, sweep_live_source=ns.sweep_live_source,
+        root, ns.dry_run,
+        sweep_live_source=ns.sweep_live_source,
+        force_sweep_categories=frozenset(ns.force_sweep_category),
     )
 
     label = "would modify" if ns.dry_run else "modified"

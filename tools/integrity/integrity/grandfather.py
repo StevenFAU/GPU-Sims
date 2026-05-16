@@ -115,6 +115,13 @@ def classify(finding: Finding) -> Classification:
             issue_ref="n/a",
         )
 
+    if cid == "cat2.public-symbol-used-toolkit":
+        return Classification(
+            category="toolkit-own-unused",
+            reason="pre-v1.2 toolkit-own public symbol with no current consumer (tracked for v1.2 review per grandfather-catalog toolkit-own-unused)",
+            issue_ref="n/a",
+        )
+
     if cid == "cat1.intra-repo" and f.startswith("docs/diagnostics/_audits/"):
         return Classification(
             category="audit-citation",
@@ -361,22 +368,41 @@ def apply_annotations(
     repo_root: Path,
     dry_run: bool,
     sweep_live_source: bool = False,
+    force_sweep_categories: frozenset[str] = frozenset(),
 ) -> tuple[int, int, dict[str, int], int]:
     """Apply suppression annotations for every collected finding.
 
-    Returns (files_modified, annotations_added, category_counts, live_source_skipped)."""
+    Returns (files_modified, annotations_added, category_counts, live_source_skipped).
+
+    Live-source skip logic (v1.2 P1.8 + v1.2 A.2 Decision 4):
+      Default: protect other-cat1 / other-cat1-bare-path findings on
+      LIVE-SOURCE paths from sweep (attribute, do not sweep).
+      sweep_live_source=True: bypass for ALL live-source other-cat1*
+      findings (the v1.1 default behavior; equivalent to "force-sweep
+      other-cat1 + other-cat1-bare-path").
+      force_sweep_categories: bypass live-source protection per named
+      category, leaving all other LIVE-SOURCE protections in place.
+      Used by v1.2 A.2 commit 4 to sweep toolkit-own-unused only.
+    """
     findings = collect_findings(repo_root)
 
     # P1.8 -- protect LIVE-SOURCE other-cat1 findings from sweep by default.
     # Named classifier categories (cat2-stack-*-unused, live-shader-1810, etc.)
-    # remain sweepable on live-source paths -- only the heterogeneous
+    # remain sweepable on live-source paths by design -- only the heterogeneous
     # other-cat1 fallthrough bucket is dangerous to auto-annotate on live code.
+    # v1.2 A.2 Decision 4 extends the bypass surface: force_sweep_categories
+    # opts specific named categories (e.g., toolkit-own-unused) into the sweep
+    # even when their findings sit on LIVE-SOURCE paths, without disabling the
+    # default protection for all other categories.
     live_source_skipped = 0
     if not sweep_live_source:
         kept: list[Finding] = []
         for f in findings:
             cat = classify(f).category
             if cat in ("other-cat1", "other-cat1-bare-path") and is_live_source_path(f.file):
+                if cat in force_sweep_categories:
+                    kept.append(f)
+                    continue
                 live_source_skipped += 1
                 continue
             kept.append(f)

@@ -253,6 +253,46 @@ GPU_SIMS_HAVE_ALEMBIC`).
 **Future treatment:** Remove suppression on each header when the
 header is next modified. Permanent suppressions are not expected.
 
+### `toolkit-own-unused` (?)
+
+**Pattern:** `cat2.public-symbol-used-toolkit` findings -- top-level
+public `def` or `class` symbols declared in
+`tools/integrity/integrity/**/*.py` with no consumer in
+`tools/integrity/{integrity,scripts,tests}/`. Per v1.2 A.2 Decision 2
+strict scan rules: module-level constants, underscore-prefixed names,
+`visit_*` methods on `ast.NodeVisitor` subclasses, `test_*` functions,
+and `main`/`__main__` entrypoint names are NOT scanned. Per Decision 3:
+the `tests/`, `tests/fixtures/`, and `scripts/` subdirectories are
+included as scan-input (their imports count as consumption) but
+excluded as scan-target (their own top-level symbols are not scanned
+for being unused).
+
+**Why grandfathered:** v1.2 A.2 introduces the toolkit self-application
+check that closes the recursive blind spot named in v1.1 batch-1 retro
+section 5.3. Findings present at A.2 landing time are pre-existing
+declared-public-but-unused symbols accumulated across batches 0 through
+1.x; the v1.2 baseline sweep grandfathers them. Going forward, any new
+public symbol added to the toolkit must have a non-self consumer or
+carry a per-entry tracking note here.
+
+**Tracking notes:**
+
+- `stack_paths()` at `tools/integrity/integrity/common/stack_paths.py`
+  is the first tracked entry. Per v1.2 A.2 Decision 7: declared as a
+  helper for future stack-config consolidation; tracked for v1.3
+  consolidation work. When v1.3 wires `stack_paths()` into the Stack
+  checks (consolidating the three pairs of duplicated path constants),
+  this entry will resolve and the annotation can be removed.
+
+**Future treatment:** Per-entry review during v1.3 stack-config
+consolidation. Most entries are runner / classifier / generator
+internals consumed only within the defining module; the spec's
+strict-scan rule produces a true positive in those cases (a public
+shape with no cross-module consumer), but the right fix is usually
+underscore-prefix renaming rather than wiring up a new consumer.
+Auto-refresh of this section's count is banked for v1.3 (Decision 6
+keeps refresh manual in v1.2).
+
 ### `audit-bare-path` (635)
 
 **Pattern:** `cat1.bare-path` findings in files under

@@ -107,6 +107,7 @@ table). Filename / line-count / referenced-in-main.cpp / one-line description:
 
 Three shader files (`density_solve`, `divergence_solve`, `pressure_apply`)
 remain on disk as orphans after commit 2b; cleanup was explicitly deferred
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 to a later commit per `phase11_5_commit2b_landing_2026-05-14.md:179-186`.
 They are still referenced by name in `main.cpp` (3 hits each: `make_compute`
 declaration, `allocateDescriptorSet`, and `try_reload`) — but never
@@ -207,6 +208,7 @@ Adjacent (not captured by the constexpr-form grep but in the same block):
 ```
 
 These match the SPlisHSPlasH 2.16.1 defaults at the registered anchor
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 (see Section E and `TimeStepDFSPH.h:28-37`, modulo the upstream's pluralized
 boundary handling).
 
@@ -257,6 +259,7 @@ The fabricated `c254caf...` SHA persists only in `load-bearing-decisions.md`
 re-pointed to SPlisHSPlasH 2.16.1 (SHA `6bff55a6`) at the integrity-registry
 level. The doc has not been touched since.
 
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 ### C.3 `grep -rn "integrity-allow:.*live-shader-1810" particle-fluids/sph-water/`
 
 ```
@@ -271,6 +274,7 @@ shaders/pressure_apply.comp.glsl:7
 shaders/jacobi_update_density.comp.glsl:7
 ```
 
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 Nine `integrity-allow: ... live-shader-1810 ...` directives in shaders.
 Zero in `src/main.cpp` or under `docs/`.
 
@@ -313,7 +317,9 @@ suppression idioms in the same tree.**
    2.16.1.
 
 2. **Two shaders have a 1.8.10 citation with no adjacent suppression
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    line:** `compute_density_change.comp.glsl:10` and
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
    `compute_pressure_accel.comp.glsl:10`. Section F confirms these
    *are* suppressed (probably by a file-scope rule covering the whole
    particle-fluids/sph-water/shaders/ tree, since they don't appear in
@@ -438,6 +444,7 @@ All quotations from `references/SPlisHSPlasH/SPlisHSPlasH/...` at SHA
 
 **E.1.a — `#define` site**
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `SPlisHSPlasH/DFSPH/TimeStepDFSPH.h:1-15`:
 
 ```cpp
@@ -462,6 +469,7 @@ runs with warmstart enabled.
 
 **E.1.b — Pressure-solve start-of-frame warmstart init**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:287-307` (inside the `pressureSolve` per-particle init
 loop, after `computeDensityAdv` and `m_simulationData.getFactor(...) *= invH2`):
 
@@ -504,6 +512,7 @@ Key facts:
 
 **E.1.c — Divergence-solve start-of-frame warmstart init (`USE_WARMSTART_V`)**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:444-461` (inside the `divergenceSolve` per-particle init
 loop, after `computeDensityChange` + particle-deficiency clamp +
 `m_simulationData.getFactor(...) *= invH`):
@@ -542,6 +551,7 @@ Key facts:
 
 **E.1.d — End-of-frame `* h²` (pressure) and `* h` (divergence) storage**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Pressure-solve end-of-frame (`TimeStepDFSPH.cpp:364-383`):
 
 ```cpp
@@ -567,6 +577,7 @@ Pressure-solve end-of-frame (`TimeStepDFSPH.cpp:364-383`):
 #endif
 ```
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 Divergence-solve end-of-frame (`TimeStepDFSPH.cpp:521-540`):
 
 ```cpp
@@ -604,6 +615,7 @@ per-particle init kernel that today seeds `p_rho2` to zero.
 
 **E.2.a — Pressure-solve outer loop and eta formula**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:309-343`:
 
 ```cpp
@@ -657,6 +669,7 @@ satisfies `avg_density_err <= eta`.
 
 **E.2.b — Divergence-solve outer loop and eta formula**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:465-497`:
 
 ```cpp
@@ -703,6 +716,7 @@ the loop condition), not configurable.
 
 **E.2.c — `avg_density_err` accumulation pattern (pressure-solve)**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:558-619`:
 
 ```cpp
@@ -760,6 +774,7 @@ only contributions from over-compressed particles count). `avg_density_err
 
 **E.2.d — `avg_density_err` accumulation pattern (divergence-solve)**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:621-706`:
 
 ```cpp
@@ -867,6 +882,7 @@ XSPH.cpp:102, :177  [XSPH viscosity boundary branch]
 
 **E.3.b — Scalar `computeDFSPHFactor` Akinci2012 branch**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `TimeStepDFSPH.cpp:1106-1186` (full scalar `computeDFSPHFactor`):
 
 ```cpp
@@ -991,6 +1007,7 @@ whether the integrand is a gradient or a kernel value.
 
 **E.3.d — `computeBoundaryVolume` per-frame dispatch**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `BoundaryModel_Akinci2012.cpp:48-75` (the function itself):
 
 ```cpp
@@ -1029,7 +1046,9 @@ is the Akinci2012 "1/(self + boundary-neighbor kernel sum)" volume
 formula. The result `m_V[i]` is what every `forall_boundary_neighbors`
 branch above reads via `bm_neighbor->getVolume(neighborIndex)`.
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `computeBoundaryVolume` is called from `TimeStep.cpp:90` (initial
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 neighbor-search after `performNeighborhoodSearchSort`) and `TimeStep.cpp:150-153`
 (every frame's boundary update, gated on dynamic / animated boundaries —
 static boundaries' volumes are computed once and never recomputed).
@@ -1042,6 +1061,7 @@ cost rather than a per-frame cost.
 
 **E.4.a — CFL field declarations and defaults**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `Simulation.cpp:68-70`:
 
 ```cpp
@@ -1056,6 +1076,7 @@ Upstream defaults: `cflFactor = 0.5`, `cflMinTimeStepSize = 1e-4`,
 clamps `frame_dt / substeps` to `[DT_MIN, DT_MAX]` but does not consult
 `maxVel`.)
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `Simulation.cpp:200, :205, :210`:
 
 ```cpp
@@ -1066,6 +1087,7 @@ CFL_MAX_TIMESTEPSIZE = createNumericParameter("cflMaxTimeStepSize", "CFL - max. 
 
 **E.4.b — `updateTimeStepSizeCFL` body**
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 `Simulation.cpp:415-492` (the function that computes the next dt):
 
 ```cpp
@@ -1136,6 +1158,7 @@ magnitude over all fluid particles (note: `velMag = (vel + accel*h).squaredNorm(
 not `.norm()`); the `sqrt(maxVel)` in the dt formula recovers the actual
 maximum speed.
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 **Note on `updateTimeStepSize` (the dispatcher):** `Simulation.cpp:395-413`
 has a wrapper that supports two CFL modes:
 - `m_cflMethod == 1`: just call `updateTimeStepSizeCFL()`
@@ -1196,7 +1219,9 @@ because they lack the explicit `SPlisHSPlasH 1.8.10` / `SPlisHSPlasH 2.16.1`
 prefix that would route them to `cat1.upstream-citation`). All are
 covered by `cat1.intra-repo grandfathered-pre-v1` suppressions.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The first two entries (`docs/load-bearing-decisions.md:1-81 cited line
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 81 exceeds file line count 80` and `shaders/_struct_layouts.txt:1-109
 cited line 109 exceeds file line count 108`) are off-by-one
 range-citation errors that are also suppressed.
@@ -1218,6 +1243,7 @@ SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:758-760: ...
 
 Two distinct integrity findings collapse into this filter:
 
+<!-- integrity-allow: cat1.upstream-citation; grandfathered-pre-v1 (see grandfather-catalog other-cat1); n/a -->
 1. One *expected* finding: a `SPlisHSPlasH 2.16.1 SPHKernels.h:43-85`
    citation lacks a `references/SPlisHSPlasH/SPlisHSPlasH/` prefix and
    so the path doesn't resolve. (Probably from `density_alpha.comp.glsl`
@@ -1293,6 +1319,7 @@ Walking the prior phase11_5 audits for items explicitly flagged as
 | Item | Source | What |
 | --- | --- | --- |
 | **B.1** Delete orphan shaders | commit-2b audit ¶179-186 | Remove from disk: `density_solve.comp.glsl`, `divergence_solve.comp.glsl`, `pressure_apply.comp.glsl`. |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | **B.2** Delete orphan host-side pipeline objects | same | Remove `pipe_density_solve`, `pipe_divergence_solve`, `pipe_pressure_apply` declarations (`main.cpp:1284-1291`), descriptor-set allocations (`:1384-1392`), reload helpers (`:2177-2180`), and the `writeDfsphSolveDescriptor` / `writePressureApplyDescriptor` helpers (probe-2 § N or thereabouts). |
 | **B.3** Re-anchor `load-bearing-decisions.md` to 2.16.1 | Setup-1 G.5 ¶432 | Replace lines 9 + 54 of `docs/load-bearing-decisions.md` to point at `SPlisHSPlasH 2.16.1` at SHA `6bff55a6...` (and verify that the doc's five non-obvious-convention list — α/ρ², h=4r, etc. — still applies to 2.16.1). |
 | **B.4** Re-anchor `README.md` lines 28 + 90 | implicit from B.3 | Same as B.3 — `README.md` carries the same 1.8.10 anchor claim. |
@@ -1376,8 +1403,11 @@ twin (function at 735-1103). Probably a probe-2 / probe-3 line-number
 swap. Documented here so commit 3's mapping table cites the right scalar
 line numbers.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ### H.6 docs/notes.md:20 still pre-v1
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
+<!-- integrity-allow: cat1.upstream-citation; audit-doc reference to the historical 1.8.10 fabrication (permanent suppression); n/a -->
 `docs/notes.md:20` says `"SPlisHSPlasH 1.8.10 TimeStepDFSPH.cpp:442-692 to
 be translated in the [next phase]"` — covered by `cat1.intra-repo
 grandfathered-pre-v1` suppression at `:19`. Re-anchor to 2.16.1 alongside

@@ -180,6 +180,7 @@ of `1.0/tau` for the BGK relaxation (`omtauinv = 1.0 - tauinv`).
 BGK collision implementations are D2Q9. Quoting both the CPU fused
 stream-collide kernel and the CUDA equivalent for completeness.
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 #### A.6.a CPU fused stream-collide — `chapter13/cpu/LBM.cpp:97–181`
 
 Verbatim:
@@ -368,6 +369,7 @@ weights.
 #### A.6.c Equilibrium-distribution computation (the canonical form)
 
 Both implementations use the closed-form factored equilibrium documented in
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 the three-line comment block (`chapter13/cpu/LBM.cpp:145–148`, verbatim):
 
 ```cpp
@@ -377,6 +379,7 @@ the three-line comment block (`chapter13/cpu/LBM.cpp:145–148`, verbatim):
 ```
 
 The fully-expanded, non-factored equilibrium also exists in the educational
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 "cpu_intro" version (`chapter13/cpu_intro/main.cpp:271–298`):
 
 ```cpp
@@ -420,6 +423,7 @@ property of the velocity-set normalization, not the dimensionality).
 ### A.7 D2Q9 velocity-set and ω_i weights — verbatim
 
 The canonical declaration of D2Q9 lattice constants is in
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `chapter13/cpu_intro/main.cpp:25–35` (one of the cleaner placements; the
 chapter13/cpu and chapter13/gpu variants declare `w0/ws/wd` only as
 separate scalars without the indexed-array view):
@@ -437,6 +441,7 @@ const int dirx[] = {0,1,0,-1, 0,1,-1,-1, 1};
 const int diry[] = {0,0,1, 0,-1,1, 1,-1,-1};
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 A second canonical declaration appears in `chapter8/cylinder.cpp:59–62`,
 verbatim:
 
@@ -465,9 +470,11 @@ cy = [0 1  0 -1 1  1 -1 -1 0];                  % velocities, y components
 
 - chapter13/cpu_intro and chapter8/cylinder.cpp put the **rest direction first** (`w0 = 4/9` at index 0; `ws = 1/9` for indices 1–4; `wd = 1/36` for indices 5–8).
 - chapter5 MATLAB exemplars put the **rest direction last** (`4/9` at index 9 (MATLAB 1-based)).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 - chapter13/cpu and chapter13/gpu store rest direction (`f0`) in a separate scalar array (NOT in the `f1`/`f2` arrays which only hold the eight non-rest populations; see `fieldn_index(x,y,d) = (ndir-1)*(NX*y+x)+(d-1)` at `chapter13/cpu/LBM.h:65–68`).
 
 The direction numbering for chapter13/cpu's `fX` array is documented as the
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 ASCII diagram inside the kernel (`chapter13/cpu/LBM.cpp:113–115`):
 
 ```
@@ -506,12 +513,14 @@ in § A.7). This is the canonical halfway-BB pattern: `fprop(boundary, dir_back)
 
 The chapter8 C++ files use a related but distinct pattern (`anti`-bounce-back
 for concentration / scalar fields, not solid-wall halfway BB for momentum).
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 The pattern at `chapter8/cylinder.cpp:222`:
 
 ```cpp
 f2[bb_nodes[counter]*NPOP+dir]=-f2[counter2*NPOP+complement[dir]]+2*weights[dir]*conc_wall;
 ```
 
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 with `complement` indexed at `chapter8/cylinder.cpp:63`:
 
 ```cpp
@@ -537,6 +546,7 @@ use:
    see Phase 12 LBM probe Section E for license + verification gaps).
 
 2. **Periodic boundary conditions baked into the streaming step.**
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
    `chapter13/cpu/LBM.cpp:107–110`:
    ```cpp
    unsigned int xp1 = (x+1)%NX;
@@ -701,7 +711,9 @@ partition.
 **Is Krüger's code a suitable v1 cat-3 integrity anchor?** Only partially.
 The clone is MIT-licensed (compatible), buildable in principle but
 build-system-bare (no CMake), and provides clean pedagogical-readability
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 references for D2Q9 BGK collision (`chapter13/cpu/LBM.cpp:97`,
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 `chapter13/gpu/LBM.cu:172`), the equilibrium expansion (`chapter13/cpu_intro/main.cpp:271–298`,
 showing the `4.5 = 9/2` / `1.5 = 3/2` literal-constant form), and halfway
 bounce-back (`chapter5/poiseuille_BB.m:123`). But **the repository ships no

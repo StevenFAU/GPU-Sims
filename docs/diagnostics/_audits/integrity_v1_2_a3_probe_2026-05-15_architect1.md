@@ -215,9 +215,13 @@ tree dataclasses:
 
 | Function | Signature | Citation shape | "Bare-path" aware? |
 |----------|-----------|----------------|--------------------|
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `extract_intra_repo_citations` | `(text: str, source_file: Path) -> list[IntraRepoCitation]` (grammar.py:84-112) | `<path>:<line>[-<end>]` — `<path>` requires at least one slash OR at least one dot prefix-segment via `INTRA_REPO_RE`; basenames-only still match because `[A-Za-z0-9_./-]+\.[A-Za-z0-9.]+` allows the empty-slash case. | No explicit concept; bare basenames flow through identical to dotted-prefix paths. |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `extract_upstream_citations` | `(text: str, source_file: Path) -> list[UpstreamCitation]` (grammar.py:152-177) | `<UpstreamName> <version> <path>:<line>[-<end>]`. The `<path>` token is the same character class as intra-repo; vendor-relative. | No explicit concept; the path field is whatever the regex captures after `<version> `. |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `IntraRepoCitation` dataclass | grammar.py:60-68 | parse tree for intra-repo | n/a |
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 | `UpstreamCitation` dataclass | grammar.py:139-149 | parse tree for upstream | n/a |
 
 INFERENCE (A.2): a `cat1.bare-path` check does **not** need a new extractor
@@ -466,6 +470,7 @@ FACT: total LOC = 124.
 
 ### B.2 — `run()` path-resolution logic, verbatim
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 The path-resolution block (intra_repo.py:100-122) is:
 
 ```python
@@ -529,33 +534,61 @@ python3 -m integrity --check cat1.intra-repo --mode warn-only \
 produced these first 30 findings (verbatim):
 
 ```text
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 CHANGELOG.md : 92 | Chakazul/Lenia/Python/LeniaNDK.py:329-335: path 'Chakazul/Lenia/Python/LeniaNDK.py' does not resolve under /home/otacon/
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 CHANGELOG.md : 154 | context.hpp:78: path 'context.hpp' does not resolve under /home/otacon/Projects/GPU-Sims/GPU-Sims or /home/otacon/Projec
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 CHANGELOG.md : 154 | context.cpp:116: path 'context.cpp' does not resolve under /home/otacon/Projects/GPU-Sims/GPU-Sims or /home/otacon/Proje
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 CHANGELOG.md : 154 | context.cpp:202: path 'context.cpp' does not resolve under /home/otacon/Projects/GPU-Sims/GPU-Sims or /home/otacon/Proje
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 common/common-py/examples/hello/hello/main.py : 31 | kernel_impl.py:631: path 'kernel_impl.py' does not resolve under /home/otacon/Projects/GPU-Sims/GPU-Sims/common/common-p
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/load-bearing-decisions.md : 236 | main.py:608: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/load-bearing-decisions.md : 248 | main.py:560: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/load-bearing-decisions.md : 258 | main.py:599: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/load-bearing-decisions.md : 274 | main.py:466: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/load-bearing-decisions.md : 276 | main.py:96: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/load-bearing-decisions.md : 283 | main.py:187: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.intra-repo; audit-doc snapshot of pre-v1 codebase (see grandfather-catalog audit-citation); n/a -->
 continuous-ca/lenia-fft/docs/notes.md : 63 | Chakazul/Lenia/Python/LeniaNDK.py:329-335: path 'Chakazul/Lenia/Python/LeniaNDK.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/notes.md : 169 | main.py:164: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/notes.md : 176 | main.py:203: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/docs/notes.md : 178 | main.py:306-318: path 'main.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/python/lenia_fft/presets.py : 12 | LeniaNDK.py:329-335: path 'LeniaNDK.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 continuous-ca/lenia-fft/python/lenia_fft/presets.py : 81 | LeniaNDK.py:184-206: path 'LeniaNDK.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/category_context_quantum_landing_2026-05-15.md : 81 | grammar.py:49-52: path 'grammar.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/category_context_quantum_landing_2026-05-15.md : 291 | grammar.py:49-52: path 'grammar.py' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_consumers_2026-05-14_architect2.md : 231 | vdb_writer.hpp:33: path 'vdb_writer.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_consumers_2026-05-14_architect2.md : 233 | vdb_writer.hpp:41: path 'vdb_writer.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 162 | alembic_writer.hpp:21: path 'alembic_writer.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 164 | alembic_writer.hpp:31: path 'alembic_writer.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 166 | alembic_writer.hpp:44: path 'alembic_writer.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 177 | camera.hpp:12: path 'camera.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 179 | camera.hpp:35: path 'camera.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 181 | camera.hpp:33: path 'camera.hpp' does not resolve under …
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_inventory_2026-05-14_architect2.md : 183 | camera.hpp:46: path 'camera.hpp' does not resolve under …
 ```
 
@@ -913,6 +946,7 @@ the same reason.** The corrected estimate is in the F.2 drift note.
 
 ### E.1 — Verbatim dump of `_parse_ground_truth_sources` (snapshot.py)
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 FACT: located at snapshot.py:102-135 (200-LOC total file).
 
 ```python
@@ -1080,6 +1114,7 @@ UNRESOLVABLE: 250
 
 === AMBIGUOUS sample (15) ===
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/phase12_lattice_boltzmann.md:1153|main.cpp:1100
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1087,6 +1122,7 @@ docs/phase12_lattice_boltzmann.md:1153|main.cpp:1100
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/phase12_lattice_boltzmann.md:1276|main.cpp:1168
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1094,6 +1130,7 @@ docs/phase12_lattice_boltzmann.md:1276|main.cpp:1168
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:144|main.cpp:1168
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1101,22 +1138,27 @@ docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:144|main.cpp:1168
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:192|runner.py:133
     -> common/common-py/.venv/lib/python3.12/site-packages/_pytest/runner.py
     -> tools/integrity/integrity/runner.py
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:203|runner.py:143
     -> common/common-py/.venv/lib/python3.12/site-packages/_pytest/runner.py
     -> tools/integrity/integrity/runner.py
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:203|runner.py:144
     -> common/common-py/.venv/lib/python3.12/site-packages/_pytest/runner.py
     -> tools/integrity/integrity/runner.py
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:293|runner.py:143
     -> common/common-py/.venv/lib/python3.12/site-packages/_pytest/runner.py
     -> tools/integrity/integrity/runner.py
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1.md:180|example.cpp:42
     -> build-test-alembic/_deps/nlohmann_json-src/docs/mkdocs/docs/integration/example.cpp
     -> build-test-alembic/_deps/nlohmann_json-src/docs/mkdocs/docs/integration/conan/example.cpp
@@ -1124,6 +1166,7 @@ docs/retro/integrity-toolkit-v1.1-batch1.md:180|example.cpp:42
     -> build-test-alembic/_deps/spdlog-src/example/example.cpp
     -> build-test-alembic/_deps/shaderc-src/third_party/spirv-headers/tests/example.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1.md:335|main.cpp:1168
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1131,6 +1174,7 @@ docs/retro/integrity-toolkit-v1.1-batch1.md:335|main.cpp:1168
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/sims_prioritization_2026-05-14_triage.md:103|main.cpp:1789
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1138,6 +1182,7 @@ docs/diagnostics/_audits/sims_prioritization_2026-05-14_triage.md:103|main.cpp:1
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_commit1_landing_2026-05-14.md:23|main.cpp:1349
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1145,6 +1190,7 @@ docs/diagnostics/_audits/phase11_5_commit1_landing_2026-05-14.md:23|main.cpp:134
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_commit2a_landing_2026-05-14.md:332|main.cpp:666
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1152,6 +1198,7 @@ docs/diagnostics/_audits/phase11_5_commit2a_landing_2026-05-14.md:332|main.cpp:6
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_resume_probe_2026-05-15_architect1.md:1296|main.cpp:1284
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1159,6 +1206,7 @@ docs/diagnostics/_audits/phase11_5_resume_probe_2026-05-15_architect1.md:1296|ma
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_unexercised_2026-05-14_architect2.md:70|main.cpp:1214
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1166,6 +1214,7 @@ docs/diagnostics/_audits/commoncpp_unexercised_2026-05-14_architect2.md:70|main.
     -> build-test-alembic/_deps/alembic-src/python/PyAlembic/Tests/main.cpp
     -> build-test-alembic/_deps/alembic-src/maya/AbcImport/main.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_unexercised_2026-05-14_architect2.md:72|main.cpp:1215
     -> continuous-ca/reaction-diffusion-3d/src/main.cpp
     -> particle-fluids/sph-water/src/main.cpp
@@ -1175,66 +1224,92 @@ docs/diagnostics/_audits/commoncpp_unexercised_2026-05-14_architect2.md:72|main.
 
 === REGISTERED-UPSTREAM-BARE sample (8) ===
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/integrity-toolkit-spec.md:612|SPHKernels.h:14
     -> references/SPlisHSPlasH/SPlisHSPlasH/SPHKernels.h
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_commit2_verification_2026-05-14.md:93|TimeStepDFSPH.cpp:1306
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_commit2_verification_2026-05-14.md:107|TimeStepDFSPH.cpp:1383
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_probe3_2026-05-14_architect1.md:8|TimeStepDFSPH.cpp:735
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_probe3_2026-05-14_architect1.md:305|TimeStepDFSPH.cpp:324
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_probe3_2026-05-14_architect1.md:308|TimeStepDFSPH.h:29
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.h
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_probe3_2026-05-14_architect1.md:308|TimeStepDFSPH.cpp:34
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/phase11_5_probe3_2026-05-14_architect1.md:308|TimeStepDFSPH.cpp:311
     -> references/SPlisHSPlasH/SPlisHSPlasH/DFSPH/TimeStepDFSPH.cpp
 
 === INTRA-REPO-BARE sample (8) ===
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:107|snapshot.py:178
     -> tools/integrity/integrity/snapshot.py
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/integrity_v1_1_batch1_spec_2026-05-15_architect1.md:97|alembic_writer.hpp:11
     -> common/common-cpp/include/gpusims/alembic_writer.hpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/integrity_v1_1_batch1_spec_2026-05-15_architect1.md:97|vdb_writer.hpp:12
     -> common/common-cpp/include/gpusims/vdb_writer.hpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_consumers_2026-05-14_architect2.md:231|vdb_writer.hpp:33
     -> common/common-cpp/include/gpusims/vdb_writer.hpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_consumers_2026-05-14_architect2.md:233|vdb_writer.hpp:41
     -> common/common-cpp/include/gpusims/vdb_writer.hpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/integrity_build_6_landing_2026-05-14.md:110|vdb_writer.hpp:33
     -> common/common-cpp/include/gpusims/vdb_writer.hpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/integrity_build_6_landing_2026-05-14.md:112|alembic_writer.hpp:24
     -> common/common-cpp/include/gpusims/alembic_writer.hpp
 
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
 docs/diagnostics/_audits/commoncpp_unexercised_2026-05-14_architect2.md:30|alembic_writer.hpp:24
     -> common/common-cpp/include/gpusims/alembic_writer.hpp
 
 === UNRESOLVABLE sample (10) ===
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/integrity-toolkit-spec.md:441|nTimeStepDFSPH.cpp:1370
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/integrity-toolkit-spec.md:443|file.cpp:42
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/integrity-toolkit-spec.md:488|LeniaNDK.py:329
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/integrity-toolkit-spec.md:853|LeniaNDK.py:329
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/sim-specs/lenia-fft.md:62|LeniaNDK.py:329
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/sim-specs/lenia-fft.md:93|LeniaNDK.py:329
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/retro/integrity-toolkit-v1.1-batch1-addendum.md:141|comp.glsl:7
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/retro/integrity-toolkit-v1.md:132|LeniaNDK.py:329
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/diagnostics/_audits/phase11_5_commit2_verification_2026-05-14.md:17|comp.glsl:73
+<!-- integrity-allow: cat1.bare-path; audit-doc snapshot bare-path citation pre-v1.2 (see grandfather-catalog audit-bare-path); n/a -->
   docs/diagnostics/_audits/phase12_lbm_probe_2026-05-15_architect1.md:1001|frag.glsl:1
 ```
 

@@ -20,6 +20,7 @@ companion-shas:
 ## A. Change summary
 
 Commit 4 lands the grandfather-sweep companion: ~660 inline
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 `integrity-allow:` annotations across audit/retro/toolkit-doc files
 and the 3 live-source deferred-upstream files. The strict-mode gate
 drops from 707 hard-fails (commit 3) to **44 hard-fails** — the
@@ -190,6 +191,7 @@ backwards-compatible with P1.8's tests (which only verify
    cat1.bare-path. These are NOT swept per the extended P1.8 filter
    (the test file is under `tools/integrity/tests/`, which is
    live-source). They contribute to the 44 residue and should be
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
    addressed by either annotating with inline `# integrity-allow:`
    comments OR adding `tools/integrity/tests/` to
    SWEEPABLE_PATH_PREFIXES.

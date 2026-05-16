@@ -123,6 +123,7 @@ tools/integrity/integrity/runner.py:82                             discover_chec
 tools/integrity/integrity/runner.py:102                            run_checks
 ```
 
+<!-- integrity-allow: cat1.annotation-form; audit-doc literal mention of the annotation grammar (not a real annotation); n/a -->
 24 findings. After the sweep, all 24 carry an `integrity-allow:
 cat2.public-symbol-used-toolkit; ...` comment immediately preceding
 the cited line.

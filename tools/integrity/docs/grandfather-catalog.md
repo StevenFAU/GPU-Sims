@@ -12,16 +12,31 @@ after this commit. Grandfathered findings are suppressed via inline
 
 ## Updating counts
 
-The per-category counts in the headings below reflect the toolkit state
-at the time this catalog was last manually refreshed (commit `c3391f7`,
-2026-05-15). To refresh:
+The per-category counts in the headings below reflect the most recent
+run of the auto-refresh script:
 
-```
-python3 -m integrity --grandfather-report --no-history-append
-```
+    python3 tools/integrity/scripts/refresh_catalog_counts.py
 
-Then update each category heading's parenthetical with the count from
-the report. Auto-refresh from the history file is a v1.2 candidate.
+The script reads `python3 -m integrity --grandfather-report
+--no-history-append`'s output and rewrites each numeric `(N)`
+parenthetical in this file's category headings. Non-numeric
+parentheticals (e.g. `(?)` placeholders or free-prose forms like
+`(0 swept; 44 live-source skipped)`) are preserved verbatim.
+
+To preview proposed changes without writing:
+
+    python3 tools/integrity/scripts/refresh_catalog_counts.py --dry-run
+
+The script errors out if any category in the report lacks a
+corresponding heading in this file — that signals a missed
+grandfather-catalog entry that needs human authoring (the catalog's
+per-category prose explains WHY each category is grandfathered and
+should not be mechanically stubbed).
+
+Run the refresh whenever catalog counts drift far enough to mislead
+a reader. The v1.3 candidates roadmap § 4 T1.3 banked the
+auto-refresh as the resolution for the manual-refresh debt v1.1
+batch-1 retro § 5.5 quantified at +6.7% drift per batch cycle.
 
 ## Categories
 
@@ -111,7 +126,7 @@ reason class as `spec-grammar-example`.
 
 **Future treatment:** Permanent suppression on these docs.
 
-### `audit-report-grammar-example` (49)
+### `audit-report-grammar-example` (50)
 
 **Pattern:** `cat1.annotation-form` findings in files under
 `docs/diagnostics/_audits/`.
